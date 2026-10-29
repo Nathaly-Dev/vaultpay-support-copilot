@@ -102,6 +102,10 @@ Não medido ainda. As métricas de avaliação entram na Fase 4.
 - Dados pessoais mascarados antes de chegar ao LLM e ao banco.
 - Apenas dados fictícios em todo o projeto.
 
+## Licença
+
+[MIT](LICENSE).
+
 ## Como usei IA neste projeto
 
 Uso o Claude Code como mentor técnico: ele propõe a estrutura e a modelagem, explica o porquê de cada decisão e escreve partes do código. Eu decido entre as alternativas (por exemplo, aprovei o modelo de dados antes de o schema ser escrito).
