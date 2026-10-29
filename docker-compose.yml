@@ -1,0 +1,26 @@
+services:
+  db:
+    # Imagem oficial do pgvector com versão fixada (Postgres 17 + pgvector 0.8.1).
+    image: pgvector/pgvector:0.8.1-pg17
+    container_name: vaultpay-db
+    restart: unless-stopped
+    environment:
+      # ":?" faz o compose falhar se a variável não existir no .env (falha fechada).
+      POSTGRES_USER: ${POSTGRES_USER:?defina POSTGRES_USER no .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+      POSTGRES_DB: ${POSTGRES_DB:?defina POSTGRES_DB no .env}
+    ports:
+      # Só aceita conexões da própria máquina, não da rede local.
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Scripts desta pasta rodam só na primeira criação do volume.
+      - ./db/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:

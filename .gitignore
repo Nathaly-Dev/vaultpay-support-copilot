@@ -1,0 +1,33 @@
+# Segredos e configuração local
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+
+# Dados locais (dumps, exports e bancos nunca vão para o Git)
+*.dump
+*.sql.gz
+*.sqlite
+*.db
+data/exports/
+
+# Modelos baixados (sentence-transformers / Ollama)
+models/
+.cache/
+
+# Sistema e editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
