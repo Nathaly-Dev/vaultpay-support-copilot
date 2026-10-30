@@ -7,3 +7,6 @@ pgvector
 pydantic
 # Falar com o Ollama local, com tempo limite
 httpx
+# API (Fase 3, ADR 0002). uvicorn sem extras: o [standard] traria 5 pacotes que não usamos.
+fastapi
+uvicorn
