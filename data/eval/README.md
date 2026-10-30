@@ -14,7 +14,7 @@ Abra no Excel ou no Google Sheets (separador `;`, já com acentos). Uma linha po
 | `pergunta` | Como um cliente escreveria, com as suas palavras: informal, com erro de digitação, sem copiar frase da política. |
 | `tem_resposta` | `sim` se as políticas respondem; `nao` se não respondem. |
 | `resposta_esperada` | A resposta certa, curta. Vazia quando `tem_resposta` é `nao`. |
-| `fonte_esperada` | `slug-da-politica, Art. N` (o slug é o nome do arquivo em `data/policies/`). Vazia quando `tem_resposta` é `nao`. |
+| `fonte_esperada` | `slug-da-politica, Art. N` (o slug é o nome do arquivo em `data/policies/`). Quando a resposta junta dois artigos, separe com `\|`; a primeira é a principal. Vazia quando `tem_resposta` é `nao`. |
 
 Exemplos (não estão no arquivo; escreva as suas):
 
@@ -30,3 +30,12 @@ Exemplos (não estão no arquivo; escreva as suas):
 - Inclua as falhas já conhecidas: "Vocês vendem CDB?" e "Qual o telefone da central?" (as políticas respondem as duas).
 - Só dados fictícios: se a pergunta tiver CPF, e-mail ou telefone, invente (ex.: CPF `123.456.789-09`).
 - Arquivo publicado é imutável: mudou a prova, vira `perguntas-v2.csv` (para comparar notas, a prova precisa ser a mesma).
+
+## Decisões do gabarito (v1)
+
+As perguntas foram escritas pela Nathaly; o `tem_resposta` foi conferido artigo por artigo contra as políticas (2026-10-30). `resposta_esperada` e `fonte_esperada` são um rascunho do Claude a partir das políticas, **revisado linha por linha pela Nathaly** antes de valer como gabarito.
+
+- **Corrigidas:** P012 (fatura) virou `nao`, nenhuma política fala de fatura. P016 (consignado) e P029 (ações dos EUA) viraram `sim`: a Tabela de Tarifas (Art. 3) diz que a VaultPay não oferece empréstimo nem investimentos.
+- **Casos de fronteira, marcados `nao`:** P005 (bitcoin), porque as políticas não falam de cripto e ler "investimentos" como "cripto" seria deduzir além do texto; P013 (celular roubado com o app aberto), porque nenhuma política cobre o caso e improvisar com o artigo de golpe seria arriscado numa urgência. Para os dois, o comportamento certo é encaminhar.
+- **Aceitas como estão:** P017 (cobrança dupla) cabe na compra não reconhecida (Cartão, Art. 6); P024 fala de "compra", então vale o prazo do cartão (60 dias), não o do Pix MED (30 dias).
+- P026 usa `example.com`, domínio reservado para exemplos (`email.com` existe de verdade).
