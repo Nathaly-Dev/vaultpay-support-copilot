@@ -6,7 +6,7 @@ Chatbot de atendimento ao cliente com RAG que responde dúvidas com base nas pol
 
 > ⚠️ **A VaultPay é uma empresa fictícia.** Todos os documentos, políticas e dados deste projeto são inventados, para fins de estudo e portfólio.
 
-> 🚧 **Em andamento.** Hoje existe a estrutura do projeto e o banco de dados. Veja o [Roadmap](#roadmap).
+> 🚧 **Em andamento.** O atendente já responde pela linha de comando, citando a fonte ou encaminhando, e grava cada conversa. Ainda sem API, interface e avaliação medida. Veja o [Roadmap](#roadmap).
 
 ## O problema
 
@@ -67,6 +67,11 @@ Pré-requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/
    ```bash
    docker compose cp db/smoke_test.sql db:/tmp/smoke_test.sql
    docker compose exec db psql -U vaultpay -d vaultpay_copilot -v ON_ERROR_STOP=1 -f /tmp/smoke_test.sql
+   ```
+4. Banco criado antes de uma migration nova? O Docker só aplica `db/migrations/` na criação do banco; aplique a nova à mão (exemplo com a 002, que pode rodar mais de uma vez sem erro):
+   ```bash
+   docker compose cp db/migrations/002_escalation_service_unavailable.sql db:/tmp/002.sql
+   docker compose exec db psql -U vaultpay -d vaultpay_copilot -v ON_ERROR_STOP=1 -f /tmp/002.sql
    ```
 
 ## Ingestão das políticas
@@ -145,8 +150,8 @@ Não medido ainda. As métricas de avaliação entram na Fase 4.
 
 - [x] **Fase 0, fundação:** estrutura do projeto, PostgreSQL + pgvector no Docker, schema com constraints e triggers.
 - [x] **Fase 1, ingestão:** políticas fictícias, chunks por artigo, embeddings e gravação no banco.
-- [ ] **Fase 2, RAG:** mascaramento de PII, busca vetorial, resposta com Ollama citando a fonte e recusa quando não há base.
-- [ ] **Fase 3, API:** endpoints em FastAPI, registro de conversas e encaminhamentos.
+- [x] **Fase 2, RAG:** mascaramento de PII, busca vetorial, resposta com Ollama citando a fonte, recusa quando não há base (três travas) e registro de conversas e encaminhamentos.
+- [ ] **Fase 3, API:** endpoints em FastAPI.
 - [ ] **Fase 4, avaliação:** conjunto de perguntas versionado (incluindo perguntas sem resposta na base) e métricas com Deepeval.
 - [ ] **Fase 5, análise e demo:** análise de encaminhamentos com Pandas, demo com OpenAI e aplicação inteira no Docker.
 
