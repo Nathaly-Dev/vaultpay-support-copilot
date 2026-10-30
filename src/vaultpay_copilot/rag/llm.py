@@ -32,3 +32,11 @@ class OllamaClient:
             # Sem nova tentativa automática: gerar de novo é lento, e o atendente já encaminha
             # para um humano. Só o tipo do erro sobe, nunca o corpo da resposta do serviço.
             raise LlmUnavailable(type(exc).__name__) from exc
+
+    def is_up(self) -> bool:
+        # Lista os modelos instalados: barato e não gera texto. Tempo curto: o /health não trava.
+        try:
+            self._client.get("/api/tags", timeout=2).raise_for_status()
+        except httpx.HTTPError:
+            return False
+        return True
