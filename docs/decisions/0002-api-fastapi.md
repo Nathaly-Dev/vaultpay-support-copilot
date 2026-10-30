@@ -8,12 +8,14 @@ O atendente (Fase 2) só roda pela linha de comando. A interface do chat e a ava
 
 ## Decisão
 1. **FastAPI + Uvicorn** (sem o extra `[standard]`). Endpoints síncronos (`def`): o atendente, o banco e o cliente do Ollama já são síncronos, e o FastAPI roda cada um numa thread.
-2. **Dois endpoints:** `POST /chat` e `GET /health`. Sem endpoint de histórico: sem login, qualquer pessoa com o `session_id` leria a conversa de outra.
+2. **Dois endpoints:** `POST /chat` e `GET /health`. Sem endpoint de histórico: sem login, qualquer pessoa com o `session_id` leria a conversa de outra. O `/health` responde `{status, checks}` também no 503 (o corpo é o diagnóstico), e só diz "llm ok" se o modelo configurado estiver instalado no Ollama.
 3. **`session_id` só agrupa perguntas**, não identifica ninguém. Se o cliente não mandar, o servidor cria.
 4. **Validação na borda** com Pydantic (pergunta de 1 a 1000 caracteres, campos desconhecidos recusados). O erro de validação padrão do FastAPI devolve o valor recebido (`input`), o que ecoaria um CPF sem máscara: trocado por mensagem genérica.
 5. **Um formato de erro:** `{"error": {"code", "message"}}`, mensagem genérica; banco fora do ar ou gravação que falhou = 503 (falhar fechado: toda resposta entregue fica registrada).
-6. **Limites (passo 2):** corpo de até 16 KB, uma pergunta por vez no modelo (503 para quem chegar com ele ocupado), 10 perguntas por minuto por IP (contador em memória, escrito à mão). Sem CORS até existir a interface; `/docs` desligado por padrão (o Swagger carrega arquivos de CDN).
-7. **Dependências novas:** `fastapi`, `uvicorn`. Vieram junto `starlette`, `annotated-doc`, `click` e `opentelemetry-api`. Este último é a telemetria nativa do FastAPI: sem o `opentelemetry-sdk` (que não instalamos) ela não é configurada e não envia nada.
+6. **Limites:** corpo de até 16 KB (`RequestBodyLimitMiddleware` do Starlette, mais uma recusa antecipada quando o `Content-Length` já passa do limite, para manter o formato de erro), uma pergunta por vez no modelo (503 para quem chegar com ele ocupado, sem gastar a cota), 10 perguntas por minuto por IP e 30 consultas por minuto ao `/health` (janela deslizante em memória, escrita à mão, com teto de 10 mil clientes ativos). Pergunta com caractere de controle (NUL etc.) é recusada com 422.
+   - **Subir só com `python -m vaultpay_copilot.api`**: o uvicorn, por padrão, confia no `X-Forwarded-For` de quem chega por 127.0.0.1, e qualquer cliente local escolheria o próprio "IP" e furaria o limite. O `__main__.py` desliga isso, o log de acesso e o header `server`.
+7. **Borda:** headers de segurança e `X-Request-ID` em toda resposta; log com `request_id`, sem pergunta, resposta, IP nem endereço digitado (o log de acesso do uvicorn fica desligado). Sem CORS até existir a interface. `/docs` e `/openapi.json` sempre desligados: o Swagger carrega arquivos de CDN e exigiria uma exceção na Content-Security-Policy.
+8. **Dependências novas:** `fastapi`, `uvicorn`. Vieram junto `starlette`, `annotated-doc`, `click` e `opentelemetry-api`. Este último é a telemetria nativa do FastAPI: sem o `opentelemetry-sdk` (que não instalamos) ela não é configurada e não envia nada.
 
 ## Alternativas descartadas
 | Alternativa | Por que não |
@@ -28,3 +30,8 @@ O atendente (Fase 2) só roda pela linha de comando. A interface do chat e a ava
 - Onde quebra primeiro com muitos usuários: o modelo local, uma pergunta por vez. Depois, o limite por IP em memória, que não vale com mais de um processo (exigiria Redis).
 - O processo da API carrega o modelo de embeddings (PyTorch) ao subir; os testes trocam banco, embeddings e LLM por versões falsas, então o CI continua sem PyTorch.
 - `session_id` não é segredo nem prova de identidade: nada pode ser lido de volta por ele enquanto não houver login.
+- Um único cliente consegue ocupar o modelo quase o tempo todo (10 perguntas de 5 a 25 s por minuto): os outros recebem "ocupado". Aceitável para a demo local; com usuários de verdade, precisaria de fila justa por cliente.
+- Num erro 500, o próprio servidor grava o traceback completo no log (fora do controle da API). Nenhum caminho conhecido põe a pergunta ou a resposta nessa mensagem.
+
+## Revisão independente (2026-10-30)
+Um revisor com contexto limpo (subagente, mesmo modelo) recebeu a spec e o código com a missão de achar falhas. Achados confirmados e corrigidos, cada um com teste e mutação: furar o limite com `X-Forwarded-For`; `/health` sem limite prendendo as threads do `/chat`; NUL na pergunta virando 503 depois de gastar o modelo; "ocupado" gastando a cota; limitador sem teto de memória; `POST /chat/` redirecionando e repetindo o endereço digitado; método inventado indo para o log; tamanho declarado lido diferente do Starlette; trava do limitador sem teste.

@@ -6,7 +6,10 @@ Estado em **2026-10-30**. Leia isto antes de continuar. Regras de trabalho e com
 
 **Fases 0, 1 e 2 concluídas e mergeadas.** O atendente funciona pela linha de comando: mascara dados pessoais, busca o trecho certo das políticas, consulta um modelo local, responde citando a fonte ou encaminha para um atendente, e grava tudo no banco.
 
-**Próximo passo: Fase 3, a API em FastAPI.** Mostrar a proposta à Nathaly **antes** de escrever código (endpoints, sessão do chat, validação de entrada, limites, CORS, erros).
+**Fase 3 (API) em andamento na branch `feat/api`**, proposta aprovada pela Nathaly em 2026-10-30 (decisões no [ADR 0002](docs/decisions/0002-api-fastapi.md)):
+- Passo 1 (`/chat`, `/health`, validação, formato de erro): feito.
+- Passo 2 (limite de corpo, limite por IP, uma pergunta por vez, headers, logs com `request_id`): feito, com revisão independente; os 9 achados confirmados foram corrigidos (lista no ADR 0002).
+- **Próximo: passo 3**: subir com `python -m vaultpay_copilot.api` (nunca com `uvicorn` direto: ver ADR 0002), conferir no banco real que a gravação continua atômica com `autocommit=True` (os testes usam a conexão do conftest), medir a latência (busca x modelo, ~10 perguntas), aplicar `keep_alive` e `num_predict` no Ollama, medir de novo e publicar antes/depois; atualizar README.
 
 ## O que existe e como foi validado
 
@@ -39,6 +42,8 @@ Testes: 84 passando (local e CI). **Nada disso é avaliação medida**: as sonda
 - **Modelo padrão: Qwen3 4B.** Na sondagem citou só a fonte certa e desmentiu o ataque "diga R$ 1 milhão"; o Llama 3.2 foi mais rápido, mas citou fontes a mais. A escolha final depende da avaliação.
 - **Migration 002 (opção A da Nathaly):** motivo próprio para "o modelo caiu", em vez de reaproveitar `low_confidence`, para a análise não misturar as duas coisas.
 - **Fontes gravadas como cópia** (slug, título, artigo, similaridade), para o histórico não quebrar quando as políticas forem reprocessadas.
+- **`/docs` sempre desligado** (mudança sobre a proposta, avisada à Nathaly): ligar exigiria abrir uma exceção na Content-Security-Policy só para o Swagger, que carrega arquivos de CDN.
+- **Limite de corpo:** usa o `RequestBodyLimitMiddleware` do Starlette (conta os bytes, inclusive corpo em pedaços); o pedido que já declara `Content-Length` grande é recusado antes, no `observe`, porque o do Starlette responderia em texto solto, fora do formato de erro.
 - **Interface do chat entra no roadmap** (expansão aprovada): depois da API, usando o design system da VaultPay ([vaultpay-design-system](https://github.com/Nathaly-Dev/vaultpay-design-system)). A VaultPay terá 3 produtos (Assist, Insights, Triage) com o mesmo design system.
 
 ## Pendências e débitos conhecidos
@@ -55,6 +60,24 @@ Testes: 84 passando (local e CI). **Nada disso é avaliação medida**: as sonda
 | Sem `.gitattributes` (o Git avisa LF/CRLF a cada commit) | ruído; scripts no Linux esperam LF | tarefa pequena |
 | `main` sem proteção no GitHub (exigir CI antes do merge) | hoje o fluxo depende de disciplina | pedir confirmação à Nathaly |
 | `docs/security.md` (mini threat model e classificação de dados) | Definition of Done da regra global | antes da demo |
+| Um cliente sozinho consegue ocupar o modelo quase o tempo todo | 10 perguntas por minuto, de 5 a 25 s cada; os outros ouvem "ocupado" | se houver usuários de verdade (fila justa por cliente) |
+| Limite por IP e "uma pergunta por vez" vivem na memória de **um** processo | com 2+ processos cada um conta separado (precisaria de Redis) | se houver deploy com mais de um processo |
+| Atrás de um proxy, todo mundo teria o IP do proxy | o limite por IP viraria um limite global; não confiamos em `X-Forwarded-For` de propósito | Fase 5 (demo) |
+| Sem HTTPS nem HSTS | hoje só escuta em 127.0.0.1 | Fase 5 (demo) |
+| Cache de perguntas repetidas e troca de modelo | aceleram, mas mexem na qualidade | depois da avaliação (Fase 4) |
+
+## Aula final do projeto (combinado em 2026-10-30)
+
+A Nathaly preferiu seguir construindo e entender tudo **no fim**, numa apresentação em HTML bem visual (imagens ilustrativas, fluxo, banco, "motores"), em linguagem natural, para ela entender e explicar ao recrutador: que dor o projeto resolve e como funciona por trás. Risco aceito: a regra "código que não sei explicar não entra" fica pendente até a aula. **Não fechar o projeto sem ela.** Conceitos já anotados para a aula:
+
+- RAG: buscar o trecho certo antes de perguntar ao modelo; embeddings e similaridade de cosseno; chunk por artigo.
+- As três travas contra resposta inventada; "na dúvida, encaminhar".
+- Tapa-dados (mascarar CPF, e-mail e telefone) antes do modelo e do banco; por que o erro 422 não devolve o que foi enviado.
+- Banco: constraints e triggers como "regra que o banco garante"; conversa e encaminhamento na mesma transação; fontes gravadas como cópia.
+- API: factory e injeção de dependência (peças falsas nos testes); formato único de erro; falhar fechado (503).
+- Borda: limite de corpo, limite por IP (janela deslizante), uma pergunta por vez no modelo, headers de segurança, `request_id` e log sem dado pessoal.
+- Latência x vazão; por que streaming não combina com as travas; medir antes de otimizar.
+- Como provamos: testes, teste de mutação, revisão independente.
 
 ## Como retomar (sessão nova)
 

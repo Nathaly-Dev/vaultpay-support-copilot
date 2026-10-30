@@ -36,7 +36,14 @@ class OllamaClient:
     def is_up(self) -> bool:
         # Lista os modelos instalados: barato e não gera texto. Tempo curto: o /health não trava.
         try:
-            self._client.get("/api/tags", timeout=2).raise_for_status()
-        except httpx.HTTPError:
+            response = self._client.get("/api/tags", timeout=2)
+            response.raise_for_status()
+            data = response.json()
+        except (httpx.HTTPError, ValueError):
             return False
-        return True
+        models = data.get("models") if isinstance(data, dict) else None
+        if not isinstance(models, list):
+            return False
+        # Ollama de pé sem o modelo configurado ainda é "fora do ar": toda pergunta daria erro.
+        names = {m.get("name") for m in models if isinstance(m, dict)}
+        return self.model in names or f"{self.model}:latest" in names

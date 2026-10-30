@@ -123,11 +123,25 @@ def test_health_com_banco_fora_do_ar():
 @pytest.mark.parametrize(
     ("handler", "expected"),
     [
-        (lambda request: httpx.Response(200, json={"models": []}), True),
+        (lambda request: httpx.Response(200, json={"models": [{"name": "modelo"}]}), True),
+        (lambda request: httpx.Response(200, json={"models": [{"name": "modelo:latest"}]}), True),
+        (lambda request: httpx.Response(200, json={"models": [{"name": "outro:3b"}]}), False),
+        (lambda request: httpx.Response(200, json={"models": []}), False),
+        (lambda request: httpx.Response(200, json=["modelo"]), False),
+        (lambda request: httpx.Response(200, content=b"nao e json"), False),
         (lambda request: httpx.Response(500), False),
         (lambda request: (_ for _ in ()).throw(httpx.ConnectError("recusado")), False),
     ],
-    ids=["de-pe", "erro-http", "sem-conexao"],
+    ids=[
+        "de-pe",
+        "de-pe-com-latest",
+        "sem-o-modelo",
+        "nenhum-modelo",
+        "formato-estranho",
+        "json-quebrado",
+        "erro-http",
+        "sem-conexao",
+    ],
 )
 def test_ollama_is_up(handler, expected):
     client = OllamaClient("http://ollama.teste", "modelo", timeout_s=1)
