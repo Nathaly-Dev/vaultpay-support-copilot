@@ -1,0 +1,5 @@
+# Dependências diretas de runtime. O requirements.txt (com hashes) é gerado daqui:
+#   pip-compile --generate-hashes --strip-extras -o requirements.txt requirements.in
+sentence-transformers
+psycopg[binary]
+pgvector

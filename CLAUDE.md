@@ -35,4 +35,5 @@ docker compose down -v                  # APAGA o banco (única forma de reaplic
 `src/vaultpay_copilot/{api,ingestion,rag,evaluation}` · `data/policies/` (documentos fictícios) · `db/migrations/` · `db/smoke_test.sql` · `tests/`
 
 ## Estado
-Ver `HANDOFF.md` quando existir; até lá, o Roadmap do `README.md`. Estado atual: Fase 0 concluída (schema validado em ambiente local); nada de RAG implementado.
+Ver `HANDOFF.md` quando existir; até lá, o Roadmap do `README.md`. Estado atual: Fases 0 e 1 concluídas (schema, políticas fictícias e ingestão com embeddings); busca e geração de resposta (Fase 2) ainda não implementadas.
+Python: usar o `.venv` (3.12) e instalar só pelos lockfiles com hash (`requirements*.txt`, gerados dos `.in` com `pip-compile --generate-hashes --allow-unsafe`).
