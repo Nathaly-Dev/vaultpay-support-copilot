@@ -125,6 +125,7 @@ def test_modelo_fora_do_ar_nao_derruba_o_atendente():
     reply = run("Qual o limite do Pix?", FakeLlm(fail=True))
 
     assert (reply.outcome, reply.text) == ("error", UNAVAILABLE_TEXT)
+    assert reply.reason == "service_unavailable"
 
 
 def test_o_modelo_so_recebe_a_pergunta_mascarada():

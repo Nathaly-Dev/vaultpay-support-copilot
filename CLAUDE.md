@@ -30,13 +30,14 @@ docker compose ps                       # esperar "healthy"
 docker compose cp db/smoke_test.sql db:/tmp/smoke_test.sql
 docker compose exec db psql -U vaultpay -d vaultpay_copilot -v ON_ERROR_STOP=1 -f /tmp/smoke_test.sql
 docker compose down -v                  # APAGA o banco (única forma de reaplicar a migration 001)
+# migration nova num banco que já existe: docker compose cp + psql -f (ver README, passo 4)
 ```
 
 ## Estrutura
 `src/vaultpay_copilot/{api,ingestion,rag,evaluation}` · `data/policies/` (documentos fictícios) · `db/migrations/` · `db/smoke_test.sql` · `tests/`
 
 ## Estado
-Ver `HANDOFF.md` quando existir; até lá, o Roadmap do `README.md`. Estado atual: Fases 0 e 1 concluídas. Fase 2: tapa-dados, busca e atendente com as três travas feitos (`rag/assistant.py`, prompt versionado em `rag/prompts/`, modelo padrão `qwen3:4b-instruct` via Ollama local); falta gravar conversas e encaminhamentos no banco. `MIN_SIMILARITY=0.80` é provisório: calibrar com o conjunto de avaliação.
+Ver `HANDOFF.md` quando existir; até lá, o Roadmap do `README.md`. Estado atual: Fases 0 e 1 concluídas. Fase 2 concluída: tapa-dados, busca, atendente com as três travas (`rag/assistant.py`, prompt versionado em `rag/prompts/`, modelo padrão `qwen3:4b-instruct` via Ollama local) e gravação (`rag/recorder.py`: conversa e encaminhamento na mesma transação). Migrations: 001 (schema) e 002 (motivo `service_unavailable`). Próximo: Fase 3 (API). `MIN_SIMILARITY=0.80` é provisório: calibrar com o conjunto de avaliação.
 Mudar o prompt = novo arquivo `answer-vN.md` e novo `PROMPT_VERSION`, nunca editar uma versão já usada.
 Python: usar o `.venv` (3.12) e instalar só pelos lockfiles com hash (`requirements*.txt`, gerados dos `.in` com `pip-compile --generate-hashes --allow-unsafe`). `requirements.txt` = núcleo (usado no CI, Linux); `requirements-ml.txt` = núcleo + PyTorch (lockfile específico de Windows, não serve no Linux).
 CI: `.github/workflows/ci.yml` (lint, formato, schema, testes, pip-audit e gitleaks). Actions fixadas por SHA.

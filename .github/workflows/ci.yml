@@ -61,8 +61,13 @@ jobs:
       - name: Formatação
         run: ruff format --check src tests
 
-      - name: Aplicar o schema
-        run: psql -h localhost -U vaultpay -d vaultpay_test -v ON_ERROR_STOP=1 -f db/migrations/001_initial_schema.sql
+      # Todas as migrations, em ordem (001, 002, ...), como num banco novo.
+      - name: Aplicar as migrations
+        run: |
+          for f in db/migrations/*.sql; do
+            echo "aplicando $f"
+            psql -h localhost -U vaultpay -d vaultpay_test -v ON_ERROR_STOP=1 -f "$f"
+          done
 
       - name: Teste de fumaça do schema
         run: psql -h localhost -U vaultpay -d vaultpay_test -v ON_ERROR_STOP=1 -f db/smoke_test.sql

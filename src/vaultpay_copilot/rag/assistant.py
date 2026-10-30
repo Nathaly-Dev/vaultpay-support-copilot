@@ -31,8 +31,8 @@ ESCALATION_TEXT = (
 UNAVAILABLE_TEXT = "Não consegui responder agora. Vou encaminhar sua pergunta para um atendente."
 
 Outcome = Literal["answered", "escalated", "error"]
-# Mesmos códigos da coluna escalations.reason no banco.
-Reason = Literal["no_context", "low_confidence"]
+# Mesmos códigos da coluna escalations.reason no banco (service_unavailable: migration 002).
+Reason = Literal["no_context", "low_confidence", "service_unavailable"]
 
 
 class LlmAnswer(BaseModel):
@@ -85,7 +85,7 @@ def answer(question: str, retrieve: Retrieve, llm: Llm, min_similarity: float) -
             _SYSTEM_PROMPT, build_user_message(masked, chunks), LlmAnswer.model_json_schema()
         )
     except LlmUnavailable:
-        return reply("error", UNAVAILABLE_TEXT, llm_model=llm.model)
+        return reply("error", UNAVAILABLE_TEXT, reason="service_unavailable", llm_model=llm.model)
 
     # Trava 2
     try:
@@ -118,12 +118,15 @@ def build_user_message(masked_question: str, chunks: list[RetrievedChunk]) -> st
 
 
 def main(question: str) -> None:
+    from uuid import uuid4
+
     import psycopg
     from pgvector.psycopg import register_vector
 
     from vaultpay_copilot.config import LlmSettings, Settings
     from vaultpay_copilot.ingestion.embedder import QueryEmbedder
     from vaultpay_copilot.rag.llm import OllamaClient
+    from vaultpay_copilot.rag.recorder import record
     from vaultpay_copilot.rag.retriever import search
 
     llm_settings = LlmSettings.from_env()
@@ -138,6 +141,8 @@ def main(question: str) -> None:
             llm,
             llm_settings.min_similarity,
         )
+        # Cada execução do comando é uma sessão nova (a API vai reaproveitar a sessão do chat).
+        conversation_id = record(conn, result, session_id=uuid4())
 
     print(f"pergunta (mascarada): {result.question_masked}")
     print(f"resultado: {result.outcome}" + (f" ({result.reason})" if result.reason else ""))
@@ -146,6 +151,7 @@ def main(question: str) -> None:
         print(f"  fonte: {source.citation}")
     model = result.llm_model or "-"
     print(f"modelo: {model} | prompt: {result.prompt_version} | {result.latency_ms} ms")
+    print(f"gravado como conversa {conversation_id}")
 
 
 if __name__ == "__main__":

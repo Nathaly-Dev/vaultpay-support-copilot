@@ -12,9 +12,9 @@ DECLARE
     esc_id  bigint;
     ts      timestamptz;
 BEGIN
-    -- Documento válido
+    -- Documento válido (slug próprio do teste: não colide com as políticas reais já ingeridas)
     INSERT INTO documents (slug, title, category, content, content_hash, effective_date)
-    VALUES ('politica-pix', 'Política de Pix', 'pix', 'Texto fictício de teste.', repeat('a', 64), current_date)
+    VALUES ('smoke-teste-documento', 'Documento de teste', 'pix', 'Texto fictício de teste.', repeat('a', 64), current_date)
     RETURNING id INTO doc_id;
 
     -- 1. Trigger set_updated_at sobrescreve valor manual
@@ -79,6 +79,18 @@ BEGIN
     UPDATE escalations SET status = 'open' WHERE id = esc_id;
     ASSERT (SELECT resolved_at FROM escalations WHERE id = esc_id) IS NULL, 'resolved_at não foi limpo ao reabrir';
     RAISE NOTICE 'ok 7: resolved_at controlado pelo trigger';
+
+    -- 8. Motivo 'service_unavailable' (migration 002) é aceito; motivo inventado continua barrado
+    INSERT INTO conversations (session_id, question_masked, answer, outcome)
+    VALUES (gen_random_uuid(), 'Qual o limite do Pix?', 'Não consegui responder agora.', 'error')
+    RETURNING id INTO conv_id;
+    INSERT INTO escalations (conversation_id, reason) VALUES (conv_id, 'service_unavailable');
+    BEGIN
+        INSERT INTO escalations (conversation_id, reason) VALUES (gen_random_uuid(), 'motivo_inventado');
+        ASSERT false, 'motivo inventado foi aceito';
+    EXCEPTION WHEN check_violation THEN
+        RAISE NOTICE 'ok 8: service_unavailable aceito, motivo inventado rejeitado';
+    END;
 
     RAISE NOTICE 'todos os testes passaram';
 END;
