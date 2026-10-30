@@ -37,4 +37,5 @@ docker compose down -v                  # APAGA o banco (única forma de reaplic
 
 ## Estado
 Ver `HANDOFF.md` quando existir; até lá, o Roadmap do `README.md`. Estado atual: Fases 0 e 1 concluídas (schema, políticas fictícias e ingestão com embeddings); busca e geração de resposta (Fase 2) ainda não implementadas.
-Python: usar o `.venv` (3.12) e instalar só pelos lockfiles com hash (`requirements*.txt`, gerados dos `.in` com `pip-compile --generate-hashes --allow-unsafe`).
+Python: usar o `.venv` (3.12) e instalar só pelos lockfiles com hash (`requirements*.txt`, gerados dos `.in` com `pip-compile --generate-hashes --allow-unsafe`). `requirements.txt` = núcleo (usado no CI, Linux); `requirements-ml.txt` = núcleo + PyTorch (lockfile específico de Windows, não serve no Linux).
+CI: `.github/workflows/ci.yml` (lint, formato, schema, testes, pip-audit e gitleaks). Actions fixadas por SHA.

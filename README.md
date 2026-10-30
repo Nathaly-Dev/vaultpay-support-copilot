@@ -1,5 +1,7 @@
 # VaultPay Support Copilot
 
+[![CI](https://github.com/Nathaly-Dev/vaultpay-support-copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/Nathaly-Dev/vaultpay-support-copilot/actions/workflows/ci.yml)
+
 Chatbot de atendimento ao cliente com RAG que responde dúvidas com base nas políticas da empresa, **sempre citando a fonte**, e encaminha para um atendente quando não sabe.
 
 > ⚠️ **A VaultPay é uma empresa fictícia.** Todos os documentos, políticas e dados deste projeto são inventados, para fins de estudo e portfólio.
@@ -73,8 +75,10 @@ Pré-requisito: Python 3.12. A instalação usa o lockfile com hashes (mesmas ve
 
 ```bash
 py -3.12 -m venv .venv
-.venv/Scripts/python -m pip install --require-hashes -r requirements.txt -r requirements-dev.txt
+.venv/Scripts/python -m pip install --require-hashes -r requirements-ml.txt -r requirements-dev.txt
 ```
+
+`requirements.txt` é só o núcleo (banco e configuração) e é o que o CI usa; `requirements-ml.txt` inclui o modelo de embeddings (PyTorch) e foi gerado no Windows.
 
 Com o banco no ar, leia `data/policies/*.md`, gere os embeddings e grave no banco (idempotente: rodar de novo só refaz o que mudou). Na primeira vez baixa o modelo `multilingual-e5-small` (~470 MB):
 
