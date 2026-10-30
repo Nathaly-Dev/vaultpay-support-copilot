@@ -42,6 +42,30 @@ class Settings:
         return f"Settings(db={self.db_user}@{self.db_host}:{self.db_port}/{self.db_name})"
 
 
+@dataclass(frozen=True)
+class LlmSettings:
+    base_url: str
+    model: str
+    timeout_s: float
+    # Trava 1: abaixo desta similaridade nem chamamos o modelo. Provisório: calibrar na avaliação.
+    min_similarity: float
+
+    @classmethod
+    def from_env(cls) -> "LlmSettings":
+        _load_env_file(_ENV_FILE)
+        settings = cls(
+            base_url=os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434"),
+            model=os.environ.get("LLM_MODEL", "qwen3:4b-instruct"),
+            timeout_s=float(os.environ.get("LLM_TIMEOUT_S", "120")),
+            min_similarity=float(os.environ.get("MIN_SIMILARITY", "0.80")),
+        )
+        if settings.timeout_s <= 0:
+            raise RuntimeError("LLM_TIMEOUT_S precisa ser maior que zero")
+        if not 0 <= settings.min_similarity <= 1:
+            raise RuntimeError("MIN_SIMILARITY precisa estar entre 0 e 1")
+        return settings
+
+
 def _required(name: str) -> str:
     value = os.environ.get(name)
     if not value:

@@ -98,6 +98,28 @@ Busca (teste manual): mascara os dados pessoais da pergunta e mostra os 4 trecho
 PYTHONPATH=src .venv/Scripts/python -m vaultpay_copilot.rag.retriever "Perdi meu cartão, o que faço?"
 ```
 
+## O atendente
+
+Pré-requisito: [Ollama](https://ollama.com) instalado (sem conta, roda tudo no seu computador) e o modelo baixado:
+
+```bash
+ollama pull qwen3:4b-instruct
+```
+
+Pergunte (a resposta vem com a fonte, ou o atendente encaminha para uma pessoa):
+
+```bash
+PYTHONPATH=src .venv/Scripts/python -m vaultpay_copilot.rag.assistant "Qual o limite do Pix de madrugada?"
+```
+
+Como ele decide, com três travas contra resposta inventada:
+
+1. **Nota mínima:** se nenhum trecho é parecido o bastante (`MIN_SIMILARITY`), encaminha sem chamar o modelo.
+2. **Formato fixo:** o modelo devolve `{answerable, answer, source_ids}`, conferido com Pydantic; fora do formato, encaminha.
+3. **Fonte conferida:** se citar um trecho que não recebeu, encaminha.
+
+A pergunta é mascarada antes de tudo, a resposta passa pelo mascaramento de novo, e se o Ollama cair o atendente responde "vou encaminhar" em vez de quebrar. O prompt fica em [`src/vaultpay_copilot/rag/prompts/answer-v1.md`](src/vaultpay_copilot/rag/prompts/answer-v1.md); modelo, endereço, tempo limite e nota mínima são configuráveis no `.env` (veja `.env.example`).
+
 Decisões de modelo e chunking em [`docs/decisions/0001-embeddings-e-chunking.md`](docs/decisions/0001-embeddings-e-chunking.md).
 
 ## Modelo de dados

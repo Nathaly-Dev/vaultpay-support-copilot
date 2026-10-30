@@ -36,6 +36,7 @@ docker compose down -v                  # APAGA o banco (única forma de reaplic
 `src/vaultpay_copilot/{api,ingestion,rag,evaluation}` · `data/policies/` (documentos fictícios) · `db/migrations/` · `db/smoke_test.sql` · `tests/`
 
 ## Estado
-Ver `HANDOFF.md` quando existir; até lá, o Roadmap do `README.md`. Estado atual: Fases 0 e 1 concluídas (schema, políticas fictícias e ingestão com embeddings); busca e geração de resposta (Fase 2) ainda não implementadas.
+Ver `HANDOFF.md` quando existir; até lá, o Roadmap do `README.md`. Estado atual: Fases 0 e 1 concluídas. Fase 2: tapa-dados, busca e atendente com as três travas feitos (`rag/assistant.py`, prompt versionado em `rag/prompts/`, modelo padrão `qwen3:4b-instruct` via Ollama local); falta gravar conversas e encaminhamentos no banco. `MIN_SIMILARITY=0.80` é provisório: calibrar com o conjunto de avaliação.
+Mudar o prompt = novo arquivo `answer-vN.md` e novo `PROMPT_VERSION`, nunca editar uma versão já usada.
 Python: usar o `.venv` (3.12) e instalar só pelos lockfiles com hash (`requirements*.txt`, gerados dos `.in` com `pip-compile --generate-hashes --allow-unsafe`). `requirements.txt` = núcleo (usado no CI, Linux); `requirements-ml.txt` = núcleo + PyTorch (lockfile específico de Windows, não serve no Linux).
 CI: `.github/workflows/ci.yml` (lint, formato, schema, testes, pip-audit e gitleaks). Actions fixadas por SHA.

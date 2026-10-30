@@ -3,3 +3,7 @@
 #   pip-compile --generate-hashes --strip-extras --allow-unsafe -o requirements.txt requirements.in
 psycopg[binary]
 pgvector
+# Conferir o formato da resposta do modelo (trava 2)
+pydantic
+# Falar com o Ollama local, com tempo limite
+httpx
