@@ -6,10 +6,13 @@ Estado em **2026-10-30**. Leia isto antes de continuar. Regras de trabalho e com
 
 **Fases 0, 1 e 2 concluídas e mergeadas.** O atendente funciona pela linha de comando: mascara dados pessoais, busca o trecho certo das políticas, consulta um modelo local, responde citando a fonte ou encaminha para um atendente, e grava tudo no banco.
 
-**Fase 3 (API) em andamento na branch `feat/api`**, proposta aprovada pela Nathaly em 2026-10-30 (decisões no [ADR 0002](docs/decisions/0002-api-fastapi.md)):
-- Passo 1 (`/chat`, `/health`, validação, formato de erro): feito.
-- Passo 2 (limite de corpo, limite por IP, uma pergunta por vez, headers, logs com `request_id`): feito, com revisão independente; os 9 achados confirmados foram corrigidos (lista no ADR 0002).
-- **Próximo: passo 3**: subir com `python -m vaultpay_copilot.api` (nunca com `uvicorn` direto: ver ADR 0002), conferir no banco real que a gravação continua atômica com `autocommit=True` (os testes usam a conexão do conftest), medir a latência (busca x modelo, ~10 perguntas), aplicar `keep_alive` e `num_predict` no Ollama, medir de novo e publicar antes/depois; atualizar README.
+**Fase 3 (API) concluída na branch `feat/api`, em PR aguardando o ok da Nathaly para o merge.** Decisões no [ADR 0002](docs/decisions/0002-api-fastapi.md); latência medida no README (seção Resultados).
+- `/chat` e `/health` com validação, limites, headers e logs sem dado pessoal; revisão independente com 9 achados corrigidos.
+- Subir só com `python -m vaultpay_copilot.api` (nunca `uvicorn` direto).
+- Validado de verdade nesta máquina: API no ar, `/health` ok, 3 perguntas pela API gravadas no banco (fontes e encaminhamento certos), gravação atômica com `autocommit=True` (teste no banco real).
+- Medido: `keep_alive=30m` evita ~9 s de carga do modelo; `num_predict` sem ganho (desligado); `127.0.0.1` no lugar de `localhost` tirou ~5 s de cada pergunta.
+
+**Próximo: Fase 4 (avaliação).** Começa pelo conjunto de perguntas escrito pela Nathaly (ver pendências).
 
 ## O que existe e como foi validado
 
@@ -25,12 +28,13 @@ Estado em **2026-10-30**. Leia isto antes de continuar. Regras de trabalho e com
 | Gravação (conversa + encaminhamento na mesma transação) | `rag/recorder.py` | 7 testes no banco real, 3 mutações pegas |
 | CI (lint, formato, migrations, fumaça, testes, pip-audit, gitleaks) | `.github/workflows/ci.yml` | verde na `main`; actions fixadas por SHA |
 
-Testes: 84 passando (local e CI). **Nada disso é avaliação medida**: as sondagens com o modelo real usaram 3 a 7 perguntas.
+Contagem de testes: ver o CI. **Nada disso é avaliação de qualidade medida**: as sondagens com o modelo real usaram 3 a 10 perguntas.
 
 ## Ambiente local desta máquina (não está no código)
 
 - **Porta 5433**: já existe outro PostgreSQL na 5432 do Windows (não é deste projeto; não mexer). O `.env` usa `POSTGRES_PORT=5433`.
 - Docker Desktop instalado (WSL 2). Banco no container `vaultpay-db`, com a 002 já aplicada.
+- **Use `127.0.0.1`, nunca `localhost`, para o banco**: aqui o `localhost` tenta o IPv6 primeiro e cada conexão espera o tempo limite (5 a 10 s). O código já usa `127.0.0.1` por padrão.
 - **Ollama 0.40.13** instalado sem conta, escutando só em `127.0.0.1:11434`. Modelos: `qwen3:4b-instruct` (padrão) e `llama3.2:3b` (comparação). Sem GPU dedicada: 5 a 25 s por resposta.
 - Python 3.12 no `.venv`, instalado pelos lockfiles com hash. O PyTorch está no `requirements-ml.txt` (lockfile só de Windows).
 - O banco tem **3 conversas de teste** (fictícias) do teste real do passo 5.
@@ -64,6 +68,7 @@ Testes: 84 passando (local e CI). **Nada disso é avaliação medida**: as sonda
 | Limite por IP e "uma pergunta por vez" vivem na memória de **um** processo | com 2+ processos cada um conta separado (precisaria de Redis) | se houver deploy com mais de um processo |
 | Atrás de um proxy, todo mundo teria o IP do proxy | o limite por IP viraria um limite global; não confiamos em `X-Forwarded-For` de propósito | Fase 5 (demo) |
 | Sem HTTPS nem HSTS | hoje só escuta em 127.0.0.1 | Fase 5 (demo) |
+| Ao subir, o `sentence-transformers` consulta o Hugging Face Hub (aviso "unauthenticated requests") | chamada externa a cada início, expõe o IP; com o modelo já baixado daria para rodar offline (`HF_HUB_OFFLINE=1`) | tarefa pequena, antes da demo |
 | Cache de perguntas repetidas e troca de modelo | aceleram, mas mexem na qualidade | depois da avaliação (Fase 4) |
 
 ## Aula final do projeto (combinado em 2026-10-30)
@@ -85,6 +90,8 @@ A Nathaly preferiu seguir construindo e entender tudo **no fim**, numa apresenta
 docker compose up -d
 .venv/Scripts/python -m pytest -q
 PYTHONPATH=src .venv/Scripts/python -m vaultpay_copilot.rag.assistant "Qual o limite do Pix de madrugada?"
+PYTHONPATH=src .venv/Scripts/python -m vaultpay_copilot.api          # API em 127.0.0.1:8000
+PYTHONPATH=src .venv/Scripts/python -m vaultpay_copilot.evaluation.latency   # mede a latência
 ```
 
 O Ollama precisa estar aberto (ícone de lhama perto do relógio).

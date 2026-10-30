@@ -6,7 +6,7 @@ Chatbot de atendimento ao cliente com RAG que responde dúvidas com base nas pol
 
 > ⚠️ **A VaultPay é uma empresa fictícia.** Todos os documentos, políticas e dados deste projeto são inventados, para fins de estudo e portfólio.
 
-> 🚧 **Em andamento.** O atendente já responde pela linha de comando, citando a fonte ou encaminhando, e grava cada conversa. Ainda sem API, interface e avaliação medida. Veja o [Roadmap](#roadmap).
+> 🚧 **Em andamento.** O atendente responde por uma API local (FastAPI), citando a fonte ou encaminhando, e grava cada conversa. Ainda sem interface e sem avaliação de qualidade medida. Veja o [Roadmap](#roadmap).
 
 ## O problema
 
@@ -127,6 +127,21 @@ A pergunta é mascarada antes de tudo, a resposta passa pelo mascaramento de nov
 
 Decisões de modelo e chunking em [`docs/decisions/0001-embeddings-e-chunking.md`](docs/decisions/0001-embeddings-e-chunking.md).
 
+## A API
+
+Suba sempre por este comando (ele desliga opções inseguras do uvicorn; o porquê está no ADR):
+
+```bash
+PYTHONPATH=src .venv/Scripts/python -m vaultpay_copilot.api
+```
+
+Escuta só em `http://127.0.0.1:8000`. Dois endereços:
+
+- `POST /chat` com `{"question": "...", "session_id": "<uuid, opcional>"}` devolve `{session_id, conversation_id, outcome, answer, sources: [{title, article}]}`. `outcome` é `answered`, `escalated` ou `error` (modelo fora do ar, já encaminhado).
+- `GET /health` diz se o banco e o modelo configurado estão de pé (200) ou qual caiu (503).
+
+Proteções na borda: pergunta de 1 a 1000 caracteres e sem caracteres de controle; corpo até 16 KB; 10 perguntas por minuto por IP; uma pergunta por vez no modelo (quem chega com ele ocupado recebe 503 com `Retry-After`); erro sempre no formato `{"error": {"code", "message"}}`, sem devolver o que foi enviado; headers de segurança e `X-Request-ID` em toda resposta; log sem pergunta, resposta nem IP. Decisões e trade-offs em [`docs/decisions/0002-api-fastapi.md`](docs/decisions/0002-api-fastapi.md).
+
 ## Modelo de dados
 
 - **documents:** políticas da VaultPay, com categoria, vigência e hash do conteúdo.
@@ -144,14 +159,32 @@ Schema completo em [`db/migrations/001_initial_schema.sql`](db/migrations/001_in
 
 ## Resultados
 
-Não medido ainda. As métricas de avaliação entram na Fase 4.
+**Qualidade:** não medida ainda (Fase 4).
+
+**Latência** (2026-10-30, Ryzen 7 5825U sem GPU dedicada, 16 GB, `qwen3:4b-instruct` no Ollama). É medida de velocidade, não de qualidade: as 10 perguntas do medidor só servem de carga.
+
+```bash
+PYTHONPATH=src .venv/Scripts/python -m vaultpay_copilot.evaluation.latency
+```
+
+| Etapa | Tempo |
+|---|---|
+| Busca (embedding da pergunta + banco), mediana de 10 | 24 ms |
+| Modelo já carregado na memória, mediana de 9 | 9,4 s |
+| Modelo descarregado (1ª pergunta depois de uma pausa) | 18,4 s |
+
+O gargalo é o modelo: a busca é cerca de 400 vezes mais rápida. O que mudou com a medição:
+
+- **`LLM_KEEP_ALIVE=30m`** (padrão agora): o Ollama mantém o modelo na memória por 30 min em vez de 5, evitando os ~9 s de carga quando a pausa entre perguntas fica nesse intervalo. Custo: ~3 GB de RAM ocupados.
+- **`LLM_NUM_PREDICT` (teto de tokens): sem ganho.** Com teto de 512, a mediana foi 9,6 s (dentro da variação) e nenhum resultado mudou: as respostas já são curtas. Fica desligado, porque um teto baixo cortaria resposta longa válida.
+- **Banco por `127.0.0.1` em vez de `localhost`:** no Windows, `localhost` tentava antes o IPv6, onde o Docker não escuta, e cada conexão esperava o tempo limite. Medido pela API (3 perguntas e o `/health`, uma vez): o `/health` caiu de 5,3 s para 0,27 s e cada pergunta ficou ~5 s mais rápida; a suíte de testes caiu de 75 s para 5 s.
 
 ## Roadmap
 
 - [x] **Fase 0, fundação:** estrutura do projeto, PostgreSQL + pgvector no Docker, schema com constraints e triggers.
 - [x] **Fase 1, ingestão:** políticas fictícias, chunks por artigo, embeddings e gravação no banco.
 - [x] **Fase 2, RAG:** mascaramento de PII, busca vetorial, resposta com Ollama citando a fonte, recusa quando não há base (três travas) e registro de conversas e encaminhamentos.
-- [ ] **Fase 3, API:** endpoints em FastAPI.
+- [x] **Fase 3, API:** `/chat` e `/health` em FastAPI, com validação, limites e logs sem dado pessoal; latência medida.
 - [ ] **Fase 4, avaliação:** conjunto de perguntas versionado (incluindo perguntas sem resposta na base) e métricas com Deepeval.
 - [ ] **Fase 5, análise e demo:** análise de encaminhamentos com Pandas, demo com OpenAI e aplicação inteira no Docker.
 

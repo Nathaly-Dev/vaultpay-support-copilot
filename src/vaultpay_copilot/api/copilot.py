@@ -60,26 +60,27 @@ class Copilot:
         return {"database": database, "llm": self.llm.is_up()}
 
 
+def connect_db(conninfo: str) -> psycopg.Connection:
+    # autocommit: a busca não deixa uma transação aberta enquanto o modelo pensa;
+    # a gravação abre a sua própria (conversa + encaminhamento juntos).
+    return psycopg.connect(
+        conninfo,
+        autocommit=True,
+        connect_timeout=5,
+        options=f"-c statement_timeout={_STATEMENT_TIMEOUT_MS}",
+    )
+
+
 def build_copilot() -> Copilot:
     # Import aqui dentro: o embedder puxa o PyTorch, que o CI não instala.
     from vaultpay_copilot.ingestion.embedder import QueryEmbedder
     from vaultpay_copilot.rag.llm import OllamaClient
 
     conninfo = Settings.from_env().conninfo()
-    llm_settings = LlmSettings.from_env()
-
-    def connect() -> psycopg.Connection:
-        # autocommit: a busca não deixa uma transação aberta enquanto o modelo pensa;
-        # a gravação abre a sua própria (conversa + encaminhamento juntos).
-        return psycopg.connect(
-            conninfo,
-            autocommit=True,
-            connect_timeout=5,
-            options=f"-c statement_timeout={_STATEMENT_TIMEOUT_MS}",
-        )
+    s = LlmSettings.from_env()
 
     embed = QueryEmbedder()
     # Carrega o modelo de embeddings agora, ao subir, e não na primeira pergunta.
     embed("aquecimento")
-    llm = OllamaClient(llm_settings.base_url, llm_settings.model, llm_settings.timeout_s)
-    return Copilot(connect, embed, llm, llm_settings.min_similarity)
+    llm = OllamaClient(s.base_url, s.model, s.timeout_s, s.keep_alive, s.num_predict)
+    return Copilot(lambda: connect_db(conninfo), embed, llm, s.min_similarity)

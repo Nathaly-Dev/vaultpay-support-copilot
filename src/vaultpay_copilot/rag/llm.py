@@ -8,22 +8,36 @@ class LlmUnavailable(Exception):
 
 
 class OllamaClient:
-    def __init__(self, base_url: str, model: str, timeout_s: float) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        model: str,
+        timeout_s: float,
+        keep_alive: str | None = None,
+        num_predict: int | None = None,
+    ) -> None:
         self.model = model
+        self._keep_alive, self._num_predict = keep_alive, num_predict
         self._client = httpx.Client(base_url=base_url, timeout=timeout_s)
 
     def chat(self, system: str, user: str, schema: dict) -> str:
+        options: dict = {"temperature": 0}
+        if self._num_predict is not None:
+            # Resposta cortada no teto vira JSON incompleto: a trava 2 encaminha, não inventa.
+            options["num_predict"] = self._num_predict
         payload = {
             "model": self.model,
             "stream": False,
             # O Ollama restringe a saída a este formato (JSON Schema); a trava 2 confere de novo.
             "format": schema,
-            "options": {"temperature": 0},
+            "options": options,
             "messages": [
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},
             ],
         }
+        if self._keep_alive is not None:
+            payload["keep_alive"] = self._keep_alive
         try:
             response = self._client.post("/api/chat", json=payload)
             response.raise_for_status()

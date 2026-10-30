@@ -7,10 +7,13 @@ import httpx
 import psycopg
 import pytest
 
-from vaultpay_copilot.api.copilot import Copilot
+from vaultpay_copilot.api.copilot import Copilot, connect_db
+from vaultpay_copilot.config import Settings
 from vaultpay_copilot.ingestion.chunker import parse_policy
 from vaultpay_copilot.ingestion.ingest import ingest_policies
+from vaultpay_copilot.rag.assistant import Reply
 from vaultpay_copilot.rag.llm import OllamaClient
+from vaultpay_copilot.rag.recorder import record
 
 MODEL = "modelo-teste-api"
 
@@ -150,3 +153,36 @@ def test_ollama_is_up(handler, expected):
     )
 
     assert client.is_up() is expected
+
+
+def test_com_autocommit_a_gravacao_continua_tudo_ou_nada():
+    # A conexão real da API (autocommit) também precisa gravar conversa e encaminhamento
+    # juntos: se o encaminhamento falha, a conversa não pode ficar sozinha no banco.
+    try:
+        conn = connect_db(Settings.from_env().conninfo())
+    except (psycopg.OperationalError, RuntimeError) as exc:
+        pytest.skip(f"banco indisponível (docker compose up -d): {type(exc).__name__}")
+    session_id = uuid4()
+    broken = Reply("escalated", "Encaminhado.", "Pergunta fictícia", reason="motivo_inexistente")
+    try:
+        assert conn.autocommit
+        with pytest.raises(psycopg.errors.CheckViolation):
+            record(conn, broken, session_id)
+
+        count = conn.execute(
+            "SELECT count(*) FROM conversations WHERE session_id = %s", (session_id,)
+        ).fetchone()
+        assert count == (0,)
+    finally:
+        # Se a atomicidade quebrar, não deixa a conversa órfã no banco local.
+        conn.execute("DELETE FROM conversations WHERE session_id = %s", (session_id,))
+        conn.close()
+
+
+def test_conexao_da_api_tem_tempo_limite_por_consulta():
+    try:
+        conn = connect_db(Settings.from_env().conninfo())
+    except (psycopg.OperationalError, RuntimeError) as exc:
+        pytest.skip(f"banco indisponível (docker compose up -d): {type(exc).__name__}")
+    with conn:
+        assert conn.execute("SHOW statement_timeout").fetchone() == ("5s",)
