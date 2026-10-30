@@ -159,7 +159,22 @@ Schema completo em [`db/migrations/001_initial_schema.sql`](db/migrations/001_in
 
 ## Resultados
 
-**Qualidade:** não medida ainda (Fase 4).
+**Qualidade** (linha de base, 2026-10-30, `qwen3:4b-instruct`, prompt `answer-v1`, `MIN_SIMILARITY=0.80`). Conjunto de 30 perguntas escritas à mão ([`data/eval/`](data/eval/)): 22 com resposta nas políticas, 8 sem.
+
+```bash
+PYTHONPATH=src .venv/Scripts/python -m vaultpay_copilot.evaluation.run_eval
+```
+
+| Medida | Resultado |
+|---|---|
+| Decisão certa (respondeu quando havia base, encaminhou quando não havia) | 25/30 (83,3%) |
+| Respondeu sem base (o erro mais grave) | 1/8 (P013) |
+| Encaminhou mesmo havendo base | 4/22 |
+| Citou a fonte certa, quando respondeu com base | 17/18 (94,4%) |
+| A busca achou o artigo principal entre os 4 trechos | 18/22 (81,8%) |
+| Texto da resposta correto (revisão humana) | em revisão |
+
+O que os erros mostram: 3 dos 4 encaminhamentos indevidos são falha da **busca** (as palavras "consignado", "ações" e "cobrança duplicada" não encontram "empréstimo", "investimentos" e "compra não reconhecida"); o outro é o **modelo** não tratar "não atendemos por telefone" como resposta. A nota mínima de similaridade não separa os grupos: as perguntas sem base ficaram entre 0,84 e 0,85, no meio das com base (0,83 a 0,90), então subir o `MIN_SIMILARITY` cortaria respostas certas. Resultado completo em [`data/eval/results/`](data/eval/results/).
 
 **Latência** (2026-10-30, Ryzen 7 5825U sem GPU dedicada, 16 GB, `qwen3:4b-instruct` no Ollama). É medida de velocidade, não de qualidade: as 10 perguntas do medidor só servem de carga.
 

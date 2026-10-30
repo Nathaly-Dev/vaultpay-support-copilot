@@ -12,7 +12,12 @@ Estado em **2026-10-30**. Leia isto antes de continuar. Regras de trabalho e com
 - Validado de verdade nesta máquina: API no ar, `/health` ok, 3 perguntas pela API gravadas no banco (fontes e encaminhamento certos), gravação atômica com `autocommit=True` (teste no banco real).
 - Medido: `keep_alive=30m` evita ~9 s de carga do modelo; `num_predict` sem ganho (desligado); `127.0.0.1` no lugar de `localhost` tirou ~5 s de cada pergunta.
 
-**Próximo: Fase 4 (avaliação).** Começa pelo conjunto de perguntas escrito pela Nathaly (ver pendências).
+**Fase 4 (avaliação) em andamento na branch `feat/eval-set`:**
+- Conjunto v1 escrito pela Nathaly (30 perguntas, 22 com base e 8 sem), gabarito revisado por ela (`data/eval/`).
+- Medidor `evaluation/run_eval.py`: decisão, fonte e busca automáticas; texto da resposta em revisão humana (planilha `-revisao.csv`). Deepeval fica para a Fase 5, com a OpenAI como juiz (decisão da Nathaly).
+- Linha de base medida (README, Resultados): decisão 25/30; respondeu sem base 1 (P013); encaminhou com base 4 (P010, P016, P017, P029); fonte certa 17/18; busca 18/22.
+- **Próximo:** a Nathaly marca a planilha de revisão; depois, uma mudança por vez medida contra a linha de base: busca híbrida (palavra-chave + semântica) para P016, P017 e P029; prompt `answer-v2` para "a resposta é não" (P010) e para não improvisar sem base (P013).
+- `MIN_SIMILARITY`: medido que não separa os grupos (sem base 0,84 a 0,85, com base 0,83 a 0,90). A trava 1 hoje nunca dispara; o portão real é o modelo.
 
 ## O que existe e como foi validado
 
@@ -55,7 +60,7 @@ Contagem de testes: ver o CI. **Nada disso é avaliação de qualidade medida**:
 | Item | Por que importa | Quando |
 |---|---|---|
 | **Conjunto de avaliação** escrito pela Nathaly (perguntas, resposta e fonte esperadas, casos sem resposta) | sem ele, nada é medido; não gerar as perguntas com IA a partir das políticas | Fase 4 (pode começar antes) |
-| `MIN_SIMILARITY=0.80` é um chute | calibrar com a avaliação | Fase 4 |
+| `MIN_SIMILARITY=0.80` não separa os grupos (medido) | a trava 1 nunca dispara; decidir se fica, muda de critério ou sai | Fase 4 |
 | "Vocês vendem CDB?" não acha o artigo de investimentos | falha da busca semântica (CDB x investimentos); medir e testar busca híbrida | Fase 4 |
 | "Telefone da central" é encaminhado, mas a base diz "não atendemos por telefone" | resposta perdida | Fase 4 |
 | A trava 3 confere se a fonte **existe**, não se é **relevante** | o Llama citou fontes sem relação | Fase 4 |
