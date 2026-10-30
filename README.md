@@ -67,6 +67,29 @@ Pré-requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/
    docker compose exec db psql -U vaultpay -d vaultpay_copilot -v ON_ERROR_STOP=1 -f /tmp/smoke_test.sql
    ```
 
+## Ingestão das políticas
+
+Pré-requisito: Python 3.12. A instalação usa o lockfile com hashes (mesmas versões em qualquer máquina):
+
+```bash
+py -3.12 -m venv .venv
+.venv/Scripts/python -m pip install --require-hashes -r requirements.txt -r requirements-dev.txt
+```
+
+Com o banco no ar, leia `data/policies/*.md`, gere os embeddings e grave no banco (idempotente: rodar de novo só refaz o que mudou). Na primeira vez baixa o modelo `multilingual-e5-small` (~470 MB):
+
+```bash
+PYTHONPATH=src .venv/Scripts/python -m vaultpay_copilot.ingestion.ingest
+```
+
+Testes (os de ingestão usam o banco real e desfazem tudo no final):
+
+```bash
+.venv/Scripts/python -m pytest -q
+```
+
+Decisões de modelo e chunking em [`docs/decisions/0001-embeddings-e-chunking.md`](docs/decisions/0001-embeddings-e-chunking.md).
+
 ## Modelo de dados
 
 - **documents:** políticas da VaultPay, com categoria, vigência e hash do conteúdo.
@@ -89,7 +112,7 @@ Não medido ainda. As métricas de avaliação entram na Fase 4.
 ## Roadmap
 
 - [x] **Fase 0, fundação:** estrutura do projeto, PostgreSQL + pgvector no Docker, schema com constraints e triggers.
-- [ ] **Fase 1, ingestão:** escrever as políticas fictícias, dividir em chunks, gerar embeddings e gravar no banco.
+- [x] **Fase 1, ingestão:** políticas fictícias, chunks por artigo, embeddings e gravação no banco.
 - [ ] **Fase 2, RAG:** mascaramento de PII, busca vetorial, resposta com Ollama citando a fonte e recusa quando não há base.
 - [ ] **Fase 3, API:** endpoints em FastAPI, registro de conversas e encaminhamentos.
 - [ ] **Fase 4, avaliação:** conjunto de perguntas versionado (incluindo perguntas sem resposta na base) e métricas com Deepeval.

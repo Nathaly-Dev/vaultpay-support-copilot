@@ -5,6 +5,7 @@ Complementa o `~/.claude/CLAUDE.md` global; em segurança vale o mais rígido.
 
 ## Modo de trabalho (mentor)
 - Explicar o **porquê** de cada decisão em 2 a 3 linhas, em português do Brasil.
+- **Ao explicar ou ensinar qualquer coisa, usar linguagem não técnica e amigável**, como se fosse para quem está aprendendo: analogias do dia a dia, exemplo concreto primeiro, termo técnico só depois e sempre com uma frase dizendo o que significa. Evitar jargão solto.
 - Uma etapa por vez. Antes de schema, arquitetura ou lib nova: mostrar a proposta e **esperar aprovação**.
 - A Nathaly precisa explicar tudo numa entrevista: conceito novo = 1 linha do que é + o que estudar depois.
 - Ao final de cada entrega: o que foi feito, o que foi verificado, próximo passo.
@@ -35,4 +36,5 @@ docker compose down -v                  # APAGA o banco (única forma de reaplic
 `src/vaultpay_copilot/{api,ingestion,rag,evaluation}` · `data/policies/` (documentos fictícios) · `db/migrations/` · `db/smoke_test.sql` · `tests/`
 
 ## Estado
-Ver `HANDOFF.md` quando existir; até lá, o Roadmap do `README.md`. Estado atual: Fase 0 concluída (schema validado em ambiente local); nada de RAG implementado.
+Ver `HANDOFF.md` quando existir; até lá, o Roadmap do `README.md`. Estado atual: Fases 0 e 1 concluídas (schema, políticas fictícias e ingestão com embeddings); busca e geração de resposta (Fase 2) ainda não implementadas.
+Python: usar o `.venv` (3.12) e instalar só pelos lockfiles com hash (`requirements*.txt`, gerados dos `.in` com `pip-compile --generate-hashes --allow-unsafe`).

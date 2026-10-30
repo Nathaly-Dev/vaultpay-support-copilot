@@ -1,0 +1,5 @@
+# Ferramentas de desenvolvimento. Gerar o lockfile com:
+#   pip-compile --generate-hashes --strip-extras -o requirements-dev.txt requirements-dev.in
+-c requirements.txt
+pytest
+ruff
