@@ -1,10 +1,5 @@
 from pathlib import Path
 
-import psycopg
-import pytest
-from pgvector.psycopg import register_vector
-
-from vaultpay_copilot.config import Settings
 from vaultpay_copilot.ingestion.chunker import parse_policy
 from vaultpay_copilot.ingestion.ingest import ingest_policies
 
@@ -25,20 +20,6 @@ Texto dois.
 def fake_embed(texts: list[str]) -> list[list[float]]:
     # Vetor fixo de 384 dimensões: testa a gravação sem baixar o modelo real.
     return [[0.1] * 384 for _ in texts]
-
-
-@pytest.fixture
-def conn():
-    try:
-        connection = psycopg.connect(Settings.from_env().conninfo(), connect_timeout=3)
-    except (psycopg.OperationalError, RuntimeError) as exc:
-        pytest.skip(f"banco indisponível (docker compose up -d): {type(exc).__name__}")
-    register_vector(connection)
-    # Abre a transação aqui: assim a ingestão usa um savepoint e o rollback final desfaz tudo.
-    connection.execute("SELECT 1")
-    yield connection
-    connection.rollback()
-    connection.close()
 
 
 def make_policy(tmp_path: Path, text: str = POLICY_TEXT):
