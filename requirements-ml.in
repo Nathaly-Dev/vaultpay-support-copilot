@@ -1,0 +1,5 @@
+# Núcleo + modelo de embeddings (puxa o PyTorch). Necessário só para rodar a ingestão de verdade.
+# Atenção: este lockfile é específico de plataforma (o PyTorch muda por sistema). Gerado no Windows.
+#   pip-compile --generate-hashes --strip-extras --allow-unsafe -o requirements-ml.txt requirements-ml.in
+-r requirements.in
+sentence-transformers

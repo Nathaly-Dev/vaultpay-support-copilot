@@ -1,5 +1,5 @@
-# Dependências diretas de runtime. O requirements.txt (com hashes) é gerado daqui:
-#   pip-compile --generate-hashes --strip-extras -o requirements.txt requirements.in
-sentence-transformers
+# Dependências do núcleo (banco e configuração): é o que testes e CI precisam.
+# Lockfile gerado daqui:
+#   pip-compile --generate-hashes --strip-extras --allow-unsafe -o requirements.txt requirements.in
 psycopg[binary]
 pgvector
