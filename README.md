@@ -92,6 +92,12 @@ Testes (os de ingestão usam o banco real e desfazem tudo no final):
 .venv/Scripts/python -m pytest -q
 ```
 
+Busca (teste manual): mascara os dados pessoais da pergunta e mostra os 4 trechos mais parecidos, com a similaridade:
+
+```bash
+PYTHONPATH=src .venv/Scripts/python -m vaultpay_copilot.rag.retriever "Perdi meu cartão, o que faço?"
+```
+
 Decisões de modelo e chunking em [`docs/decisions/0001-embeddings-e-chunking.md`](docs/decisions/0001-embeddings-e-chunking.md).
 
 ## Modelo de dados
