@@ -1,0 +1,170 @@
+/* Peças da VaultPay: básicas (botão, navegação) e de conversa (Assist).
+   Só tokens: nenhuma cor, tamanho ou fonte solta (conferido em tests/components.test.mjs).
+   Requer tokens.css e fonts.css. */
+
+/* Toque confortável no celular: 44 px. */
+:root { --vp-touch: calc(var(--vp-space-10) + var(--vp-space-1)); }
+
+.vp-sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.vp-icon { width: var(--vp-space-4); height: var(--vp-space-4); flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Botões ---------- */
+
+.vp-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--vp-space-2);
+  min-height: var(--vp-touch); padding: 0 var(--vp-space-4);
+  font: inherit; font-size: var(--vp-text-sm); font-weight: var(--vp-weight-medium);
+  color: var(--vp-text-primary); background: transparent;
+  border: 1px solid var(--vp-border-strong); border-radius: var(--vp-radius-md);
+  cursor: pointer; transition: background var(--vp-duration-fast) var(--vp-ease-out), border-color var(--vp-duration-fast) var(--vp-ease-out);
+}
+.vp-btn:hover { background: var(--vp-surface-2); }
+/* Um só por tela: a ação principal (no chat, enviar). */
+.vp-btn--primary { background: var(--vp-accent); color: var(--vp-on-accent); border-color: transparent; }
+.vp-btn--primary:hover { background: var(--vp-accent-hover); }
+.vp-btn--icon { width: var(--vp-touch); padding: 0; }
+.vp-btn:disabled { color: var(--vp-text-disabled); cursor: not-allowed; }
+.vp-btn--primary:disabled { background: var(--vp-surface-2); }
+
+.vp-btn:focus-visible,
+.vp-nav-item:focus-visible,
+.vp-suggestion:focus-visible { outline: 2px solid var(--vp-focus); outline-offset: 2px; }
+
+/* ---------- Navegação lateral ---------- */
+
+.vp-nav-item {
+  display: flex; align-items: center; gap: var(--vp-space-3); width: 100%;
+  min-height: var(--vp-touch); padding: 0 var(--vp-space-3);
+  font: inherit; font-size: var(--vp-text-sm); text-align: left; text-decoration: none;
+  color: var(--vp-text-secondary); background: transparent; border: 0; border-radius: var(--vp-radius-md);
+  cursor: pointer;
+}
+.vp-nav-item:hover { background: var(--vp-surface-2); color: var(--vp-text-primary); }
+.vp-nav-item[aria-current="true"] { background: var(--vp-surface-2); color: var(--vp-text-primary); font-weight: var(--vp-weight-medium); }
+.vp-nav-item[aria-current="true"] .vp-icon { color: var(--vp-text-accent); }
+
+/* ---------- Mensagens ---------- */
+
+.vp-msg { display: flex; align-items: flex-start; gap: var(--vp-space-3); max-width: min(88%, 44rem); }
+.vp-msg--user { margin-left: auto; flex-direction: row-reverse; }
+/* No celular, a resposta usa a largura toda; a pergunta do cliente continua recuada. */
+@media (max-width: 30rem) {
+  .vp-msg { max-width: 100%; }
+  .vp-msg--user { max-width: 88%; }
+}
+
+.vp-msg__avatar {
+  flex: none; display: grid; place-items: center;
+  width: var(--vp-space-8); height: var(--vp-space-8);
+  color: var(--vp-brand-mark); background: var(--vp-surface-2);
+  border: 1px solid var(--vp-border); border-radius: var(--vp-radius-md);
+}
+.vp-msg__avatar svg { width: var(--vp-space-5); height: var(--vp-space-5); }
+
+.vp-msg__body { display: flex; flex-direction: column; gap: var(--vp-space-1); min-width: 0; }
+
+.vp-msg__bubble {
+  padding: var(--vp-space-3) var(--vp-space-4);
+  font-size: var(--vp-text-sm); line-height: var(--vp-leading-normal); overflow-wrap: anywhere;
+  color: var(--vp-text-primary); background: var(--vp-surface-1);
+  border: 1px solid var(--vp-border); border-radius: var(--vp-radius-sm) var(--vp-radius-lg) var(--vp-radius-lg) var(--vp-radius-lg);
+}
+.vp-msg__bubble p { margin: 0; }
+.vp-msg__bubble p + p { margin-top: var(--vp-space-2); }
+
+.vp-msg--user .vp-msg__bubble {
+  color: var(--vp-on-accent); background: var(--vp-accent); border-color: transparent;
+  font-weight: var(--vp-weight-medium);
+  border-radius: var(--vp-radius-lg) var(--vp-radius-sm) var(--vp-radius-lg) var(--vp-radius-lg);
+}
+
+.vp-msg__meta { display: flex; align-items: center; gap: var(--vp-space-2); font-size: var(--vp-text-xs); color: var(--vp-text-muted); font-variant-numeric: tabular-nums; }
+.vp-msg--user .vp-msg__meta { justify-content: flex-end; }
+
+/* Encaminhado para atendente: estado de informação (cor + ícone + rótulo), nunca ouro. */
+.vp-msg--handoff .vp-msg__avatar { color: var(--vp-info-text); background: var(--vp-info-bg); border-color: var(--vp-info-border); }
+.vp-msg--handoff .vp-msg__bubble { color: var(--vp-info-text); background: var(--vp-info-bg); border-color: var(--vp-info-border); }
+.vp-msg__title { display: flex; align-items: center; gap: var(--vp-space-2); margin-bottom: var(--vp-space-1); font-weight: var(--vp-weight-semibold); }
+.vp-msg__protocol { margin-top: var(--vp-space-2); font-family: var(--vp-font-mono); font-size: var(--vp-text-xs); }
+
+/* Erro do serviço: estado de perigo. */
+.vp-msg--error .vp-msg__avatar,
+.vp-msg--error .vp-msg__bubble { color: var(--vp-danger-text); background: var(--vp-danger-bg); border-color: var(--vp-danger-border); }
+
+/* Dado pessoal que o servidor mascarou, mostrado no lugar do valor. */
+.vp-pii {
+  display: inline-block; padding: 0 var(--vp-space-1);
+  font-family: var(--vp-font-mono); font-size: var(--vp-text-xs); font-weight: var(--vp-weight-medium);
+  color: var(--vp-accent); background: var(--vp-on-accent); border-radius: var(--vp-radius-sm);
+}
+
+/* ---------- Fonte citada ---------- */
+
+.vp-source {
+  display: flex; align-items: flex-start; gap: var(--vp-space-2);
+  margin-top: var(--vp-space-3); padding: var(--vp-space-2) var(--vp-space-3);
+  font-size: var(--vp-text-xs); line-height: var(--vp-leading-normal); font-weight: var(--vp-weight-regular);
+  color: var(--vp-text-on-accent-subtle); background: var(--vp-accent-subtle);
+  border: 1px solid var(--vp-border-accent); border-radius: var(--vp-radius-md);
+}
+.vp-source + .vp-source { margin-top: var(--vp-space-2); }
+.vp-source__title { display: block; font-weight: var(--vp-weight-semibold); }
+.vp-source__quote { display: block; margin: 0; }
+
+/* ---------- Aviso curto (ex.: "CPF mascarado") ---------- */
+
+.vp-note { display: inline-flex; align-items: center; gap: var(--vp-space-1); font-size: var(--vp-text-xs); color: var(--vp-text-secondary); }
+.vp-note--success { color: var(--vp-success-text); }
+
+/* ---------- Digitando ---------- */
+
+.vp-typing {
+  display: inline-flex; align-items: center; gap: var(--vp-space-1);
+  padding: var(--vp-space-3) var(--vp-space-4);
+  background: var(--vp-surface-1); border: 1px solid var(--vp-border);
+  border-radius: var(--vp-radius-sm) var(--vp-radius-lg) var(--vp-radius-lg) var(--vp-radius-lg);
+}
+.vp-typing__dot {
+  width: var(--vp-space-2); height: var(--vp-space-2); border-radius: var(--vp-radius-full);
+  background: var(--vp-accent); animation: vp-typing 1.2s var(--vp-ease-in-out) infinite;
+}
+.vp-typing__dot:nth-child(2) { animation-delay: 0.15s; }
+.vp-typing__dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes vp-typing { 0%, 80%, 100% { opacity: 0.3; } 40% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .vp-typing__dot { animation: none; opacity: 0.6; }
+}
+
+/* ---------- Campo de mensagem ---------- */
+
+.vp-composer {
+  display: flex; align-items: flex-end; gap: var(--vp-space-2);
+  padding: var(--vp-space-2) var(--vp-space-2) var(--vp-space-2) var(--vp-space-4);
+  background: var(--vp-surface-1); border: 1px solid var(--vp-border-input); border-radius: var(--vp-radius-lg);
+}
+.vp-composer:focus-within { outline: 2px solid var(--vp-focus); outline-offset: 2px; }
+.vp-composer__field {
+  flex: 1; min-width: 0; max-height: calc(var(--vp-space-16) * 2); padding: var(--vp-space-3) 0;
+  font: inherit; font-size: var(--vp-text-md); line-height: var(--vp-leading-normal);
+  color: var(--vp-text-primary); background: transparent; border: 0; outline: none; resize: none;
+}
+.vp-composer__field::placeholder { color: var(--vp-text-muted); }
+.vp-composer__count { align-self: center; font-family: var(--vp-font-mono); font-size: var(--vp-text-xs); color: var(--vp-text-muted); font-variant-numeric: tabular-nums; }
+
+/* ---------- Sugestão de pergunta ---------- */
+
+.vp-suggestion {
+  display: grid; gap: var(--vp-space-1); justify-items: start; width: 100%;
+  padding: var(--vp-space-3) var(--vp-space-4);
+  font: inherit; text-align: left; color: var(--vp-text-primary);
+  background: var(--vp-surface-1); border: 1px solid var(--vp-border); border-radius: var(--vp-radius-lg);
+  cursor: pointer; transition: border-color var(--vp-duration-fast) var(--vp-ease-out);
+}
+.vp-suggestion:hover { border-color: var(--vp-border-accent); }
+.vp-suggestion__icon { color: var(--vp-text-accent); }
+.vp-suggestion__title { font-size: var(--vp-text-sm); font-weight: var(--vp-weight-semibold); }
+.vp-suggestion__hint { font-size: var(--vp-text-xs); color: var(--vp-text-secondary); }

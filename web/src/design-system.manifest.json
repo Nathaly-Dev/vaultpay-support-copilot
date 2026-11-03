@@ -1,0 +1,23 @@
+{
+  "version": "v0.1.0",
+  "files": {
+    "LICENSE": "5053aa18362814797701304afc64b5d7bb3cefdf4c1f5c4834fb789cb487d1a2",
+    "fonts/LICENSE-IBMPlexMono-OFL.txt": "23b0a9d0c6d3f140a0b77e483c5cfa6bba574325ef5cb189ed9f2fec4884533f",
+    "fonts/LICENSE-Manrope-OFL.txt": "d826ab6583b12c26807d8716a545bdbbb672df04f48608a364ba9efdbe501c30",
+    "fonts/README.md": "41c48278a5444f4287cd1265623f8981e176030f67f53c9fe0e0fc713f51aa7a",
+    "fonts/ibm-plex-mono-latin-400-normal.woff2": "08949f728dc52d528e69b1667d15c89a5686a4ee9a296ff90983985f99c380f7",
+    "fonts/ibm-plex-mono-latin-500-normal.woff2": "01d285447409c8a588692162439a038b8cbd7871309ee20267b0d2d91c6e8e22",
+    "fonts/manrope-latin-wght-normal.woff2": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+    "logo/favicon.svg": "d2f395971fdca4b99e29c9f2391ca753f988c431d14453b3c184be99dbc93cc7",
+    "logo/vaultpay-app-icon.svg": "f177526ede6ea3086c92f75d2f382feb8022b470710aa6029733bd4facaa59f6",
+    "logo/vaultpay-mark-mono.svg": "9d21e6fe01e9970a6d219c4ba3415dd6a323d06d281dc70a7f6d51ba6ccad863",
+    "logo/vaultpay-mark-on-dark.svg": "1ec8383dcebc545eda7c63ae1cfe2ecd9c319cd8c45f237bed5ec5386e3714a3",
+    "logo/vaultpay-mark-on-light.svg": "9f174090bfd4eec637da889a5370898de3594cfd4b40bd6bb621d68e81f133de",
+    "logo/vaultpay-mark.svg": "933361ccd546cbfa750b9930471fcb023638e21e9910098a6d4b929b7a16926d",
+    "logo/vaultpay-wordmark-on-dark.svg": "db6128647c6ed97b3c9ab3484d491e9bb21ce4e570169badf5b2c964ada4b020",
+    "logo/vaultpay-wordmark-on-light.svg": "0a35120e95dba027dbe7776c2d9cd227484a26355c752389e618a7607fbda75a",
+    "src/components.css": "e710b70e3b1a95810ee9ffdaf5d4e73cab126826a1bb597a62c9aaadbeae5cc6",
+    "src/fonts.css": "615e94ba651691875dc4e82b4f96a5ab5ca3173a999714754f5e25209c9aecab",
+    "src/tokens.css": "3696942d775a54f4ce66ed0678ca17cb427d5eba3d9e52709053a738fa85dccc"
+  }
+}

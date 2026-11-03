@@ -1,18 +1,24 @@
 # HANDOFF: VaultPay Assist (support copilot)
 
-Estado em **2026-10-30**. Leia isto antes de continuar. Regras de trabalho e comandos ficam no [`CLAUDE.md`](CLAUDE.md); a visão do produto, no [`README.md`](README.md).
+Estado em **2026-11-03**. Leia isto antes de continuar. Regras de trabalho e comandos ficam no [`CLAUDE.md`](CLAUDE.md); a visão do produto, no [`README.md`](README.md).
 
 ## Onde estamos
 
 **Fases 0, 1 e 2 concluídas e mergeadas.** O atendente funciona pela linha de comando: mascara dados pessoais, busca o trecho certo das políticas, consulta um modelo local, responde citando a fonte ou encaminha para um atendente, e grava tudo no banco.
 
-**Fase 3 (API) concluída na branch `feat/api`, em PR aguardando o ok da Nathaly para o merge.** Decisões no [ADR 0002](docs/decisions/0002-api-fastapi.md); latência medida no README (seção Resultados).
+**Fase 3 (API) concluída e mergeada (PR #10).** Decisões no [ADR 0002](docs/decisions/0002-api-fastapi.md); latência medida no README (seção Resultados).
 - `/chat` e `/health` com validação, limites, headers e logs sem dado pessoal; revisão independente com 9 achados corrigidos.
 - Subir só com `python -m vaultpay_copilot.api` (nunca `uvicorn` direto).
 - Validado de verdade nesta máquina: API no ar, `/health` ok, 3 perguntas pela API gravadas no banco (fontes e encaminhamento certos), gravação atômica com `autocommit=True` (teste no banco real).
 - Medido: `keep_alive=30m` evita ~9 s de carga do modelo; `num_predict` sem ganho (desligado); `127.0.0.1` no lugar de `localhost` tirou ~5 s de cada pergunta.
 
-**Próximo: Fase 4 (avaliação).** Começa pelo conjunto de perguntas escrito pela Nathaly (ver pendências).
+**Interface do chat (expansão aprovada) feita, em PRs aguardando o ok da Nathaly:**
+- Design system: peças de conversa e tag `v0.1.0` (PRs #3 e #4 do `vaultpay-design-system`, mergeados).
+- API para a interface (PR #11, branch `feat/chat-api`): trecho da fonte (`quote`), pergunta mascarada, tipos mascarados e `POST /handoff` (motivo `user_requested`).
+- Front React + Vite + TypeScript em `web/` (branch `feat/web`, em cima da `feat/chat-api`): boas-vindas com sugestões, barra de assuntos, fonte com trecho, `[CPF]` no balão, protocolo, "falar com atendente", status do `/health`. Validado com a API e o Qwen de verdade: 3 mensagens na mesma sessão gravadas no banco, CPF mascarado. Screenshots claro/escuro, PC/celular.
+- Ordem do merge: PR #11 primeiro; depois rebase da `feat/web` na `main` e o PR dela.
+
+**Fase 4 (avaliação) em andamento na branch `feat/eval-set` (só local, sem PR):** conjunto v1 e linha de base medidos; falta a Nathaly marcar a planilha de revisão (`data/eval/results/*-revisao.csv`).
 
 ## O que existe e como foi validado
 
@@ -68,6 +74,8 @@ Contagem de testes: ver o CI. **Nada disso é avaliação de qualidade medida**:
 | Limite por IP e "uma pergunta por vez" vivem na memória de **um** processo | com 2+ processos cada um conta separado (precisaria de Redis) | se houver deploy com mais de um processo |
 | Atrás de um proxy, todo mundo teria o IP do proxy | o limite por IP viraria um limite global; não confiamos em `X-Forwarded-For` de propósito | Fase 5 (demo) |
 | Sem HTTPS nem HSTS | hoje só escuta em 127.0.0.1 | Fase 5 (demo) |
+| Front e API sobem em dois comandos (Vite em desenvolvimento) | a API ainda não serve o build de `web/dist` | antes da demo (Fase 5) |
+| `vp-note` só tem a variante de sucesso no design system; o Assist define `status-warning` e `status-danger` no próprio CSS | regra: estilo nasce no design system | design system v0.2.0 |
 | Ao subir, o `sentence-transformers` consulta o Hugging Face Hub (aviso "unauthenticated requests") | chamada externa a cada início, expõe o IP; com o modelo já baixado daria para rodar offline (`HF_HUB_OFFLINE=1`) | tarefa pequena, antes da demo |
 | Cache de perguntas repetidas e troca de modelo | aceleram, mas mexem na qualidade | depois da avaliação (Fase 4) |
 
