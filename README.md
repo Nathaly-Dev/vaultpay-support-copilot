@@ -158,6 +158,20 @@ Regras garantidas pelo próprio banco (constraints e triggers em PL/pgSQL):
 
 Schema completo em [`db/migrations/001_initial_schema.sql`](db/migrations/001_initial_schema.sql).
 
+## A interface
+
+Chat em React + Vite + TypeScript, em [`web/`](web/), com as peças do [VaultPay Design System](https://github.com/Nathaly-Dev/vaultpay-design-system) `v0.2.0` (cópia em `web/src/design-system/`, conferida por teste: não se edita). Mostra a fonte com o trecho da política, o `[CPF]` no lugar do número depois que o servidor mascara, o protocolo quando encaminha e o botão "falar com atendente". As conversas ficam salvas **só nesta aba** (`sessionStorage`), listadas no menu em "Conversas nesta aba": voltam depois de recarregar, somem ao fechar a aba e cada uma expira 15 minutos depois da última mensagem. Só o texto já mascarado pelo servidor é salvo (o `[CPF]`, nunca o número digitado). O navegador guarda também a escolha de tema.
+
+Pré-requisito: Node 22 ou mais novo. Com a API no ar (seção acima), em outro terminal:
+
+```bash
+cd web
+npm ci --ignore-scripts
+npm run dev
+```
+
+Abra `http://127.0.0.1:5173`. Em desenvolvimento, o Vite repassa `/chat`, `/handoff` e `/health` para a API, então ela continua sem CORS. Testes e tipos: `npm run check`.
+
 ## Resultados
 
 **Qualidade:** não medida ainda (Fase 4).

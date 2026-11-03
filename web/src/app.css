@@ -1,0 +1,100 @@
+/* Layout do Assist. Só posição e espaço: cor, fonte e tamanho vêm dos tokens e das peças do
+   design system (conferido em src/designSystem.test.ts). Separação por camadas, sem linhas. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--vp-surface-0);
+  color: var(--vp-text-primary);
+  font-family: var(--vp-font-sans);
+  font-size: var(--vp-text-md);
+  line-height: var(--vp-leading-normal);
+}
+
+h1, h2, p { margin: 0; }
+
+.app { display: grid; grid-template-columns: 16rem minmax(0, 1fr); height: 100dvh; }
+
+/* ---------- Menu (painel da marca) ---------- */
+
+.sidebar { display: flex; flex-direction: column; gap: var(--vp-space-4); padding: var(--vp-space-6) var(--vp-space-4); overflow-y: auto; }
+.brand { display: flex; align-items: baseline; gap: var(--vp-space-2); padding: 0 var(--vp-space-2) var(--vp-space-2); }
+.brand img { height: var(--vp-space-6); width: auto; }
+.brand__product { font-size: var(--vp-text-sm); font-weight: var(--vp-weight-medium); }
+.sidebar nav { display: grid; gap: var(--vp-space-1); }
+.sidebar__label { padding: var(--vp-space-2) var(--vp-space-3) var(--vp-space-1); font-size: var(--vp-text-xs); font-weight: var(--vp-weight-semibold); }
+/* Conversa salva: título numa linha só (com reticências) e o prazo embaixo. */
+.history-item { min-height: var(--vp-space-12); }
+.history-item:disabled { cursor: not-allowed; }
+.history-item__text { display: grid; min-width: 0; text-align: left; }
+.history-item__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-item__meta { font-size: var(--vp-text-xs); font-weight: var(--vp-weight-regular); }
+.sidebar__footer { margin-top: auto; display: grid; gap: var(--vp-space-3); }
+.sidebar__disclaimer { font-size: var(--vp-text-xs); padding: 0 var(--vp-space-2); }
+
+/* Cada versão do símbolo aparece só no tema certo: o escolhido no botão ou, sem escolha, o do sistema. */
+.on-dark { display: none; }
+:root[data-theme="dark"] .on-dark { display: inline-block; }
+:root[data-theme="dark"] .on-light { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .on-dark { display: inline-block; }
+  :root:not([data-theme="light"]) .on-light { display: none; }
+}
+
+/* ---------- Conversa ---------- */
+
+.chat { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+
+.chat__header { display: flex; align-items: center; gap: var(--vp-space-3); padding: var(--vp-space-5) var(--vp-space-8) var(--vp-space-2); }
+.chat__mark { width: var(--vp-space-8); height: var(--vp-space-8); }
+.chat__title { flex: 1; font-size: var(--vp-text-xl); font-weight: var(--vp-weight-bold); letter-spacing: -0.01em; }
+
+.chat__thread {
+  flex: 1; overflow-y: auto;
+  display: flex; flex-direction: column; gap: var(--vp-space-5);
+  padding: var(--vp-space-4) var(--vp-space-8);
+}
+
+.chat__footer { display: grid; gap: var(--vp-space-3); padding: var(--vp-space-2) var(--vp-space-8) var(--vp-space-5); }
+
+.chat__notes { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--vp-space-2) var(--vp-space-4); }
+/* Ação discreta dentro de um aviso curto: parece link, com área de toque e foco visíveis. */
+.link-button {
+  margin-left: var(--vp-space-1); padding: var(--vp-space-1) 0; min-height: var(--vp-space-6);
+  font: inherit; font-weight: var(--vp-weight-semibold); color: var(--vp-text-accent);
+  background: none; border: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 0.15em;
+}
+.link-button:focus-visible { outline: 2px solid var(--vp-focus); outline-offset: 2px; }
+
+/* Perguntas prontas acima do campo. No celular, uma linha que rola para o lado. */
+.quick { display: flex; flex-wrap: wrap; gap: var(--vp-space-2); }
+
+/* ---------- Boas-vindas ---------- */
+
+.welcome {
+  margin: auto; max-width: 46rem; width: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: var(--vp-space-4);
+  text-align: center; padding: var(--vp-space-8) 0;
+}
+.welcome__icon { width: var(--vp-space-16); height: var(--vp-space-16); }
+.welcome h1 { font-size: var(--vp-text-3xl); font-weight: var(--vp-weight-bold); line-height: var(--vp-leading-tight); letter-spacing: -0.02em; }
+.welcome__lead { color: var(--vp-text-secondary); font-size: var(--vp-text-lg); max-width: 34rem; }
+.welcome__grid { display: grid; gap: var(--vp-space-3); width: 100%; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); margin-top: var(--vp-space-4); }
+
+/* ---------- Celular ---------- */
+
+.show-small { display: none; }
+
+@media (max-width: 48rem) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { display: none; }
+  .chat__header, .chat__thread, .chat__footer { padding-inline: var(--vp-space-4); }
+  .hide-small { display: none; }
+  .show-small { display: initial; }
+  .chat__mark.show-small { display: block; }
+  .quick { flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--vp-space-1); }
+  .quick .vp-chip { flex: none; }
+}

@@ -1,0 +1,11 @@
+# Configuração do gitleaks: as regras padrão, mais uma exceção registrada.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Exceções conferidas à mão"
+# O manifesto guarda o SHA-256 de cada arquivo da cópia do design system (dado público,
+# calculado a partir da tag v0.1.0). Hash longo parece chave para a regra generic-api-key.
+# Exceção só para este arquivo: qualquer outro segredo continua sendo pego.
+paths = ['''web/src/design-system\.manifest\.json''']

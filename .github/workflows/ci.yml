@@ -80,6 +80,36 @@ jobs:
           pip-audit -r requirements.txt --disable-pip --no-deps
           pip-audit -r requirements-ml.txt --disable-pip --no-deps
 
+  web:
+    name: Front (tipos, testes, build e auditoria)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+
+      # npm ci instala exatamente o package-lock.json; --ignore-scripts impede que um pacote
+      # rode script próprio na instalação.
+      - name: Instalar dependências (lockfile)
+        run: npm ci --ignore-scripts
+
+      - name: Tipos e testes
+        run: npm run check
+
+      - name: Build
+        run: npm run build
+
+      - name: Auditoria de vulnerabilidades
+        run: npm audit --audit-level=moderate
+
   secrets:
     name: Busca de segredos (gitleaks)
     runs-on: ubuntu-latest
