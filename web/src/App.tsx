@@ -7,7 +7,7 @@ import { Sidebar } from "./components/Sidebar";
 import { Welcome } from "./components/Welcome";
 import { Icon } from "./icons";
 import { applyTheme, loadTheme, saveTheme, type Theme } from "./theme";
-import { HIGHLIGHTS, TOPICS } from "./topics";
+import { HIGHLIGHTS, nextSuggestions, TOPICS } from "./topics";
 
 let nextId = 0;
 const newId = () => `m${++nextId}`;
@@ -90,6 +90,12 @@ export function App() {
 
   const suggestions = TOPICS.find((t) => t.id === topicId)?.suggestions ?? HIGHLIGHTS;
 
+  // Depois que a conversa começa, sempre há perguntas prontas: 1 clique, sem repetir.
+  const asked = entries.flatMap((e) => (e.kind === "user" ? [e.text] : []));
+  const lastReply = entries.findLast((e) => e.kind === "reply");
+  const lastSource = lastReply?.kind === "reply" ? (lastReply.response.sources[0]?.title ?? null) : null;
+  const quick = entries.length > 0 ? nextSuggestions(asked, topicId, lastSource) : [];
+
   return (
     <div className="app">
       <Sidebar
@@ -136,6 +142,16 @@ export function App() {
         </div>
 
         <footer className="chat__footer">
+          {quick.length > 0 && (
+            <div className="quick" role="group" aria-label="Sugestões de pergunta">
+              {quick.map((s) => (
+                <button className="vp-btn" type="button" key={s.question} disabled={busy} onClick={() => send(s.question)}>
+                  <Icon name={s.icon} />
+                  {s.question}
+                </button>
+              ))}
+            </div>
+          )}
           <Composer value={draft} onChange={setDraft} onSend={() => send(draft)} busy={busy} />
           <p className="vp-note">
             <Icon name="lock" />

@@ -84,6 +84,11 @@ h1, h2, p { margin: 0; }
   border-top: 1px solid var(--vp-border);
 }
 
+/* Perguntas prontas acima do campo. No celular, uma linha que rola para o lado. */
+.quick { display: flex; flex-wrap: wrap; gap: var(--vp-space-2); }
+.quick .vp-btn { font-size: var(--vp-text-xs); font-weight: var(--vp-weight-regular); color: var(--vp-text-secondary); }
+.quick .vp-btn .vp-icon { color: var(--vp-text-accent); }
+
 .avatar-brand { padding: 0; overflow: hidden; border: 0; }
 .avatar-brand img { width: 100%; height: 100%; display: block; }
 
@@ -108,6 +113,8 @@ h1, h2, p { margin: 0; }
   .sidebar { display: none; }
   .chat__header, .chat__thread, .chat__footer { padding-inline: var(--vp-space-4); }
   .hide-small { display: none; }
+  .quick { flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--vp-space-1); }
+  .quick .vp-btn { flex: none; }
   .show-small { display: initial; }
   .chat__mark.show-small { display: block; }
 }

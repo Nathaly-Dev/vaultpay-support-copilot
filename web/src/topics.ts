@@ -12,12 +12,15 @@ export interface Topic {
   id: string;
   label: string;
   icon: IconName;
+  // Começo do título das políticas deste assunto, como a API devolve na fonte.
+  policies: string[];
   suggestions: Suggestion[];
 }
 
 export const TOPICS: Topic[] = [
   {
     id: "pix",
+    policies: ["Política de Pix"],
     label: "Pix",
     icon: "bolt",
     suggestions: [
@@ -28,6 +31,7 @@ export const TOPICS: Topic[] = [
   },
   {
     id: "cartao",
+    policies: ["Política de Cartão"],
     label: "Cartão",
     icon: "card",
     suggestions: [
@@ -38,6 +42,7 @@ export const TOPICS: Topic[] = [
   },
   {
     id: "conta",
+    policies: ["Política de Conta Digital"],
     label: "Conta",
     icon: "bank",
     suggestions: [
@@ -48,6 +53,7 @@ export const TOPICS: Topic[] = [
   },
   {
     id: "seguranca",
+    policies: ["Política de Segurança"],
     label: "Segurança",
     icon: "shield",
     suggestions: [
@@ -58,6 +64,7 @@ export const TOPICS: Topic[] = [
   },
   {
     id: "tarifas",
+    policies: ["Tabela de Tarifas"],
     label: "Tarifas",
     icon: "receipt",
     suggestions: [
@@ -68,6 +75,7 @@ export const TOPICS: Topic[] = [
   },
   {
     id: "privacidade",
+    policies: ["Política de Privacidade"],
     label: "Privacidade",
     icon: "eye",
     suggestions: [
@@ -84,3 +92,39 @@ export const HIGHLIGHTS: Suggestion[] = [
   TOPICS[1]!.suggestions[0]!,
   TOPICS[3]!.suggestions[0]!,
 ];
+
+export function topicOfSource(title: string): Topic | undefined {
+  return TOPICS.find((topic) => topic.policies.some((prefix) => title.startsWith(prefix)));
+}
+
+const normalize = (text: string) => text.trim().toLowerCase();
+
+/**
+ * Próximas perguntas sugeridas, sem repetir o que já foi perguntado.
+ * Ordem: o assunto da última resposta, o assunto escolhido no menu, os destaques e o resto.
+ */
+export function nextSuggestions(
+  asked: string[],
+  topicId: string | null,
+  lastSourceTitle: string | null,
+  count = 3,
+): Suggestion[] {
+  const fromSource = lastSourceTitle ? topicOfSource(lastSourceTitle) : undefined;
+  const chosen = TOPICS.find((topic) => topic.id === topicId);
+  const ordered = [
+    ...(fromSource?.suggestions ?? []),
+    ...(chosen?.suggestions ?? []),
+    ...HIGHLIGHTS,
+    ...TOPICS.flatMap((topic) => topic.suggestions),
+  ];
+  const seen = new Set(asked.map(normalize));
+  const result: Suggestion[] = [];
+  for (const suggestion of ordered) {
+    const key = normalize(suggestion.question);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(suggestion);
+    if (result.length === count) break;
+  }
+  return result;
+}
