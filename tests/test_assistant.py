@@ -4,9 +4,12 @@ import pytest
 
 from vaultpay_copilot.rag.assistant import (
     ESCALATION_TEXT,
+    HANDOFF_REQUEST,
+    HANDOFF_TEXT,
     UNAVAILABLE_TEXT,
     answer,
     build_user_message,
+    handoff_reply,
 )
 from vaultpay_copilot.rag.llm import LlmUnavailable
 from vaultpay_copilot.rag.retriever import RetrievedChunk
@@ -164,3 +167,26 @@ def test_o_formato_exigido_vai_junto_para_o_modelo():
 
     schema = llm.calls[0]["schema"]
     assert set(schema["required"]) == {"answerable", "answer", "source_ids"}
+
+
+def test_anota_os_tipos_de_dado_pessoal_mascarados():
+    reply = run(
+        "Meu CPF é 123.456.789-09 e meu e-mail ana@example.com, qual o limite?",
+        llm_says(True, "O limite é R$ 5.000,00.", [1]),
+    )
+
+    assert reply.pii_found == ("CPF", "EMAIL")
+    assert "123.456.789-09" not in reply.question_masked
+
+
+def test_sem_dado_pessoal_nao_anota_nada():
+    assert run("Qual o limite?", llm_says(True, "R$ 5.000,00.", [1])).pii_found == ()
+
+
+def test_pedido_de_atendente_e_encaminhamento_sem_modelo():
+    reply = handoff_reply()
+
+    assert (reply.outcome, reply.reason) == ("escalated", "user_requested")
+    assert (reply.text, reply.question_masked) == (HANDOFF_TEXT, HANDOFF_REQUEST)
+    assert reply.llm_model is None and reply.prompt_version is None
+    assert reply.sources == []

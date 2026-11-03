@@ -10,7 +10,7 @@ import psycopg
 from pgvector.psycopg import register_vector
 
 from vaultpay_copilot.config import LlmSettings, Settings
-from vaultpay_copilot.rag.assistant import Llm, Reply, answer
+from vaultpay_copilot.rag.assistant import Llm, Reply, answer, handoff_reply
 from vaultpay_copilot.rag.recorder import record
 from vaultpay_copilot.rag.retriever import search
 
@@ -48,6 +48,11 @@ class Copilot:
                 self.min_similarity,
             )
             # Se a gravação falhar, a exceção sobe e a API devolve 503: nada sai sem registro.
+            return reply, record(conn, reply, session_id)
+
+    def handoff(self, session_id: UUID) -> tuple[Reply, UUID]:
+        reply = handoff_reply()
+        with self.connect() as conn:
             return reply, record(conn, reply, session_id)
 
     def health(self) -> dict[str, bool]:
