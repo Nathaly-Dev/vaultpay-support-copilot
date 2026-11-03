@@ -31,18 +31,32 @@ h1, h2, p { margin: 0; }
 .brand__product { font-size: var(--vp-text-sm); font-weight: var(--vp-weight-medium); color: var(--vp-text-secondary); }
 .sidebar nav { display: grid; gap: var(--vp-space-1); }
 .sidebar__label { padding: 0 var(--vp-space-3) var(--vp-space-1); font-size: var(--vp-text-xs); color: var(--vp-text-muted); }
-.sidebar__status { margin-top: auto; padding: 0 var(--vp-space-2); }
+.sidebar__status { padding: 0 var(--vp-space-2); }
+.theme-switch { margin-top: auto; }
 
 /* Faltam no design system v0.1.0 (vp-note só tem --success): candidatos à v0.2.0. */
 .status-warning { color: var(--vp-warning-text); }
 .status-danger { color: var(--vp-danger-text); }
 
-/* Cada versão do logo aparece só no tema certo. */
+/* Cada versão do logo aparece só no tema certo: o escolhido no botão ou, sem escolha, o do sistema. */
 .on-dark { display: none; }
+:root[data-theme="dark"] .on-dark { display: inline-block; }
+:root[data-theme="dark"] .on-light { display: none; }
 @media (prefers-color-scheme: dark) {
-  .on-dark { display: inline-block; }
-  .on-light { display: none; }
+  :root:not([data-theme="light"]) .on-dark { display: inline-block; }
+  :root:not([data-theme="light"]) .on-light { display: none; }
 }
+
+/* Seletor de tema. Falta no design system v0.1.0 (controle segmentado): candidato à v0.2.0. */
+.theme-switch { display: flex; border: 1px solid var(--vp-border-input); border-radius: var(--vp-radius-md); overflow: hidden; }
+.theme-switch button {
+  flex: 1; min-height: var(--vp-touch);
+  font: inherit; font-size: var(--vp-text-xs); color: var(--vp-text-secondary);
+  background: transparent; border: 0; cursor: pointer;
+}
+.theme-switch button + button { border-left: 1px solid var(--vp-border-input); }
+.theme-switch button[aria-pressed="true"] { background: var(--vp-surface-2); color: var(--vp-text-primary); font-weight: var(--vp-weight-semibold); }
+.theme-switch button:focus-visible { outline: 2px solid var(--vp-focus); outline-offset: -2px; }
 
 /* ---------- Conversa ---------- */
 

@@ -11,7 +11,7 @@ A interface entrou no roadmap como expansão aprovada, depois da API. O primeiro
 2. **Peças em CSS no design system** (`components.css`, classes `vp-`), não em componentes React: Insights e Triage podem usar as mesmas peças com qualquer tecnologia. O Assist copia a tag `v0.1.0` para `web/src/design-system/` e um teste confere, por SHA-256, que a cópia não foi editada.
 3. **Mesmo endereço da API:** em desenvolvimento o Vite repassa `/chat`, `/handoff` e `/health`; a API continua sem CORS.
 4. **A resposta da API é conferida antes de aparecer** (formato, fonte obrigatória em `answered`). Sem Zod: uma função de checagem escrita à mão basta para um formato só.
-5. **Sem guardar nada no navegador:** a conversa vive na memória da aba.
+5. **A conversa não fica no navegador:** vive na memória da aba. Só a escolha de tema (Claro/Escuro/Sistema) vai para o `localStorage`, e a tela funciona igual se ele estiver bloqueado.
 6. **Dependências:** `react`, `react-dom`; dev: `vite`, `@vitejs/plugin-react`, `typescript`, `vitest`, `@types/react`, `@types/react-dom`, `@types/node`. Versões exatas no `package-lock.json`, instalação com `--ignore-scripts`, `npm audit` no CI.
 
 ## Alternativas descartadas

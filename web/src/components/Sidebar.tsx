@@ -2,6 +2,7 @@ import type { ServiceStatus } from "../api";
 import wordmarkOnDark from "../design-system/logo/vaultpay-wordmark-on-dark.svg";
 import wordmarkOnLight from "../design-system/logo/vaultpay-wordmark-on-light.svg";
 import { Icon } from "../icons";
+import { THEMES, type Theme } from "../theme";
 import { TOPICS } from "../topics";
 
 interface Props {
@@ -9,6 +10,8 @@ interface Props {
   onTopic: (id: string) => void;
   onNewConversation: () => void;
   status: ServiceStatus | null;
+  theme: Theme;
+  onTheme: (theme: Theme) => void;
 }
 
 // Estado = cor + ícone + rótulo, nunca só cor.
@@ -18,7 +21,7 @@ const STATUS = {
   offline: { className: "vp-note status-danger", icon: "alert", label: "Atendimento fora do ar" },
 } as const;
 
-export function Sidebar({ topicId, onTopic, onNewConversation, status }: Props) {
+export function Sidebar({ topicId, onTopic, onNewConversation, status, theme, onTheme }: Props) {
   const current = status ? STATUS[status] : null;
   return (
     <aside className="sidebar" aria-label="Menu">
@@ -50,6 +53,14 @@ export function Sidebar({ topicId, onTopic, onNewConversation, status }: Props) 
           </button>
         ))}
       </nav>
+
+      <div className="theme-switch" role="group" aria-label="Tema">
+        {THEMES.map((t) => (
+          <button key={t.value} type="button" aria-pressed={theme === t.value} onClick={() => onTheme(t.value)}>
+            {t.label}
+          </button>
+        ))}
+      </div>
 
       {current && (
         <p className={`sidebar__status ${current.className}`} role="status">

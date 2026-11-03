@@ -52,8 +52,10 @@ describe("app.css só usa tokens", () => {
     expect(fonts.filter((value) => !value.startsWith("var(--vp-font-"))).toEqual([]);
   });
 
-  it("px só para linha fina", () => {
-    expect((css.match(/\b\d+(?:\.\d+)?px\b/g) ?? []).filter((v) => v !== "1px")).toEqual([]);
+  // A mesma regra do design system: 1px para linha fina e 2px só para o contorno de foco.
+  it("px só para linha fina e contorno de foco", () => {
+    const sizes = css.match(/\b\d+(?:\.\d+)?px\b/g) ?? [];
+    expect(sizes.filter((v) => !["1px", "2px"].includes(v))).toEqual([]);
   });
 
   it("toda variável usada existe no design system", () => {

@@ -75,6 +75,7 @@ Contagem de testes: ver o CI. **Nada disso é avaliação de qualidade medida**:
 | Atrás de um proxy, todo mundo teria o IP do proxy | o limite por IP viraria um limite global; não confiamos em `X-Forwarded-For` de propósito | Fase 5 (demo) |
 | Sem HTTPS nem HSTS | hoje só escuta em 127.0.0.1 | Fase 5 (demo) |
 | Front e API sobem em dois comandos (Vite em desenvolvimento) | a API ainda não serve o build de `web/dist` | antes da demo (Fase 5) |
+| Seletor de tema (controle segmentado) definido no CSS do Assist | falta no design system | design system v0.2.0 |
 | `vp-note` só tem a variante de sucesso no design system; o Assist define `status-warning` e `status-danger` no próprio CSS | regra: estilo nasce no design system | design system v0.2.0 |
 | Ao subir, o `sentence-transformers` consulta o Hugging Face Hub (aviso "unauthenticated requests") | chamada externa a cada início, expõe o IP; com o modelo já baixado daria para rodar offline (`HF_HUB_OFFLINE=1`) | tarefa pequena, antes da demo |
 | Cache de perguntas repetidas e troca de modelo | aceleram, mas mexem na qualidade | depois da avaliação (Fase 4) |

@@ -6,6 +6,7 @@ import { AssistAvatar, Message, type Entry } from "./components/Message";
 import { Sidebar } from "./components/Sidebar";
 import { Welcome } from "./components/Welcome";
 import { Icon } from "./icons";
+import { applyTheme, loadTheme, saveTheme, type Theme } from "./theme";
 import { HIGHLIGHTS, TOPICS } from "./topics";
 
 let nextId = 0;
@@ -19,11 +20,17 @@ export function App() {
   const [busy, setBusy] = useState(false);
   const [topicId, setTopicId] = useState<string | null>(null);
   const [status, setStatus] = useState<ServiceStatus | null>(null);
+  const [theme, setTheme] = useState<Theme>(loadTheme);
   const end = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     void serviceStatus().then(setStatus);
   }, []);
+
+  useEffect(() => {
+    applyTheme(theme);
+    saveTheme(theme);
+  }, [theme]);
 
   useEffect(() => {
     // Sem mensagens, a tela de boas-vindas começa do topo.
@@ -85,7 +92,14 @@ export function App() {
 
   return (
     <div className="app">
-      <Sidebar topicId={topicId} onTopic={pickTopic} onNewConversation={newConversation} status={status} />
+      <Sidebar
+        topicId={topicId}
+        onTopic={pickTopic}
+        onNewConversation={newConversation}
+        status={status}
+        theme={theme}
+        onTheme={setTheme}
+      />
 
       <main className="chat">
         <header className="chat__header">
