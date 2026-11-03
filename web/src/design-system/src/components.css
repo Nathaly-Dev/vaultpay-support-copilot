@@ -1,6 +1,7 @@
-/* Peças da VaultPay: básicas (botão, navegação) e de conversa (Assist).
+/* Peças da VaultPay: básicas (botão, navegação, seletor) e de conversa (Assist).
    Só tokens: nenhuma cor, tamanho ou fonte solta (conferido em tests/components.test.mjs).
-   Requer tokens.css e fonts.css. */
+   Separação por camadas de cor e espaço, não por linha: borda só onde ela é a informação
+   (campo de texto, foco, contorno de botão). Requer tokens.css e fonts.css. */
 
 /* Toque confortável no celular: 44 px. */
 :root { --vp-touch: calc(var(--vp-space-10) + var(--vp-space-1)); }
@@ -17,39 +18,65 @@
 .vp-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--vp-space-2);
   min-height: var(--vp-touch); padding: 0 var(--vp-space-4);
-  font: inherit; font-size: var(--vp-text-sm); font-weight: var(--vp-weight-medium);
-  color: var(--vp-text-primary); background: transparent;
-  border: 1px solid var(--vp-border-strong); border-radius: var(--vp-radius-md);
+  font: inherit; font-size: var(--vp-text-sm); font-weight: var(--vp-weight-semibold);
+  color: var(--vp-text-primary); background: var(--vp-surface-1);
+  border: 1px solid var(--vp-border-strong); border-radius: var(--vp-radius-full);
   cursor: pointer; transition: background var(--vp-duration-fast) var(--vp-ease-out), border-color var(--vp-duration-fast) var(--vp-ease-out);
 }
 .vp-btn:hover { background: var(--vp-surface-2); }
 /* Um só por tela: a ação principal (no chat, enviar). */
 .vp-btn--primary { background: var(--vp-accent); color: var(--vp-on-accent); border-color: transparent; }
 .vp-btn--primary:hover { background: var(--vp-accent-hover); }
-.vp-btn--icon { width: var(--vp-touch); padding: 0; }
+.vp-btn--icon { width: var(--vp-touch); padding: 0; border-radius: var(--vp-radius-md); }
 .vp-btn:disabled { color: var(--vp-text-disabled); cursor: not-allowed; }
 .vp-btn--primary:disabled { background: var(--vp-surface-2); }
 
 .vp-btn:focus-visible,
 .vp-nav-item:focus-visible,
-.vp-suggestion:focus-visible { outline: 2px solid var(--vp-focus); outline-offset: 2px; }
+.vp-suggestion:focus-visible,
+.vp-chip:focus-visible,
+.vp-segmented button:focus-visible,
+.vp-source__title:focus-visible,
+.vp-msg__action:focus-visible { outline: 2px solid var(--vp-focus); outline-offset: 2px; }
 
 /* ---------- Navegação lateral ---------- */
 
 .vp-nav-item {
   display: flex; align-items: center; gap: var(--vp-space-3); width: 100%;
   min-height: var(--vp-touch); padding: 0 var(--vp-space-3);
-  font: inherit; font-size: var(--vp-text-sm); text-align: left; text-decoration: none;
+  font: inherit; font-size: var(--vp-text-sm); font-weight: var(--vp-weight-medium); text-align: left; text-decoration: none;
   color: var(--vp-text-secondary); background: transparent; border: 0; border-radius: var(--vp-radius-md);
   cursor: pointer;
 }
 .vp-nav-item:hover { background: var(--vp-surface-2); color: var(--vp-text-primary); }
-.vp-nav-item[aria-current="true"] { background: var(--vp-surface-2); color: var(--vp-text-primary); font-weight: var(--vp-weight-medium); }
-.vp-nav-item[aria-current="true"] .vp-icon { color: var(--vp-text-accent); }
+.vp-nav-item[aria-current="true"] { background: var(--vp-accent-subtle); color: var(--vp-text-on-accent-subtle); font-weight: var(--vp-weight-bold); }
+
+/* ---------- Seletor (ex.: tema claro, escuro, sistema) ---------- */
+
+.vp-segmented { display: flex; padding: var(--vp-space-1); gap: var(--vp-space-1); background: var(--vp-surface-2); border-radius: var(--vp-radius-full); }
+.vp-segmented button {
+  flex: 1; min-height: var(--vp-space-8); padding: 0 var(--vp-space-3);
+  font: inherit; font-size: var(--vp-text-xs); font-weight: var(--vp-weight-medium); color: var(--vp-text-secondary);
+  background: transparent; border: 0; border-radius: var(--vp-radius-full); cursor: pointer;
+}
+.vp-segmented button[aria-pressed="true"] { background: var(--vp-surface-1); color: var(--vp-text-primary); font-weight: var(--vp-weight-bold); }
+
+/* ---------- Painel da marca (menu lateral grafite, igual nos dois temas) ---------- */
+
+.vp-brand-panel { background: var(--vp-brand-surface); color: var(--vp-on-brand); }
+.vp-brand-panel .vp-nav-item { color: var(--vp-on-brand); }
+.vp-brand-panel .vp-nav-item:hover { background: var(--vp-brand-surface-hover); color: var(--vp-on-brand-strong); }
+.vp-brand-panel .vp-nav-item[aria-current="true"] { background: var(--vp-brand-active-bg); color: var(--vp-brand-active-text); }
+.vp-brand-panel .vp-btn { color: var(--vp-on-brand-strong); background: transparent; border-color: var(--vp-brand-border); }
+.vp-brand-panel .vp-btn:hover { background: var(--vp-brand-surface-hover); }
+.vp-brand-panel .vp-segmented { background: var(--vp-brand-surface-hover); }
+.vp-brand-panel .vp-segmented button { color: var(--vp-on-brand); }
+.vp-brand-panel .vp-segmented button[aria-pressed="true"] { background: var(--vp-brand-active-bg); color: var(--vp-brand-active-text); }
+.vp-brand-panel .vp-note { color: var(--vp-on-brand); }
 
 /* ---------- Mensagens ---------- */
 
-.vp-msg { display: flex; align-items: flex-start; gap: var(--vp-space-3); max-width: min(88%, 44rem); }
+.vp-msg { display: flex; align-items: flex-start; gap: var(--vp-space-3); max-width: min(88%, 46rem); }
 .vp-msg--user { margin-left: auto; flex-direction: row-reverse; }
 /* No celular, a resposta usa a largura toda; a pergunta do cliente continua recuada. */
 @media (max-width: 30rem) {
@@ -58,26 +85,28 @@
 }
 
 .vp-msg__avatar {
-  flex: none; display: grid; place-items: center;
+  flex: none; display: grid; place-items: center; overflow: hidden;
   width: var(--vp-space-8); height: var(--vp-space-8);
-  color: var(--vp-brand-mark); background: var(--vp-surface-2);
-  border: 1px solid var(--vp-border); border-radius: var(--vp-radius-md);
+  color: var(--vp-text-accent); background: var(--vp-surface-1); border-radius: var(--vp-radius-full);
 }
-.vp-msg__avatar svg { width: var(--vp-space-5); height: var(--vp-space-5); }
+.vp-msg__avatar svg, .vp-msg__avatar img { width: var(--vp-space-5); height: var(--vp-space-5); }
 
-.vp-msg__body { display: flex; flex-direction: column; gap: var(--vp-space-1); min-width: 0; }
+.vp-msg__body { display: flex; flex-direction: column; gap: var(--vp-space-2); min-width: 0; }
 
 .vp-msg__bubble {
   padding: var(--vp-space-3) var(--vp-space-4);
-  font-size: var(--vp-text-sm); line-height: var(--vp-leading-normal); overflow-wrap: anywhere;
+  font-size: var(--vp-text-md); line-height: var(--vp-leading-normal); overflow-wrap: anywhere;
   color: var(--vp-text-primary); background: var(--vp-surface-1);
-  border: 1px solid var(--vp-border); border-radius: var(--vp-radius-sm) var(--vp-radius-lg) var(--vp-radius-lg) var(--vp-radius-lg);
+  border-radius: var(--vp-radius-sm) var(--vp-radius-lg) var(--vp-radius-lg) var(--vp-radius-lg);
 }
 .vp-msg__bubble p { margin: 0; }
 .vp-msg__bubble p + p { margin-top: var(--vp-space-2); }
+/* Valores e prazos em destaque: o que a cliente procura salta aos olhos. */
+.vp-msg__bubble strong { font-weight: var(--vp-weight-bold); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
+/* Pergunta do cliente: ouro suave nos dois temas (o ouro cheio fica para a ação de enviar). */
 .vp-msg--user .vp-msg__bubble {
-  color: var(--vp-on-accent); background: var(--vp-accent); border-color: transparent;
+  color: var(--vp-text-on-accent-subtle); background: var(--vp-accent-subtle);
   font-weight: var(--vp-weight-medium);
   border-radius: var(--vp-radius-lg) var(--vp-radius-sm) var(--vp-radius-lg) var(--vp-radius-lg);
 }
@@ -85,15 +114,27 @@
 .vp-msg__meta { display: flex; align-items: center; gap: var(--vp-space-2); font-size: var(--vp-text-xs); color: var(--vp-text-muted); font-variant-numeric: tabular-nums; }
 .vp-msg--user .vp-msg__meta { justify-content: flex-end; }
 
-/* Encaminhado para atendente: estado de informação (cor + ícone + rótulo), nunca ouro. */
-.vp-msg--handoff .vp-msg__avatar { color: var(--vp-info-text); background: var(--vp-info-bg); border-color: var(--vp-info-border); }
-.vp-msg--handoff .vp-msg__bubble { color: var(--vp-info-text); background: var(--vp-info-bg); border-color: var(--vp-info-border); }
-.vp-msg__title { display: flex; align-items: center; gap: var(--vp-space-2); margin-bottom: var(--vp-space-1); font-weight: var(--vp-weight-semibold); }
+.vp-msg__title { display: flex; align-items: center; gap: var(--vp-space-2); margin-bottom: var(--vp-space-1); font-weight: var(--vp-weight-bold); }
 .vp-msg__protocol { margin-top: var(--vp-space-2); font-family: var(--vp-font-mono); font-size: var(--vp-text-xs); }
 
-/* Erro do serviço: estado de perigo. */
+/* Avisos dentro da conversa: estado = cor + ícone + rótulo, nunca ouro. */
+.vp-msg--handoff .vp-msg__avatar,
+.vp-msg--handoff .vp-msg__bubble { color: var(--vp-info-text); background: var(--vp-info-bg); }
+.vp-msg--warning .vp-msg__avatar,
+.vp-msg--warning .vp-msg__bubble { color: var(--vp-warning-text); background: var(--vp-warning-bg); }
 .vp-msg--error .vp-msg__avatar,
-.vp-msg--error .vp-msg__bubble { color: var(--vp-danger-text); background: var(--vp-danger-bg); border-color: var(--vp-danger-border); }
+.vp-msg--error .vp-msg__bubble { color: var(--vp-danger-text); background: var(--vp-danger-bg); }
+
+/* Ação dentro de um aviso (ex.: "Tentar de novo"), na cor do próprio aviso. */
+.vp-msg__action {
+  display: inline-flex; align-items: center; gap: var(--vp-space-2);
+  min-height: var(--vp-space-8); margin-top: var(--vp-space-3); padding: 0 var(--vp-space-4);
+  font: inherit; font-size: var(--vp-text-sm); font-weight: var(--vp-weight-bold);
+  border: 0; border-radius: var(--vp-radius-full); cursor: pointer;
+}
+.vp-msg--handoff .vp-msg__action { color: var(--vp-on-info); background: var(--vp-info-fill); }
+.vp-msg--warning .vp-msg__action { color: var(--vp-on-warning); background: var(--vp-warning-fill); }
+.vp-msg--error .vp-msg__action { color: var(--vp-on-danger); background: var(--vp-danger-fill); }
 
 /* Dado pessoal que o servidor mascarou, mostrado no lugar do valor. */
 .vp-pii {
@@ -102,30 +143,38 @@
   color: var(--vp-accent); background: var(--vp-on-accent); border-radius: var(--vp-radius-sm);
 }
 
-/* ---------- Fonte citada ---------- */
+/* ---------- Fonte citada: etiqueta que abre o trecho (<details>) ---------- */
 
-.vp-source {
-  display: flex; align-items: flex-start; gap: var(--vp-space-2);
-  margin-top: var(--vp-space-3); padding: var(--vp-space-2) var(--vp-space-3);
-  font-size: var(--vp-text-xs); line-height: var(--vp-leading-normal); font-weight: var(--vp-weight-regular);
-  color: var(--vp-text-on-accent-subtle); background: var(--vp-accent-subtle);
-  border: 1px solid var(--vp-border-accent); border-radius: var(--vp-radius-md);
-}
+.vp-source { margin-top: var(--vp-space-3); }
 .vp-source + .vp-source { margin-top: var(--vp-space-2); }
-.vp-source__title { display: block; font-weight: var(--vp-weight-semibold); }
-.vp-source__quote { display: block; margin: 0; }
+.vp-source__title {
+  display: inline-flex; align-items: center; gap: var(--vp-space-2);
+  min-height: var(--vp-space-8); padding: 0 var(--vp-space-3);
+  font-size: var(--vp-text-xs); font-weight: var(--vp-weight-bold);
+  color: var(--vp-text-accent); background: var(--vp-surface-2); border-radius: var(--vp-radius-full);
+  cursor: pointer; list-style: none;
+}
+.vp-source__title::-webkit-details-marker { display: none; }
+.vp-source__chevron { transition: transform var(--vp-duration-fast) var(--vp-ease-out); }
+.vp-source[open] .vp-source__chevron { transform: rotate(180deg); }
+.vp-source__quote {
+  margin: var(--vp-space-2) 0 0; padding: var(--vp-space-3);
+  font-size: var(--vp-text-sm); line-height: var(--vp-leading-normal);
+  color: var(--vp-text-secondary); background: var(--vp-surface-2); border-radius: var(--vp-radius-md);
+}
 
-/* ---------- Aviso curto (ex.: "CPF mascarado") ---------- */
+/* ---------- Aviso curto (ex.: "Seu CPF foi protegido") ---------- */
 
 .vp-note { display: inline-flex; align-items: center; gap: var(--vp-space-1); font-size: var(--vp-text-xs); color: var(--vp-text-secondary); }
 .vp-note--success { color: var(--vp-success-text); }
+.vp-note--warning { color: var(--vp-warning-text); }
+.vp-note--danger { color: var(--vp-danger-text); }
 
 /* ---------- Digitando ---------- */
 
 .vp-typing {
   display: inline-flex; align-items: center; gap: var(--vp-space-1);
-  padding: var(--vp-space-3) var(--vp-space-4);
-  background: var(--vp-surface-1); border: 1px solid var(--vp-border);
+  padding: var(--vp-space-3) var(--vp-space-4); background: var(--vp-surface-1);
   border-radius: var(--vp-radius-sm) var(--vp-radius-lg) var(--vp-radius-lg) var(--vp-radius-lg);
 }
 .vp-typing__dot {
@@ -134,6 +183,7 @@
 }
 .vp-typing__dot:nth-child(2) { animation-delay: 0.15s; }
 .vp-typing__dot:nth-child(3) { animation-delay: 0.3s; }
+.vp-typing__label { margin-left: var(--vp-space-2); font-size: var(--vp-text-xs); color: var(--vp-text-secondary); }
 @keyframes vp-typing { 0%, 80%, 100% { opacity: 0.3; } 40% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
   .vp-typing__dot { animation: none; opacity: 0.6; }
@@ -141,6 +191,7 @@
 
 /* ---------- Campo de mensagem ---------- */
 
+/* A borda fica: é ela que mostra onde se digita (contraste de campo, WCAG 1.4.11). */
 .vp-composer {
   display: flex; align-items: flex-end; gap: var(--vp-space-2);
   padding: var(--vp-space-2) var(--vp-space-2) var(--vp-space-2) var(--vp-space-4);
@@ -155,16 +206,30 @@
 .vp-composer__field::placeholder { color: var(--vp-text-muted); }
 .vp-composer__count { align-self: center; font-family: var(--vp-font-mono); font-size: var(--vp-text-xs); color: var(--vp-text-muted); font-variant-numeric: tabular-nums; }
 
-/* ---------- Sugestão de pergunta ---------- */
+/* ---------- Sugestões ---------- */
 
+/* Cartão (tela de boas-vindas). */
 .vp-suggestion {
   display: grid; gap: var(--vp-space-1); justify-items: start; width: 100%;
-  padding: var(--vp-space-3) var(--vp-space-4);
+  padding: var(--vp-space-4);
   font: inherit; text-align: left; color: var(--vp-text-primary);
-  background: var(--vp-surface-1); border: 1px solid var(--vp-border); border-radius: var(--vp-radius-lg);
+  background: var(--vp-surface-1); border: 1px solid transparent; border-radius: var(--vp-radius-lg);
   cursor: pointer; transition: border-color var(--vp-duration-fast) var(--vp-ease-out);
 }
 .vp-suggestion:hover { border-color: var(--vp-border-accent); }
 .vp-suggestion__icon { color: var(--vp-text-accent); }
-.vp-suggestion__title { font-size: var(--vp-text-sm); font-weight: var(--vp-weight-semibold); }
+.vp-suggestion__title { font-size: var(--vp-text-sm); font-weight: var(--vp-weight-bold); }
 .vp-suggestion__hint { font-size: var(--vp-text-xs); color: var(--vp-text-secondary); }
+
+/* Etiqueta de 1 clique (durante a conversa). */
+.vp-chip {
+  display: inline-flex; align-items: center; gap: var(--vp-space-2);
+  min-height: var(--vp-space-10); padding: 0 var(--vp-space-4);
+  font: inherit; font-size: var(--vp-text-sm); font-weight: var(--vp-weight-medium); white-space: nowrap;
+  color: var(--vp-text-secondary); background: var(--vp-surface-1);
+  border: 1px solid transparent; border-radius: var(--vp-radius-full);
+  cursor: pointer; transition: border-color var(--vp-duration-fast) var(--vp-ease-out);
+}
+.vp-chip:hover { border-color: var(--vp-border-accent); color: var(--vp-text-primary); }
+.vp-chip .vp-icon { color: var(--vp-text-accent); }
+.vp-chip:disabled { color: var(--vp-text-disabled); cursor: not-allowed; }

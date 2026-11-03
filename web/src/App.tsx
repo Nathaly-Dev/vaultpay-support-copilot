@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { ApiError, ask, handoff, serviceStatus, type ChatResponse, type ServiceStatus } from "./api";
 import { Composer } from "./components/Composer";
-import appIcon from "./design-system/logo/vaultpay-app-icon.svg";
 import { AssistAvatar, Message, type Entry } from "./components/Message";
 import { Sidebar } from "./components/Sidebar";
 import { Welcome } from "./components/Welcome";
+import appIcon from "./design-system/logo/vaultpay-app-icon.svg";
 import { Icon } from "./icons";
 import { applyTheme, loadTheme, saveTheme, type Theme } from "./theme";
 import { HIGHLIGHTS, nextSuggestions, TOPICS } from "./topics";
@@ -12,12 +12,21 @@ import { HIGHLIGHTS, nextSuggestions, TOPICS } from "./topics";
 let nextId = 0;
 const newId = () => `m${++nextId}`;
 
+// Recusas que passam sozinhas viram aviso (laranja), não erro (vermelho), com texto próprio:
+// o título já diz o que houve, então a mensagem só diz o que fazer.
+const TRANSIENT: Record<string, { title: string; message: string }> = {
+  busy: { title: "Atendente ocupado", message: "Outra pergunta está sendo respondida. A sua continua aqui." },
+  rate_limited: { title: "Muitas perguntas seguidas", message: "Aguarde um minuto e tente de novo." },
+};
+
 export function App() {
-  // A conversa vive só na memória da aba: nada fica salvo no navegador.
+  // A conversa vive só na memória da aba: nada dela fica salvo no navegador.
   const [entries, setEntries] = useState<Entry[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
-  const [busy, setBusy] = useState(false);
+  // Pergunta ao modelo e pedido de atendente correm em paralelo: cada um tem seu "aguardando".
+  const [asking, setAsking] = useState(false);
+  const [callingHuman, setCallingHuman] = useState(false);
   const [topicId, setTopicId] = useState<string | null>(null);
   const [status, setStatus] = useState<ServiceStatus | null>(null);
   const [theme, setTheme] = useState<Theme>(loadTheme);
@@ -35,14 +44,11 @@ export function App() {
   useEffect(() => {
     // Sem mensagens, a tela de boas-vindas começa do topo.
     if (entries.length > 0) end.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [entries, busy]);
+  }, [entries, asking]);
 
-  async function run(call: () => Promise<ChatResponse>, userEntryId: string | null) {
-    setBusy(true);
-    const start = performance.now();
+  async function run(call: () => Promise<ChatResponse>, userEntryId: string | null, retry: () => void) {
     try {
       const response = await call();
-      const elapsedMs = performance.now() - start;
       setSessionId(response.session_id);
       setEntries((list) => [
         ...list.map((e) =>
@@ -50,28 +56,45 @@ export function App() {
             ? { ...e, masked: response.question_masked, pii: response.pii_masked }
             : e,
         ),
-        { id: newId(), kind: "reply", response, elapsedMs },
+        { id: newId(), kind: "reply", response },
       ]);
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : "Algo deu errado. Tente de novo.";
-      setEntries((list) => [...list, { id: newId(), kind: "failure", message }]);
-    } finally {
-      setBusy(false);
+      const transient = error instanceof ApiError ? TRANSIENT[error.code] : undefined;
+      const title = transient?.title ?? "Não foi possível enviar";
+      const message = transient?.message ?? (error instanceof ApiError ? error.message : "Algo deu errado. Tente de novo.");
+      const id = newId();
+      const tryAgain = () => {
+        setEntries((list) => list.filter((e) => e.id !== id));
+        retry();
+      };
+      setEntries((list) => [
+        ...list,
+        { id, kind: "failure", level: transient ? "warning" : "error", title, message, retry: tryAgain },
+      ]);
     }
+  }
+
+  function askModel(text: string, userEntryId: string) {
+    setAsking(true);
+    void run(() => ask(text, sessionId), userEntryId, () => askModel(text, userEntryId)).finally(() =>
+      setAsking(false),
+    );
   }
 
   function send(question: string) {
     const text = question.trim();
-    if (!text || busy) return;
+    if (!text || asking) return;
     const id = newId();
     setEntries((list) => [...list, { id, kind: "user", text, masked: null, pii: [] }]);
     setDraft("");
-    void run(() => ask(text, sessionId), id);
+    askModel(text, id);
   }
 
   function askForHuman() {
-    if (busy) return;
-    void run(() => handoff(sessionId), null);
+    // Funciona mesmo com o modelo ocupado: a API atende este pedido sem passar por ele.
+    if (callingHuman) return;
+    setCallingHuman(true);
+    void run(() => handoff(sessionId), null, askForHuman).finally(() => setCallingHuman(false));
   }
 
   function newConversation() {
@@ -88,7 +111,7 @@ export function App() {
     if (entries.length > 0 && first) setDraft(first.question);
   }
 
-  const suggestions = TOPICS.find((t) => t.id === topicId)?.suggestions ?? HIGHLIGHTS;
+  const welcome = TOPICS.find((t) => t.id === topicId)?.suggestions ?? HIGHLIGHTS;
 
   // Depois que a conversa começa, sempre há perguntas prontas: 1 clique, sem repetir.
   const asked = entries.flatMap((e) => (e.kind === "user" ? [e.text] : []));
@@ -110,11 +133,8 @@ export function App() {
       <main className="chat">
         <header className="chat__header">
           <img className="chat__mark show-small" src={appIcon} alt="VaultPay" />
-          <div className="chat__heading">
-            <h2 className="chat__title">Atendimento</h2>
-            <p className="chat__subtitle">Respostas com base nas políticas da VaultPay</p>
-          </div>
-          <button className="vp-btn" type="button" onClick={askForHuman} disabled={busy}>
+          <h2 className="chat__title">Atendimento</h2>
+          <button className="vp-btn" type="button" onClick={askForHuman} disabled={callingHuman}>
             <Icon name="headset" />
             <span className="hide-small">Falar com atendente</span>
             <span className="vp-sr-only show-small">Falar com atendente</span>
@@ -123,21 +143,11 @@ export function App() {
 
         <div className="chat__thread" role="log" aria-live="polite" aria-label="Conversa">
           {entries.length === 0 ? (
-            <Welcome suggestions={suggestions} onPick={send} />
+            <Welcome suggestions={welcome} onPick={send} />
           ) : (
             entries.map((entry) => <Message key={entry.id} entry={entry} />)
           )}
-          {busy && (
-            <div className="vp-msg">
-              <AssistAvatar />
-              <div className="vp-typing" role="status">
-                <span className="vp-typing__dot" />
-                <span className="vp-typing__dot" />
-                <span className="vp-typing__dot" />
-                <span className="vp-sr-only">Assist está digitando</span>
-              </div>
-            </div>
-          )}
+          {asking && <Typing />}
           <div ref={end} />
         </div>
 
@@ -145,20 +155,49 @@ export function App() {
           {quick.length > 0 && (
             <div className="quick" role="group" aria-label="Sugestões de pergunta">
               {quick.map((s) => (
-                <button className="vp-btn" type="button" key={s.question} disabled={busy} onClick={() => send(s.question)}>
+                <button
+                  className="vp-chip"
+                  type="button"
+                  key={s.question}
+                  title={s.question}
+                  disabled={asking}
+                  onClick={() => send(s.question)}
+                >
                   <Icon name={s.icon} />
-                  {s.question}
+                  {s.title}
                 </button>
               ))}
             </div>
           )}
-          <Composer value={draft} onChange={setDraft} onSend={() => send(draft)} busy={busy} />
+          <Composer value={draft} onChange={setDraft} onSend={() => send(draft)} busy={asking} />
           <p className="vp-note">
             <Icon name="lock" />
-            Nunca digite senha, PIN ou número do cartão. CPF, e-mail e telefone são mascarados.
+            Nunca digite senha, PIN ou número do cartão.
           </p>
         </footer>
       </main>
+    </div>
+  );
+}
+
+function Typing() {
+  // O modelo local leva de 5 a 30 s. Depois de alguns segundos, avisar com honestidade.
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setSlow(true), 6000);
+    return () => clearTimeout(timer);
+  }, []);
+  return (
+    <div className="vp-msg">
+      <AssistAvatar />
+      <div className="vp-typing" role="status">
+        <span className="vp-typing__dot" />
+        <span className="vp-typing__dot" />
+        <span className="vp-typing__dot" />
+        <span className="vp-typing__label">
+          {slow ? "Ainda procurando. Pode levar até 30 segundos." : "Procurando nas políticas…"}
+        </span>
+      </div>
     </div>
   );
 }

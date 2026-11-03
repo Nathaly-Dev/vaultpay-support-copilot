@@ -1,5 +1,5 @@
-/* Layout do Assist. Só posição e espaço: cor, fonte e tamanho vêm dos tokens do
-   design system (conferido em src/designSystem.test.ts). */
+/* Layout do Assist. Só posição e espaço: cor, fonte e tamanho vêm dos tokens e das peças do
+   design system (conferido em src/designSystem.test.ts). Separação por camadas, sem linhas. */
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -18,27 +18,18 @@ h1, h2, p { margin: 0; }
 
 .app { display: grid; grid-template-columns: 16rem minmax(0, 1fr); height: 100dvh; }
 
-/* ---------- Barra lateral ---------- */
+/* ---------- Menu (painel da marca) ---------- */
 
-.sidebar {
-  display: flex; flex-direction: column; gap: var(--vp-space-4);
-  padding: var(--vp-space-5) var(--vp-space-3);
-  background: var(--vp-surface-1); border-right: 1px solid var(--vp-border);
-  overflow-y: auto;
-}
+.sidebar { display: flex; flex-direction: column; gap: var(--vp-space-4); padding: var(--vp-space-6) var(--vp-space-4); overflow-y: auto; }
 .brand { display: flex; align-items: baseline; gap: var(--vp-space-2); padding: 0 var(--vp-space-2) var(--vp-space-2); }
 .brand img { height: var(--vp-space-6); width: auto; }
-.brand__product { font-size: var(--vp-text-sm); font-weight: var(--vp-weight-medium); color: var(--vp-text-secondary); }
+.brand__product { font-size: var(--vp-text-sm); font-weight: var(--vp-weight-medium); }
 .sidebar nav { display: grid; gap: var(--vp-space-1); }
-.sidebar__label { padding: 0 var(--vp-space-3) var(--vp-space-1); font-size: var(--vp-text-xs); color: var(--vp-text-muted); }
-.sidebar__status { padding: 0 var(--vp-space-2); }
-.theme-switch { margin-top: auto; }
+.sidebar__label { padding: var(--vp-space-2) var(--vp-space-3) var(--vp-space-1); font-size: var(--vp-text-xs); font-weight: var(--vp-weight-semibold); }
+.sidebar__footer { margin-top: auto; display: grid; gap: var(--vp-space-3); }
+.sidebar__disclaimer { font-size: var(--vp-text-xs); padding: 0 var(--vp-space-2); }
 
-/* Faltam no design system v0.1.0 (vp-note só tem --success): candidatos à v0.2.0. */
-.status-warning { color: var(--vp-warning-text); }
-.status-danger { color: var(--vp-danger-text); }
-
-/* Cada versão do logo aparece só no tema certo: o escolhido no botão ou, sem escolha, o do sistema. */
+/* Cada versão do símbolo aparece só no tema certo: o escolhido no botão ou, sem escolha, o do sistema. */
 .on-dark { display: none; }
 :root[data-theme="dark"] .on-dark { display: inline-block; }
 :root[data-theme="dark"] .on-light { display: none; }
@@ -47,62 +38,36 @@ h1, h2, p { margin: 0; }
   :root:not([data-theme="light"]) .on-light { display: none; }
 }
 
-/* Seletor de tema. Falta no design system v0.1.0 (controle segmentado): candidato à v0.2.0. */
-.theme-switch { display: flex; border: 1px solid var(--vp-border-input); border-radius: var(--vp-radius-md); overflow: hidden; }
-.theme-switch button {
-  flex: 1; min-height: var(--vp-touch);
-  font: inherit; font-size: var(--vp-text-xs); color: var(--vp-text-secondary);
-  background: transparent; border: 0; cursor: pointer;
-}
-.theme-switch button + button { border-left: 1px solid var(--vp-border-input); }
-.theme-switch button[aria-pressed="true"] { background: var(--vp-surface-2); color: var(--vp-text-primary); font-weight: var(--vp-weight-semibold); }
-.theme-switch button:focus-visible { outline: 2px solid var(--vp-focus); outline-offset: -2px; }
-
 /* ---------- Conversa ---------- */
 
 .chat { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 
-.chat__header {
-  display: flex; align-items: center; justify-content: space-between; gap: var(--vp-space-4);
-  padding: var(--vp-space-3) var(--vp-space-6);
-  border-bottom: 1px solid var(--vp-border); background: var(--vp-surface-0);
-}
-.chat__heading { flex: 1; min-width: 0; }
+.chat__header { display: flex; align-items: center; gap: var(--vp-space-3); padding: var(--vp-space-5) var(--vp-space-8) var(--vp-space-2); }
 .chat__mark { width: var(--vp-space-8); height: var(--vp-space-8); }
-.chat__title { font-size: var(--vp-text-md); font-weight: var(--vp-weight-semibold); }
-.chat__subtitle { font-size: var(--vp-text-xs); color: var(--vp-text-secondary); }
+.chat__title { flex: 1; font-size: var(--vp-text-xl); font-weight: var(--vp-weight-bold); letter-spacing: -0.01em; }
 
 .chat__thread {
   flex: 1; overflow-y: auto;
   display: flex; flex-direction: column; gap: var(--vp-space-5);
-  padding: var(--vp-space-6);
+  padding: var(--vp-space-4) var(--vp-space-8);
 }
 
-.chat__footer {
-  display: grid; gap: var(--vp-space-2);
-  padding: var(--vp-space-3) var(--vp-space-6) var(--vp-space-4);
-  border-top: 1px solid var(--vp-border);
-}
+.chat__footer { display: grid; gap: var(--vp-space-3); padding: var(--vp-space-2) var(--vp-space-8) var(--vp-space-5); }
 
 /* Perguntas prontas acima do campo. No celular, uma linha que rola para o lado. */
 .quick { display: flex; flex-wrap: wrap; gap: var(--vp-space-2); }
-.quick .vp-btn { font-size: var(--vp-text-xs); font-weight: var(--vp-weight-regular); color: var(--vp-text-secondary); }
-.quick .vp-btn .vp-icon { color: var(--vp-text-accent); }
-
-.avatar-brand { padding: 0; overflow: hidden; border: 0; }
-.avatar-brand img { width: 100%; height: 100%; display: block; }
 
 /* ---------- Boas-vindas ---------- */
 
 .welcome {
-  margin: auto; max-width: 44rem; width: 100%;
+  margin: auto; max-width: 46rem; width: 100%;
   display: flex; flex-direction: column; align-items: center; gap: var(--vp-space-4);
   text-align: center; padding: var(--vp-space-8) 0;
 }
 .welcome__icon { width: var(--vp-space-16); height: var(--vp-space-16); }
-.welcome h1 { font-size: var(--vp-text-2xl); font-weight: var(--vp-weight-semibold); line-height: var(--vp-leading-tight); letter-spacing: -0.02em; }
-.welcome__lead { color: var(--vp-text-secondary); max-width: 34rem; }
-.welcome__grid { display: grid; gap: var(--vp-space-3); width: 100%; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); margin-top: var(--vp-space-2); }
+.welcome h1 { font-size: var(--vp-text-3xl); font-weight: var(--vp-weight-bold); line-height: var(--vp-leading-tight); letter-spacing: -0.02em; }
+.welcome__lead { color: var(--vp-text-secondary); font-size: var(--vp-text-lg); max-width: 34rem; }
+.welcome__grid { display: grid; gap: var(--vp-space-3); width: 100%; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); margin-top: var(--vp-space-4); }
 
 /* ---------- Celular ---------- */
 
@@ -113,8 +78,8 @@ h1, h2, p { margin: 0; }
   .sidebar { display: none; }
   .chat__header, .chat__thread, .chat__footer { padding-inline: var(--vp-space-4); }
   .hide-small { display: none; }
-  .quick { flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--vp-space-1); }
-  .quick .vp-btn { flex: none; }
   .show-small { display: initial; }
   .chat__mark.show-small { display: block; }
+  .quick { flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--vp-space-1); }
+  .quick .vp-chip { flex: none; }
 }

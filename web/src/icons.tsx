@@ -17,7 +17,10 @@ type IconName =
   | "send"
   | "lock"
   | "cardOff"
-  | "warning";
+  | "warning"
+  | "chevronDown"
+  | "clock"
+  | "refresh";
 
 const PATHS: Record<IconName, string[]> = {
   plus: ["M12 5v14", "M5 12h14"],
@@ -36,6 +39,9 @@ const PATHS: Record<IconName, string[]> = {
   lock: ["M7 11V8a5 5 0 0 1 10 0v3", "M5 11h14v9H5z"],
   cardOff: ["M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z", "M4 4l16 16"],
   warning: ["M12 3 2 20h20z", "M12 10v4M12 17v.5"],
+  chevronDown: ["m6 9 6 6 6-6"],
+  clock: ["M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z", "M12 7v5l3 2"],
+  refresh: ["M20 11a8 8 0 1 0-2.3 5.7", "M20 5v6h-6"],
 };
 
 export function Icon({ name, className = "" }: { name: IconName; className?: string }) {

@@ -12,10 +12,7 @@ export function Welcome({ suggestions, onPick }: Props) {
     <section className="welcome" aria-labelledby="welcome-title">
       <img className="welcome__icon" src={appIcon} alt="" />
       <h1 id="welcome-title">Olá! Como posso ajudar?</h1>
-      <p className="welcome__lead">
-        Respondo com base nas políticas da VaultPay e sempre mostro a fonte. Quando não souber,
-        passo para uma pessoa.
-      </p>
+      <p className="welcome__lead">Respondo com base nas políticas da VaultPay e mostro de onde veio cada resposta.</p>
       <div className="welcome__grid">
         {suggestions.map((s) => (
           <button className="vp-suggestion" type="button" key={s.question} onClick={() => onPick(s.question)}>
@@ -25,10 +22,6 @@ export function Welcome({ suggestions, onPick }: Props) {
           </button>
         ))}
       </div>
-      <p className="vp-note">
-        <Icon name="alert" />
-        VaultPay é uma empresa fictícia, criada para portfólio.
-      </p>
     </section>
   );
 }

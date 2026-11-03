@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatElapsed, piiNote, protocol, splitMasked } from "./format";
+import { highlightValues, piiNote, protocol, shortArticle, splitMasked } from "./format";
 
 describe("splitMasked", () => {
   it("separa as etiquetas de dado mascarado do texto", () => {
@@ -27,9 +27,9 @@ describe("splitMasked", () => {
 
 describe("piiNote", () => {
   it.each([
-    [["CPF"], "CPF mascarado antes do modelo e do banco"],
-    [["CPF", "EMAIL"], "CPF e e-mail mascarados antes do modelo e do banco"],
-    [["CPF", "EMAIL", "TELEFONE"], "CPF, e-mail e telefone mascarados antes do modelo e do banco"],
+    [["CPF"], "Seu CPF foi protegido"],
+    [["CPF", "EMAIL"], "Seu CPF e e-mail foram protegidos"],
+    [["CPF", "EMAIL", "TELEFONE"], "Seu CPF, e-mail e telefone foram protegidos"],
   ])("%j", (types, expected) => {
     expect(piiNote(types)).toBe(expected);
   });
@@ -49,13 +49,39 @@ describe("protocol", () => {
   });
 });
 
-describe("formatElapsed", () => {
+
+describe("highlightValues", () => {
+  const strong = (text: string) => highlightValues(text).filter((p) => p.kind === "strong").map((p) => p.value);
+
+  it("marca valores, prazos e horários", () => {
+    expect(strong("Entre 20h e 6h, o limite é R$ 1.000,00 e a análise leva 10 dias úteis.")).toEqual([
+      "20h",
+      "6h",
+      "R$ 1.000,00",
+      "10 dias úteis",
+    ]);
+  });
+
+  it.each([["R$ 6,90"], ["R$ 5.000,00"], ["R$15,00"], ["60 dias corridos"], ["24 horas"], ["5 anos"]])("%s", (value) => {
+    expect(strong(`Vale ${value} aqui.`)).toEqual([value]);
+  });
+
+  it("não marca números soltos nem partes de palavras", () => {
+    expect(strong("O Art. 2 tem 5 chaves e o PIN tem 6 dígitos.")).toEqual([]);
+  });
+
+  it("junta tudo de volta no texto original", () => {
+    const text = "Até R$ 1.000,00 entre 20h e 6h.";
+    expect(highlightValues(text).map((p) => p.value).join("")).toBe(text);
+  });
+});
+
+describe("shortArticle", () => {
   it.each([
-    [4730, "4,7 s"],
-    [250, "0,3 s"],
-    [12000, "12,0 s"],
-    [-5, "0,0 s"],
-  ])("%d ms", (ms, expected) => {
-    expect(formatElapsed(ms)).toBe(expected);
+    ["Art. 2. Limites", "Art. 2"],
+    ["Art. 12. Prazo", "Art. 12"],
+    ["Sem número", "Sem número"],
+  ])("%s", (article, expected) => {
+    expect(shortArticle(article)).toBe(expected);
   });
 });

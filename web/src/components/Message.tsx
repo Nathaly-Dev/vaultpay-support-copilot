@@ -1,24 +1,32 @@
 import type { ReactNode } from "react";
 import type { ChatResponse } from "../api";
-import appIcon from "../design-system/logo/vaultpay-app-icon.svg";
-import { formatElapsed, piiNote, protocol, splitMasked } from "../format";
+import markOnDark from "../design-system/logo/vaultpay-mark-on-dark.svg";
+import markOnLight from "../design-system/logo/vaultpay-mark-on-light.svg";
+import { highlightValues, piiNote, protocol, shortArticle, splitMasked } from "../format";
 import { Icon } from "../icons";
 
 export type Entry =
   | { id: string; kind: "user"; text: string; masked: string | null; pii: string[] }
-  | { id: string; kind: "reply"; response: ChatResponse; elapsedMs: number }
-  | { id: string; kind: "failure"; message: string };
+  | { id: string; kind: "reply"; response: ChatResponse }
+  // Recusa que passa (ocupado, muitas perguntas) é aviso; o resto é erro. As duas permitem tentar de novo.
+  | { id: string; kind: "failure"; level: "warning" | "error"; title: string; message: string; retry: (() => void) | null };
 
 export function Message({ entry }: { entry: Entry }) {
   if (entry.kind === "user") return <UserMessage entry={entry} />;
   if (entry.kind === "failure") {
+    const warning = entry.level === "warning";
     return (
-      <Notice variant="error" icon="alert" title="Não foi possível enviar">
+      <Notice
+        variant={warning ? "warning" : "error"}
+        icon={warning ? "clock" : "alert"}
+        title={entry.title}
+        action={entry.retry ? { label: "Tentar de novo", onClick: entry.retry } : undefined}
+      >
         <p>{entry.message}</p>
       </Notice>
     );
   }
-  const { response, elapsedMs } = entry;
+  const { response } = entry;
   if (response.outcome === "escalated") {
     return (
       <Notice variant="handoff" icon="headset" title="Encaminhado para um atendente">
@@ -40,20 +48,18 @@ export function Message({ entry }: { entry: Entry }) {
       <AssistAvatar />
       <div className="vp-msg__body">
         <div className="vp-msg__bubble">
-          <Paragraphs text={response.answer} />
+          <Paragraphs text={response.answer} highlight />
           {response.sources.map((source) => (
-            <div className="vp-source" key={`${source.title}|${source.article}`}>
-              <Icon name="file" />
-              <span>
-                <span className="vp-source__title">
-                  {source.title}, {source.article}
-                </span>
-                <span className="vp-source__quote">{source.quote}</span>
-              </span>
-            </div>
+            <details className="vp-source" key={`${source.title}|${source.article}`}>
+              <summary className="vp-source__title">
+                <Icon name="file" />
+                {source.title} · {shortArticle(source.article)}
+                <Icon name="chevronDown" className="vp-source__chevron" />
+              </summary>
+              <p className="vp-source__quote">{source.quote}</p>
+            </details>
           ))}
         </div>
-        <span className="vp-msg__meta">Resposta em {formatElapsed(elapsedMs)}</span>
       </div>
     </div>
   );
@@ -95,11 +101,13 @@ function Notice({
   variant,
   icon,
   title,
+  action,
   children,
 }: {
-  variant: "handoff" | "error";
-  icon: "headset" | "alert";
+  variant: "handoff" | "warning" | "error";
+  icon: "headset" | "alert" | "clock";
   title: string;
+  action?: { label: string; onClick: () => void };
   children: ReactNode;
 }) {
   return (
@@ -110,10 +118,16 @@ function Notice({
       <div className="vp-msg__body">
         <div className="vp-msg__bubble">
           <span className="vp-msg__title">
-            <Icon name={variant === "handoff" ? "forward" : "alert"} />
+            {variant === "handoff" && <Icon name="forward" />}
             {title}
           </span>
           {children}
+          {action && (
+            <button className="vp-msg__action" type="button" onClick={action.onClick}>
+              <Icon name="refresh" />
+              {action.label}
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -122,21 +136,28 @@ function Notice({
 
 export function AssistAvatar() {
   return (
-    <span className="vp-msg__avatar avatar-brand" aria-hidden="true">
-      <img src={appIcon} alt="" />
+    <span className="vp-msg__avatar" aria-hidden="true">
+      <img className="on-light" src={markOnLight} alt="" />
+      <img className="on-dark" src={markOnDark} alt="" />
     </span>
   );
 }
 
 // Texto do modelo vai como texto (o React escapa): nunca como HTML.
-function Paragraphs({ text }: { text: string }) {
+function Paragraphs({ text, highlight = false }: { text: string; highlight?: boolean }) {
   return (
     <>
       {text
         .split(/\n+/)
         .filter((line) => line.trim())
         .map((line, i) => (
-          <p key={i}>{line}</p>
+          <p key={i}>
+            {highlight
+              ? highlightValues(line).map((piece, j) =>
+                  piece.kind === "strong" ? <strong key={j}>{piece.value}</strong> : piece.value,
+                )
+              : line}
+          </p>
         ))}
     </>
   );

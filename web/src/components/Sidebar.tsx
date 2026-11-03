@@ -1,6 +1,5 @@
 import type { ServiceStatus } from "../api";
-import wordmarkOnDark from "../design-system/logo/vaultpay-wordmark-on-dark.svg";
-import wordmarkOnLight from "../design-system/logo/vaultpay-wordmark-on-light.svg";
+import wordmark from "../design-system/logo/vaultpay-wordmark-on-dark.svg";
 import { Icon } from "../icons";
 import { THEMES, type Theme } from "../theme";
 import { TOPICS } from "../topics";
@@ -14,20 +13,20 @@ interface Props {
   onTheme: (theme: Theme) => void;
 }
 
+// Só aparece quando há problema: atendimento normal não precisa de aviso.
 // Estado = cor + ícone + rótulo, nunca só cor.
-const STATUS = {
-  ok: { className: "vp-note vp-note--success", icon: "shieldCheck", label: "Atendimento digital no ar" },
-  degraded: { className: "vp-note status-warning", icon: "warning", label: "Atendimento instável" },
-  offline: { className: "vp-note status-danger", icon: "alert", label: "Atendimento fora do ar" },
+const TROUBLE = {
+  degraded: { className: "vp-note vp-note--warning", icon: "warning", label: "Atendimento instável" },
+  offline: { className: "vp-note vp-note--danger", icon: "alert", label: "Atendimento fora do ar" },
 } as const;
 
 export function Sidebar({ topicId, onTopic, onNewConversation, status, theme, onTheme }: Props) {
-  const current = status ? STATUS[status] : null;
+  const trouble = status && status !== "ok" ? TROUBLE[status] : null;
   return (
-    <aside className="sidebar" aria-label="Menu">
+    // Painel da marca: grafite nos dois temas, então o logo é sempre a versão para fundo escuro.
+    <aside className="sidebar vp-brand-panel" aria-label="Menu">
       <div className="brand">
-        <img className="on-light" src={wordmarkOnLight} alt="VaultPay" />
-        <img className="on-dark" src={wordmarkOnDark} alt="VaultPay" />
+        <img src={wordmark} alt="VaultPay" />
         <span className="brand__product">Assist</span>
       </div>
 
@@ -54,20 +53,22 @@ export function Sidebar({ topicId, onTopic, onNewConversation, status, theme, on
         ))}
       </nav>
 
-      <div className="theme-switch" role="group" aria-label="Tema">
-        {THEMES.map((t) => (
-          <button key={t.value} type="button" aria-pressed={theme === t.value} onClick={() => onTheme(t.value)}>
-            {t.label}
-          </button>
-        ))}
+      <div className="sidebar__footer">
+        {trouble && (
+          <p className={trouble.className} role="status">
+            <Icon name={trouble.icon} />
+            {trouble.label}
+          </p>
+        )}
+        <div className="vp-segmented" role="group" aria-label="Tema">
+          {THEMES.map((t) => (
+            <button key={t.value} type="button" aria-pressed={theme === t.value} onClick={() => onTheme(t.value)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <p className="sidebar__disclaimer">VaultPay é uma empresa fictícia, criada para portfólio.</p>
       </div>
-
-      {current && (
-        <p className={`sidebar__status ${current.className}`} role="status">
-          <Icon name={current.icon} />
-          {current.label}
-        </p>
-      )}
     </aside>
   );
 }

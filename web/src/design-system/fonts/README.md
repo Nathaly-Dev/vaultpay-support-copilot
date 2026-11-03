@@ -4,7 +4,8 @@ Auto-hospedadas (sem CDN), só o alfabeto latino (cobre o português). Licença 
 
 | Arquivo | Fonte | Pacote de origem (npm) |
 |---|---|---|
-| `manrope-latin-wght-normal.woff2` | Manrope (variável, pesos 200 a 800) | `@fontsource-variable/manrope@5.3.0` |
+| `plus-jakarta-sans-latin-wght-normal.woff2` | Plus Jakarta Sans (variável, pesos 200 a 800): texto da interface, desde a v0.2.0 | `@fontsource-variable/plus-jakarta-sans@5.3.0` |
+| `manrope-latin-wght-normal.woff2` | Manrope (variável, pesos 200 a 800): só o gerador do logo, não é carregada pela interface | `@fontsource-variable/manrope@5.3.0` |
 | `ibm-plex-mono-latin-400-normal.woff2` | IBM Plex Mono, regular | `@fontsource/ibm-plex-mono@5.3.0` |
 | `ibm-plex-mono-latin-500-normal.woff2` | IBM Plex Mono, medium | `@fontsource/ibm-plex-mono@5.3.0` |
 
@@ -12,5 +13,6 @@ Os arquivos vieram de `npm pack` desses pacotes (sem executar scripts) e foram c
 
 Integridade dos pacotes baixados (SHA-512, do `npm pack`):
 
+- `@fontsource-variable/plus-jakarta-sans@5.3.0`: `sha512-/l/4r0yyWK9JzAlmA0LiYgGgmJe/Gswt4jTJEzr5QhJfwMbvJZDmYWyW0M4X7yCK69BajMVlV/Lx8g7WDc1+sw==`
 - `@fontsource-variable/manrope@5.3.0`: `sha512-6D5dgokHsWDDMtmXHznKa0hK229NN+1a4BLPmUCLqcO1Pw5EEhWY5RFt0AcXnVRAljFFPfRtLkJePQj6LSsV6g==`
 - `@fontsource/ibm-plex-mono@5.3.0`: `sha512-eTgnZjZEGk1QtD3ZstF+Vclo2HLAni8YMy34/DxllwZvyz1lR/1RF/xTiAquOBO7MvqBx8D2Ig2WCPMVfdZu7Q==`
