@@ -160,7 +160,7 @@ Schema completo em [`db/migrations/001_initial_schema.sql`](db/migrations/001_in
 
 ## A interface
 
-Chat em React + Vite + TypeScript, em [`web/`](web/), com as peças do [VaultPay Design System](https://github.com/Nathaly-Dev/vaultpay-design-system) `v0.2.0` (cópia em `web/src/design-system/`, conferida por teste: não se edita). Mostra a fonte com o trecho da política, o `[CPF]` no lugar do número depois que o servidor mascara, o protocolo quando encaminha e o botão "falar com atendente". A conversa vive só na memória da aba; o navegador guarda apenas a escolha de tema (Claro, Escuro ou Sistema).
+Chat em React + Vite + TypeScript, em [`web/`](web/), com as peças do [VaultPay Design System](https://github.com/Nathaly-Dev/vaultpay-design-system) `v0.2.0` (cópia em `web/src/design-system/`, conferida por teste: não se edita). Mostra a fonte com o trecho da política, o `[CPF]` no lugar do número depois que o servidor mascara, o protocolo quando encaminha e o botão "falar com atendente". As conversas ficam salvas **só nesta aba** (`sessionStorage`), listadas no menu em "Conversas nesta aba": voltam depois de recarregar, somem ao fechar a aba e cada uma expira 15 minutos depois da última mensagem. Só o texto já mascarado pelo servidor é salvo (o `[CPF]`, nunca o número digitado). O navegador guarda também a escolha de tema.
 
 Pré-requisito: Node 22 ou mais novo. Com a API no ar (seção acima), em outro terminal:
 

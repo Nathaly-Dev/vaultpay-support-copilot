@@ -26,6 +26,12 @@ h1, h2, p { margin: 0; }
 .brand__product { font-size: var(--vp-text-sm); font-weight: var(--vp-weight-medium); }
 .sidebar nav { display: grid; gap: var(--vp-space-1); }
 .sidebar__label { padding: var(--vp-space-2) var(--vp-space-3) var(--vp-space-1); font-size: var(--vp-text-xs); font-weight: var(--vp-weight-semibold); }
+/* Conversa salva: título numa linha só (com reticências) e o prazo embaixo. */
+.history-item { min-height: var(--vp-space-12); }
+.history-item:disabled { cursor: not-allowed; }
+.history-item__text { display: grid; min-width: 0; text-align: left; }
+.history-item__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-item__meta { font-size: var(--vp-text-xs); font-weight: var(--vp-weight-regular); }
 .sidebar__footer { margin-top: auto; display: grid; gap: var(--vp-space-3); }
 .sidebar__disclaimer { font-size: var(--vp-text-xs); padding: 0 var(--vp-space-2); }
 
@@ -53,6 +59,15 @@ h1, h2, p { margin: 0; }
 }
 
 .chat__footer { display: grid; gap: var(--vp-space-3); padding: var(--vp-space-2) var(--vp-space-8) var(--vp-space-5); }
+
+.chat__notes { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--vp-space-2) var(--vp-space-4); }
+/* Ação discreta dentro de um aviso curto: parece link, com área de toque e foco visíveis. */
+.link-button {
+  margin-left: var(--vp-space-1); padding: var(--vp-space-1) 0; min-height: var(--vp-space-6);
+  font: inherit; font-weight: var(--vp-weight-semibold); color: var(--vp-text-accent);
+  background: none; border: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 0.15em;
+}
+.link-button:focus-visible { outline: 2px solid var(--vp-focus); outline-offset: 2px; }
 
 /* Perguntas prontas acima do campo. No celular, uma linha que rola para o lado. */
 .quick { display: flex; flex-wrap: wrap; gap: var(--vp-space-2); }

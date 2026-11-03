@@ -74,6 +74,8 @@ Contagem de testes: ver o CI. **Nada disso é avaliação de qualidade medida**:
 | Limite por IP e "uma pergunta por vez" vivem na memória de **um** processo | com 2+ processos cada um conta separado (precisaria de Redis) | se houver deploy com mais de um processo |
 | Atrás de um proxy, todo mundo teria o IP do proxy | o limite por IP viraria um limite global; não confiamos em `X-Forwarded-For` de propósito | Fase 5 (demo) |
 | Sem HTTPS nem HSTS | hoje só escuta em 127.0.0.1 | Fase 5 (demo) |
+| Botão com cara de link ("Apagar conversa") definido no CSS do Assist | falta no design system | design system v0.3.0 |
+| No celular o menu some, e com ele a lista "Conversas nesta aba" e o seletor de tema | conversa salva ainda volta ao recarregar, mas não dá para trocar de conversa | próxima rodada da interface |
 | Front e API sobem em dois comandos (Vite em desenvolvimento) | a API ainda não serve o build de `web/dist` | antes da demo (Fase 5) |
 | Ao subir, o `sentence-transformers` consulta o Hugging Face Hub (aviso "unauthenticated requests") | chamada externa a cada início, expõe o IP; com o modelo já baixado daria para rodar offline (`HF_HUB_OFFLINE=1`) | tarefa pequena, antes da demo |
 | Cache de perguntas repetidas e troca de modelo | aceleram, mas mexem na qualidade | depois da avaliação (Fase 4) |

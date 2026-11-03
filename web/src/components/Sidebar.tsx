@@ -1,5 +1,6 @@
 import type { ServiceStatus } from "../api";
 import wordmark from "../design-system/logo/vaultpay-wordmark-on-dark.svg";
+import { type Conversation, conversationTitle, minutesLeft } from "../history";
 import { Icon } from "../icons";
 import { THEMES, type Theme } from "../theme";
 import { TOPICS } from "../topics";
@@ -11,6 +12,11 @@ interface Props {
   status: ServiceStatus | null;
   theme: Theme;
   onTheme: (theme: Theme) => void;
+  conversations: Conversation[];
+  currentId: string;
+  onOpen: (id: string) => void;
+  // Com o modelo respondendo, trocar de conversa poria a resposta na conversa errada.
+  locked: boolean;
 }
 
 // Só aparece quando há problema: atendimento normal não precisa de aviso.
@@ -20,7 +26,9 @@ const TROUBLE = {
   offline: { className: "vp-note vp-note--danger", icon: "alert", label: "Atendimento fora do ar" },
 } as const;
 
-export function Sidebar({ topicId, onTopic, onNewConversation, status, theme, onTheme }: Props) {
+export function Sidebar(props: Props) {
+  const { topicId, onTopic, onNewConversation, status, theme, onTheme } = props;
+  const { conversations, currentId, onOpen, locked } = props;
   const trouble = status && status !== "ok" ? TROUBLE[status] : null;
   return (
     // Painel da marca: grafite nos dois temas, então o logo é sempre a versão para fundo escuro.
@@ -34,6 +42,30 @@ export function Sidebar({ topicId, onTopic, onNewConversation, status, theme, on
         <Icon name="plus" />
         Nova conversa
       </button>
+
+      {conversations.length > 0 && (
+        <nav aria-labelledby="history-title">
+          <p className="sidebar__label" id="history-title">
+            Conversas nesta aba
+          </p>
+          {conversations.map((c) => (
+            <button
+              key={c.id}
+              className="vp-nav-item history-item"
+              type="button"
+              aria-current={c.id === currentId ? "true" : undefined}
+              disabled={locked && c.id !== currentId}
+              onClick={() => onOpen(c.id)}
+            >
+              <Icon name="chat" />
+              <span className="history-item__text">
+                <span className="history-item__title">{conversationTitle(c)}</span>
+                <span className="history-item__meta">expira em {minutesLeft(c)} min</span>
+              </span>
+            </button>
+          ))}
+        </nav>
+      )}
 
       <nav aria-labelledby="topics-title">
         <p className="sidebar__label" id="topics-title">

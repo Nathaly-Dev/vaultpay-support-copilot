@@ -5,12 +5,13 @@ import { AssistAvatar, Message, type Entry } from "./components/Message";
 import { Sidebar } from "./components/Sidebar";
 import { Welcome } from "./components/Welcome";
 import appIcon from "./design-system/logo/vaultpay-app-icon.svg";
+import { type Conversation, deleteConversation, loadConversations, saveConversation } from "./history";
 import { Icon } from "./icons";
 import { applyTheme, loadTheme, saveTheme, type Theme } from "./theme";
 import { HIGHLIGHTS, nextSuggestions, TOPICS } from "./topics";
 
-let nextId = 0;
-const newId = () => `m${++nextId}`;
+// Id único mesmo entre recarregamentos (a conversa salva volta com os ids antigos).
+const newId = () => crypto.randomUUID();
 
 // Recusas que passam sozinhas viram aviso (laranja), não erro (vermelho), com texto próprio:
 // o título já diz o que houve, então a mensagem só diz o que fazer.
@@ -20,20 +21,34 @@ const TRANSIENT: Record<string, { title: string; message: string }> = {
 };
 
 export function App() {
-  // A conversa vive só na memória da aba: nada dela fica salvo no navegador.
-  const [entries, setEntries] = useState<Entry[]>([]);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  // As conversas voltam se a página recarregar (só nesta aba, cada uma até 15 min sem mensagem).
+  const [conversations, setConversations] = useState<Conversation[]>(() => loadConversations());
+  const [restored] = useState<Conversation | undefined>(() => conversations[0]);
+  const [convId, setConvId] = useState<string>(() => restored?.id ?? newId());
+  const [entries, setEntries] = useState<Entry[]>(restored?.entries ?? []);
+  const [sessionId, setSessionId] = useState<string | null>(restored?.sessionId ?? null);
   const [draft, setDraft] = useState("");
   // Pergunta ao modelo e pedido de atendente correm em paralelo: cada um tem seu "aguardando".
   const [asking, setAsking] = useState(false);
   const [callingHuman, setCallingHuman] = useState(false);
-  const [topicId, setTopicId] = useState<string | null>(null);
+  const [topicId, setTopicId] = useState<string | null>(restored?.topicId ?? null);
   const [status, setStatus] = useState<ServiceStatus | null>(null);
   const [theme, setTheme] = useState<Theme>(loadTheme);
   const end = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     void serviceStatus().then(setStatus);
+  }, []);
+
+  useEffect(() => {
+    saveConversation({ id: convId, sessionId, topicId, entries });
+    setConversations(loadConversations());
+  }, [convId, entries, sessionId, topicId]);
+
+  // De tempos em tempos: atualiza o "expira em" do menu e tira as conversas vencidas.
+  useEffect(() => {
+    const timer = setInterval(() => setConversations(loadConversations()), 30_000);
+    return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
@@ -97,11 +112,30 @@ export function App() {
     void run(() => handoff(sessionId), null, askForHuman).finally(() => setCallingHuman(false));
   }
 
+  // A atual já está salva: começar outra não apaga a anterior.
+  // Com o modelo respondendo, espera: a resposta cairia na conversa nova.
   function newConversation() {
+    if (asking) return;
+    setConvId(newId());
     setEntries([]);
     setSessionId(null);
     setDraft("");
     setTopicId(null);
+  }
+
+  function openConversation(id: string) {
+    const conversation = conversations.find((c) => c.id === id);
+    if (!conversation || asking) return;
+    setConvId(conversation.id);
+    setEntries(conversation.entries);
+    setSessionId(conversation.sessionId);
+    setTopicId(conversation.topicId);
+    setDraft("");
+  }
+
+  function deleteCurrent() {
+    deleteConversation(convId);
+    newConversation();
   }
 
   function pickTopic(id: string) {
@@ -128,6 +162,10 @@ export function App() {
         status={status}
         theme={theme}
         onTheme={setTheme}
+        conversations={conversations}
+        currentId={convId}
+        onOpen={openConversation}
+        locked={asking}
       />
 
       <main className="chat">
@@ -170,10 +208,21 @@ export function App() {
             </div>
           )}
           <Composer value={draft} onChange={setDraft} onSend={() => send(draft)} busy={asking} />
-          <p className="vp-note">
-            <Icon name="lock" />
-            Nunca digite senha, PIN ou número do cartão.
-          </p>
+          <div className="chat__notes">
+            <p className="vp-note">
+              <Icon name="lock" />
+              Nunca digite senha, PIN ou número do cartão.
+            </p>
+            {entries.length > 0 && (
+              <p className="vp-note">
+                <Icon name="clock" />
+                Salva só nesta aba, por 15 min após a última mensagem.
+                <button className="link-button" type="button" onClick={deleteCurrent}>
+                  Apagar conversa
+                </button>
+              </p>
+            )}
+          </div>
         </footer>
       </main>
     </div>

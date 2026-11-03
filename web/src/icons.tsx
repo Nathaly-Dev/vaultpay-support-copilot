@@ -20,7 +20,8 @@ type IconName =
   | "warning"
   | "chevronDown"
   | "clock"
-  | "refresh";
+  | "refresh"
+  | "chat";
 
 const PATHS: Record<IconName, string[]> = {
   plus: ["M12 5v14", "M5 12h14"],
@@ -42,6 +43,7 @@ const PATHS: Record<IconName, string[]> = {
   chevronDown: ["m6 9 6 6 6-6"],
   clock: ["M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z", "M12 7v5l3 2"],
   refresh: ["M20 11a8 8 0 1 0-2.3 5.7", "M20 5v6h-6"],
+  chat: ["M4 5h16v11H9l-5 4z"],
 };
 
 export function Icon({ name, className = "" }: { name: IconName; className?: string }) {
