@@ -1,0 +1,31 @@
+﻿id;pergunta;tem_resposta;resposta_esperada;fonte_esperada
+P001;Fiz um Pix para o número errado, consigo o dinheiro de volta?;sim;"O Pix não pode ser desfeito pela VaultPay. Abra um pedido de devolução no app, em ""Ajuda > Enviei Pix errado""; a devolução depende de quem recebeu concordar.";politica-pix, Art. 5
+P002;Quanto vocês cobram para fazer TED?;sim;R$ 6,90 por transferência.;tabela-tarifas, Art. 2
+P003;Perdi meu cartão no ônibus, o que eu faço agora?;sim;Bloqueie o cartão na hora pelo app e peça a segunda via. A primeira segunda via do ano é gratuita.;politica-cartao, Art. 5
+P004;Um cara ligou dizendo que era da VaultPay e pediu minha senha, são vocês mesmo?;sim;Não. A VaultPay nunca pede senha, por nenhum canal. Encerre a ligação e fale com a VaultPay só pelo chat do app.;politica-seguranca-fraude, Art. 1 | politica-seguranca-fraude, Art. 2
+P005;Dá para comprar bitcoin pelo app?;nao;;
+P006;Qual o máximo que dá para mandar de Pix por dia?;sim;R$ 5.000,00 por dia, somando todos os Pix. Entre 20h e 6h, o limite é R$ 1.000,00.;politica-pix, Art. 2
+P007;Apareceu uma compra no cartão que eu não fiz, e agora?;sim;Conteste a compra pelo app em até 60 dias corridos da data da compra. A análise leva até 10 dias úteis.;politica-cartao, Art. 6
+P008;Quais dados meus vocês guardam?;sim;Nome, CPF, data de nascimento, e-mail, telefone, endereço, documento de identidade e selfie.;politica-privacidade, Art. 1
+P009;Vocês vendem CDB ou algum investimento?;sim;Não. A VaultPay não oferece investimentos.;tabela-tarifas, Art. 3
+P010;Qual o telefone da central?;sim;A VaultPay não atende por telefone. O atendimento é só pelo chat do app.;politica-atendimento, Art. 1
+P011;Posso abrir conta conjunta com meu marido?;nao;;
+P012;Quando fecha a minha fatura?;nao;;
+P013;Roubaram meu celular com o app logado, socorro, o que eu faço?;nao;;
+P014;Como eu abro uma conta aí?;sim;Pelo app, com documento de identidade com foto e uma selfie. É preciso ter 18 anos e CPF regular, e a análise leva até 2 dias úteis.;politica-conta-digital, Art. 2 | politica-conta-digital, Art. 1
+P015;Pix depois das 22h tem limite menor?;sim;Sim. Entre 20h e 6h, o limite total de envio é R$ 1.000,00.;politica-pix, Art. 2
+P016;Vocês fazem empréstimo consignado?;sim;Não. A VaultPay não oferece empréstimo.;tabela-tarifas, Art. 3
+P017;Fui cobrada duas vezes na mesma loja, meu CPF é 123.456.789-09.;sim;Conteste a cobrança pelo app em até 60 dias corridos da data da compra. A análise leva até 10 dias úteis.;politica-cartao, Art. 6
+P018;Saque no caixa 24h é de graça?;sim;"Em caixa eletrônico parceiro, 4 saques por mês são grátis; a partir do quinto, R$ 6,50 por saque.";tabela-tarifas, Art. 2
+P019;Recebi um SMS com link para atualizar o cadastro, é golpe?;sim;"Sim, é um golpe comum (link falso). Não clique: fale com a VaultPay só pelo chat do app e denuncie em ""Ajuda > Denunciar golpe"".";politica-seguranca-fraude, Art. 2 | politica-seguranca-fraude, Art. 6
+P020;Tem conta em dólar para eu usar na viagem?;nao;;
+P021;O cartão tem anuidade?;sim;Não, o cartão não tem anuidade.;politica-cartao, Art. 2 | tabela-tarifas, Art. 1
+P022;Quero encerrar minha conta, como faço?;sim;"Pelo app, em ""Perfil > Encerrar conta"", depois de zerar o saldo. O encerramento é concluído em até 5 dias úteis.";politica-conta-digital, Art. 5
+P023;Consigo fazer um cartão adicional para minha mãe?;nao;;
+P024;Até quantos dias depois da compra eu posso contestar?;sim;Até 60 dias corridos da data da compra.;politica-cartao, Art. 6
+P025;Tem seguro de vida aí?;sim;Não. A VaultPay não oferece seguros.;tabela-tarifas, Art. 3
+P026;Quero que apaguem todos os meus dados, meu e-mail é maria.exemplo@example.com.;sim;"Peça pelo app, em ""Perfil > Privacidade""; a resposta vem em até 15 dias. A eliminação vale quando não há obrigação legal de guardar: os dados cadastrais ficam 5 anos após o encerramento da conta.";politica-privacidade, Art. 5 | politica-privacidade, Art. 3
+P027;O cartão junta pontos ou milhas?;nao;;
+P028;Quero falar com uma pessoa de verdade, não com robô.;sim;A conversa é encaminhada para um atendente humano, e você recebe um número de protocolo.;politica-atendimento, Art. 3
+P029;Dá para investir em ações dos EUA por vocês?;sim;Não. A VaultPay não oferece investimentos.;tabela-tarifas, Art. 3
+P030;Vocês têm app para relógio smartwatch?;nao;;

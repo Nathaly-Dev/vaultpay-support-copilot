@@ -10,18 +10,16 @@ Estado em **2026-11-03**. Leia isto antes de continuar. Regras de trabalho e com
 | 1. Ingestão das políticas | ✅ mergeada |
 | 2. RAG (tapa-dados, busca, três travas, gravação) | ✅ mergeada |
 | 3. API (FastAPI) | ✅ mergeada (PR #10) |
-| Interface do chat (expansão aprovada) | ✅ feita, **em PRs abertos** (#11 e #12) |
-| 4. Avaliação | 🚧 linha de base medida, **branch só local** (`feat/eval-set`) |
+| Interface do chat (expansão aprovada) | ✅ mergeada (PRs #11 e #12) |
+| 4. Avaliação | 🚧 linha de base medida, em PR aberto (`feat/eval-set`) |
 | 5. Análise e demo | ⬜ não começada |
 
 ### Branches e PRs abertos (ordem do merge importa)
 
 | # | Branch | O quê | CI | Próximo passo |
 |---|---|---|---|---|
-| 1 | PR #11 `feat/chat-api` → `main` | API para a interface: `quote`, `question_masked`, `pii_masked`, `POST /handoff` | verde | merge com o ok da Nathaly |
-| 2 | PR #12 `feat/web` → `feat/chat-api` | Front React em `web/`, design system v0.2.0, conversas salvas na aba, botão de tema | verde | depois do #11: rebase na `main`, trocar a base do PR para `main`, merge |
-| 3 | `feat/eval-set` (só local, **sem push**) | Conjunto de avaliação v1, medidor `run_eval.py`, linha de base | não rodou | push e PR depois do #12. **Vai dar conflito** em `README.md` e `HANDOFF.md`: manter o texto da `main` e acrescentar as partes da avaliação |
-| — | design system PR #2 `docs/handoff` | HANDOFF do design system (desatualizado: diz v0.1.0) | — | atualizar para v0.2.0 antes do merge |
+| 1 | `feat/eval-set` → `main` | Conjunto de avaliação v1, medidor `run_eval.py`, linha de base | ver o PR | merge com o ok da Nathaly |
+| 2 | design system PR #2 `docs/handoff` | HANDOFF do design system (desatualizado: diz v0.1.0) | — | atualizar para v0.2.0 antes do merge |
 
 Design system: tags `v0.1.0` e `v0.2.0` publicadas; o Assist usa a **v0.2.0** (Plus Jakarta Sans, tema claro em camadas, menu grafite nos dois temas).
 
@@ -44,7 +42,7 @@ Design system: tags `v0.1.0` e `v0.2.0` publicadas; o Assist usa a **v0.2.0** (P
 | API (`/chat`, `/handoff`, `/health`) | `api/` | revisão independente (9 achados corrigidos); mutação; validada com Qwen e banco reais; ADR 0002 |
 | Interface | `web/` | Vitest (lógica), mutação, rodada com API e Qwen reais, screenshots claro/escuro e PC; ADR 0003 |
 | Latência | `evaluation/latency.py` | README, seção Resultados |
-| Qualidade | `evaluation/run_eval.py` (branch `feat/eval-set`) | linha de base acima |
+| Qualidade | `evaluation/run_eval.py`, `data/eval/` | linha de base acima; README, seção Resultados |
 | CI | `.github/workflows/ci.yml` | lint, formato, migrations, fumaça, testes, pip-audit, front (tipos, testes, build, npm audit), gitleaks; actions fixadas por SHA |
 
 Contagem de testes: ver o CI. **Validado de verdade** só nesta máquina, com dados fictícios. Nada em nuvem ainda.
@@ -54,8 +52,8 @@ Contagem de testes: ver o CI. **Validado de verdade** só nesta máquina, com da
 Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 
 **A. Fechar o que está aberto**
-1. 🙋 Merge do PR #11, depois do #12 (com rebase na `main`).
-2. Push e PR da `feat/eval-set`, resolvendo o conflito do README e do HANDOFF.
+1. ✅ PRs #11 e #12 mergeados (2026-11-03).
+2. 🙋 Merge do PR da `feat/eval-set`.
 3. Atualizar e mergear o PR #2 do design system.
 
 **B. Terminar a Fase 4 (avaliação)**
