@@ -186,3 +186,17 @@ def test_conexao_da_api_tem_tempo_limite_por_consulta():
         pytest.skip(f"banco indisponível (docker compose up -d): {type(exc).__name__}")
     with conn:
         assert conn.execute("SHOW statement_timeout").fetchone() == ("5s",)
+
+
+def test_falar_com_atendente_grava_o_encaminhamento(conn):
+    session_id = uuid4()
+
+    reply, conversation_id = copilot_on(conn).handoff(session_id)
+
+    row = conn.execute(
+        """SELECT c.session_id, c.outcome, c.llm_model, c.prompt_version, e.reason
+           FROM conversations c JOIN escalations e ON e.conversation_id = c.id
+           WHERE c.id = %s""",
+        (conversation_id,),
+    ).fetchone()
+    assert row == (session_id, "escalated", None, None, "user_requested")

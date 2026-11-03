@@ -29,10 +29,13 @@ ESCALATION_TEXT = (
     "Não sei responder isso com segurança. Vou encaminhar sua pergunta para um atendente."
 )
 UNAVAILABLE_TEXT = "Não consegui responder agora. Vou encaminhar sua pergunta para um atendente."
+HANDOFF_TEXT = "Pronto, chamei um atendente. Uma pessoa vai continuar esta conversa."
+# Texto fixo gravado no lugar da pergunta quando o cliente só aperta "falar com atendente".
+HANDOFF_REQUEST = "Pedido para falar com um atendente."
 
 Outcome = Literal["answered", "escalated", "error"]
 # Mesmos códigos da coluna escalations.reason no banco (service_unavailable: migration 002).
-Reason = Literal["no_context", "low_confidence", "service_unavailable"]
+Reason = Literal["no_context", "low_confidence", "service_unavailable", "user_requested"]
 
 
 class LlmAnswer(BaseModel):
@@ -62,17 +65,21 @@ class Reply:
     reason: Reason | None = None
     sources: list[RetrievedChunk] = field(default_factory=list)
     llm_model: str | None = None  # None quando a trava 1 encaminhou sem chamar o modelo
-    prompt_version: str = PROMPT_VERSION
+    prompt_version: str | None = PROMPT_VERSION  # None quando nenhum prompt foi usado
     latency_ms: int = 0
+    # Tipos de dado pessoal mascarados na pergunta (ex.: ("CPF",)), nunca os valores.
+    pii_found: tuple[str, ...] = ()
 
 
 def answer(question: str, retrieve: Retrieve, llm: Llm, min_similarity: float) -> Reply:
     start = perf_counter()
-    masked = mask_pii(question).text
+    masking = mask_pii(question)
+    masked = masking.text
 
     def reply(outcome: Outcome, text: str, **extra) -> Reply:
         latency_ms = round((perf_counter() - start) * 1000)
-        return Reply(outcome, text, masked, latency_ms=latency_ms, **extra)
+        found = tuple(sorted(masking.found))
+        return Reply(outcome, text, masked, latency_ms=latency_ms, pii_found=found, **extra)
 
     chunks = retrieve(masked)
 
@@ -106,6 +113,13 @@ def answer(question: str, retrieve: Retrieve, llm: Llm, min_similarity: float) -
     text = mask_pii(parsed.answer.strip()).text
     sources = [chunks[i - 1] for i in cited]
     return reply("answered", text, sources=sources, llm_model=llm.model)
+
+
+def handoff_reply() -> Reply:
+    """O cliente pediu uma pessoa: encaminha sem buscar nem chamar o modelo."""
+    return Reply(
+        "escalated", HANDOFF_TEXT, HANDOFF_REQUEST, reason="user_requested", prompt_version=None
+    )
 
 
 def build_user_message(masked_question: str, chunks: list[RetrievedChunk]) -> str:

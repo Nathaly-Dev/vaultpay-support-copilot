@@ -40,6 +40,12 @@ class RetrievedChunk:
         return self.content.split("\n", 2)[1]
 
     @property
+    def body(self) -> str:
+        """O texto do artigo, sem as linhas de título e de artigo."""
+        parts = self.content.split("\n", 2)
+        return parts[2].strip() if len(parts) == 3 else ""
+
+    @property
     def citation(self) -> str:
         return f"{self.title}, {self.article}"
 

@@ -137,7 +137,8 @@ PYTHONPATH=src .venv/Scripts/python -m vaultpay_copilot.api
 
 Escuta só em `http://127.0.0.1:8000`. Dois endereços:
 
-- `POST /chat` com `{"question": "...", "session_id": "<uuid, opcional>"}` devolve `{session_id, conversation_id, outcome, answer, sources: [{title, article}]}`. `outcome` é `answered`, `escalated` ou `error` (modelo fora do ar, já encaminhado).
+- `POST /chat` com `{"question": "...", "session_id": "<uuid, opcional>"}` devolve `{session_id, conversation_id, outcome, answer, sources: [{title, article, quote}], question_masked, pii_masked}`. `outcome` é `answered`, `escalated` ou `error` (modelo fora do ar, já encaminhado); `quote` é o começo do artigo citado; `question_masked` é a pergunta como foi gravada (com `[CPF]`, `[EMAIL]`, `[TELEFONE]`) e `pii_masked` diz que tipos foram mascarados, nunca os valores.
+- `POST /handoff` com `{"session_id": "<uuid, opcional>"}` chama um atendente sem passar pelo modelo (funciona mesmo com ele ocupado) e grava o encaminhamento com o motivo `user_requested`. Conta no limite de perguntas por minuto.
 - `GET /health` diz se o banco e o modelo configurado estão de pé (200) ou qual caiu (503).
 
 Proteções na borda: pergunta de 1 a 1000 caracteres e sem caracteres de controle; corpo até 16 KB; 10 perguntas por minuto por IP; uma pergunta por vez no modelo (quem chega com ele ocupado recebe 503 com `Retry-After`); erro sempre no formato `{"error": {"code", "message"}}`, sem devolver o que foi enviado; headers de segurança e `X-Request-ID` em toda resposta; log sem pergunta, resposta nem IP. Decisões e trade-offs em [`docs/decisions/0002-api-fastapi.md`](docs/decisions/0002-api-fastapi.md).
@@ -156,6 +157,20 @@ Regras garantidas pelo próprio banco (constraints e triggers em PL/pgSQL):
 - embeddings com dimensão errada são rejeitados.
 
 Schema completo em [`db/migrations/001_initial_schema.sql`](db/migrations/001_initial_schema.sql).
+
+## A interface
+
+Chat em React + Vite + TypeScript, em [`web/`](web/), com as peças do [VaultPay Design System](https://github.com/Nathaly-Dev/vaultpay-design-system) `v0.2.0` (cópia em `web/src/design-system/`, conferida por teste: não se edita). Mostra a fonte com o trecho da política, o `[CPF]` no lugar do número depois que o servidor mascara, o protocolo quando encaminha e o botão "falar com atendente". As conversas ficam salvas **só nesta aba** (`sessionStorage`), listadas no menu em "Conversas nesta aba": voltam depois de recarregar, somem ao fechar a aba e cada uma expira 15 minutos depois da última mensagem. Só o texto já mascarado pelo servidor é salvo (o `[CPF]`, nunca o número digitado). O navegador guarda também a escolha de tema.
+
+Pré-requisito: Node 22 ou mais novo. Com a API no ar (seção acima), em outro terminal:
+
+```bash
+cd web
+npm ci --ignore-scripts
+npm run dev
+```
+
+Abra `http://127.0.0.1:5173`. Em desenvolvimento, o Vite repassa `/chat`, `/handoff` e `/health` para a API, então ela continua sem CORS. Testes e tipos: `npm run check`.
 
 ## Resultados
 

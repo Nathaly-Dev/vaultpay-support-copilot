@@ -14,9 +14,16 @@ from vaultpay_copilot.api.app import (
     QUESTIONS_PER_MINUTE,
     SECURITY_HEADERS,
     _declared_size,
+    _quote,
     create_app,
 )
-from vaultpay_copilot.rag.assistant import ESCALATION_TEXT, UNAVAILABLE_TEXT, Reply
+from vaultpay_copilot.rag.assistant import (
+    ESCALATION_TEXT,
+    HANDOFF_TEXT,
+    UNAVAILABLE_TEXT,
+    Reply,
+    handoff_reply,
+)
 from vaultpay_copilot.rag.retriever import RetrievedChunk
 
 # CPF fictício (dígitos verificadores válidos), o mesmo dos testes do tapa-dados.
@@ -45,7 +52,7 @@ class FakeCopilot:
     """Atendente de mentira: devolve o combinado (ou levanta o erro) e guarda o que recebeu."""
 
     def __init__(self, reply: Reply = ANSWERED, error: Exception | None = None, **checks) -> None:
-        self.reply, self.error, self.calls = reply, error, []
+        self.reply, self.error, self.calls, self.handoffs = reply, error, [], []
         self.checks = {"database": True, "llm": True} | checks
 
     def ask(self, question: str, session_id: UUID) -> tuple[Reply, UUID]:
@@ -53,6 +60,12 @@ class FakeCopilot:
         if self.error:
             raise self.error
         return self.reply, CONVERSATION_ID
+
+    def handoff(self, session_id: UUID) -> tuple[Reply, UUID]:
+        self.handoffs.append(session_id)
+        if self.error:
+            raise self.error
+        return handoff_reply(), CONVERSATION_ID
 
     def health(self) -> dict[str, bool]:
         return self.checks
@@ -93,7 +106,9 @@ def test_responde_com_fonte_e_cria_a_sessao(make_client):
     body = response.json()
     assert body["outcome"] == "answered"
     assert body["answer"] == "O limite é R$ 5.000,00 por dia."
-    assert body["sources"] == [{"title": "Política de Pix", "article": "Art. 2. Limites"}]
+    assert body["sources"] == [
+        {"title": "Política de Pix", "article": "Art. 2. Limites", "quote": "Texto fictício."}
+    ]
     assert body["conversation_id"] == str(CONVERSATION_ID)
     session_id = UUID(body["session_id"])
     assert copilot.calls == [("Qual o limite do Pix?", session_id)]
@@ -114,9 +129,19 @@ def test_reaproveita_a_sessao_enviada(make_client):
 def test_nao_expoe_detalhes_internos_da_fonte(make_client):
     body = make_client(FakeCopilot()).post("/chat", json={"question": "Limite?"}).json()
 
-    # Similaridade, slug e texto do trecho são internos: só título e artigo saem.
-    assert set(body) == {"session_id", "conversation_id", "outcome", "answer", "sources"}
-    assert set(body["sources"][0]) == {"title", "article"}
+    # Similaridade, slug e ids dos trechos são internos: só título, artigo e trecho saem.
+    assert set(body) == {
+        "session_id",
+        "conversation_id",
+        "outcome",
+        "answer",
+        "sources",
+        "question_masked",
+        "pii_masked",
+    }
+    assert body["sources"] == [
+        {"title": "Política de Pix", "article": "Art. 2. Limites", "quote": "Texto fictício."}
+    ]
 
 
 def test_encaminhamento_sai_sem_fonte(make_client):
@@ -526,3 +551,121 @@ def test_le_o_tamanho_declarado_como_o_starlette(header, expected):
     scope = {"type": "http", "headers": [(b"content-length", header.encode())]}
 
     assert _declared_size(Request(scope)) == expected
+
+
+# --- dados para a interface: trecho, pergunta mascarada e "falar com atendente" ---------------
+
+
+def test_devolve_a_pergunta_mascarada_e_os_tipos_mascarados(make_client):
+    masked = Reply(
+        "answered",
+        "Ok.",
+        "Meu CPF é [CPF]",
+        sources=[SOURCE],
+        llm_model="m",
+        pii_found=("CPF",),
+    )
+
+    body = (
+        make_client(FakeCopilot(masked)).post("/chat", json={"question": f"Meu CPF é {CPF}"}).json()
+    )
+
+    assert body["question_masked"] == "Meu CPF é [CPF]"
+    assert body["pii_masked"] == ["CPF"]
+    assert CPF not in str(body)
+
+
+def test_trecho_curto_sai_inteiro():
+    assert _quote("Texto curto.", limit=40) == "Texto curto."
+
+
+def test_trecho_longo_e_cortado_num_espaco():
+    text = "O limite diário padrão para envio é de R$ 5.000,00, somando todos os Pix do dia."
+
+    quote = _quote(text, limit=40)
+
+    assert quote == "O limite diário padrão para envio é de…"
+    assert len(quote) <= 41
+
+
+def test_trecho_nao_termina_em_virgula():
+    assert _quote("Valor de R$ 5.000,00, somando tudo", limit=21) == "Valor de R$ 5.000,00…"
+
+
+def test_falar_com_atendente_encaminha_e_cria_a_sessao(make_client):
+    copilot = FakeCopilot()
+
+    response = make_client(copilot).post("/handoff", json={})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["outcome"] == "escalated"
+    assert body["answer"] == HANDOFF_TEXT
+    assert body["sources"] == []
+    assert copilot.handoffs == [UUID(body["session_id"])]
+    assert copilot.calls == []  # não passa pelo modelo
+
+
+def test_falar_com_atendente_reaproveita_a_sessao(make_client):
+    copilot = FakeCopilot()
+    session_id = uuid4()
+
+    make_client(copilot).post("/handoff", json={"session_id": str(session_id)})
+
+    assert copilot.handoffs == [session_id]
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [{"session_id": "nao-e-uuid"}, {"question": "oi"}],
+    ids=["sessao-invalida", "campo-desconhecido"],
+)
+def test_falar_com_atendente_recusa_pedido_invalido(make_client, payload):
+    copilot = FakeCopilot()
+
+    assert_error(make_client(copilot).post("/handoff", json=payload), 422, "invalid_request")
+    assert copilot.handoffs == []
+
+
+def test_falar_com_atendente_funciona_com_o_modelo_ocupado(make_client):
+    copilot = SlowCopilot()
+    client = make_client(copilot)
+    worker = threading.Thread(target=lambda: client.post("/chat", json={"question": "Primeira?"}))
+    worker.start()
+    assert copilot.thinking.wait(5)
+
+    result = {}
+    handoff = threading.Thread(target=lambda: result.update(r=client.post("/handoff", json={})))
+    handoff.start()
+    handoff.join(2)  # o modelo continua ocupado durante toda esta espera
+    answered_while_busy = not handoff.is_alive()
+
+    copilot.done.set()
+    worker.join(5)
+    handoff.join(5)
+    assert answered_while_busy
+    assert result["r"].status_code == 200
+
+
+def test_falar_com_atendente_conta_no_limite_por_ip(make_client):
+    client = make_client(FakeCopilot())
+    for _ in range(QUESTIONS_PER_MINUTE):
+        client.post("/handoff", json={})
+
+    assert_error(client.post("/handoff", json={}), 429, "rate_limited")
+
+
+def test_falar_com_atendente_com_banco_fora_do_ar(make_client):
+    copilot = FakeCopilot(error=psycopg.OperationalError("caiu"))
+
+    assert_error(make_client(copilot).post("/handoff", json={}), 503, "service_unavailable")
+
+
+def test_log_registra_o_falar_com_atendente(make_client, caplog):
+    client = make_client(FakeCopilot())
+    caplog.set_level(logging.INFO, logger="vaultpay_copilot")
+
+    client.post("/handoff", json={})
+
+    assert "method=POST path=/handoff status=200" in caplog.text
+    assert "reason=user_requested" in caplog.text
