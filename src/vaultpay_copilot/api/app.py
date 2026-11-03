@@ -29,6 +29,7 @@ MAX_BODY_BYTES = 16 * 1024
 QUESTIONS_PER_MINUTE = 10
 HEALTH_CHECKS_PER_MINUTE = 30
 BUSY_RETRY_AFTER_S = 10
+QUOTE_CHARS = 240
 
 # A API só devolve JSON: o navegador não deve carregar nada nem exibir a resposta num frame.
 SECURITY_HEADERS = {
@@ -40,7 +41,7 @@ SECURITY_HEADERS = {
 }
 
 # Só estes caminhos vão para o log: qualquer outro endereço é texto digitado pelo cliente.
-_LOGGED_PATHS = {"/chat", "/health"}
+_LOGGED_PATHS = {"/chat", "/handoff", "/health"}
 # O método também é texto do cliente (o servidor aceita qualquer palavra): só os conhecidos.
 _LOGGED_METHODS = {"GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
 
@@ -64,9 +65,17 @@ class ChatRequest(BaseModel):
     session_id: UUID | None = None
 
 
+class HandoffRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: UUID | None = None
+
+
 class Source(BaseModel):
     title: str
     article: str
+    # Começo do texto do artigo, para o cliente conferir a fonte sem sair da conversa.
+    quote: str
 
 
 class ChatResponse(BaseModel):
@@ -75,6 +84,10 @@ class ChatResponse(BaseModel):
     outcome: Outcome
     answer: str
     sources: list[Source]
+    # A pergunta como foi gravada e enviada ao modelo: com [CPF], [EMAIL] e [TELEFONE].
+    question_masked: str
+    # Que tipos de dado pessoal foram mascarados (nunca os valores).
+    pii_masked: list[str]
 
 
 class HealthResponse(BaseModel):
@@ -84,6 +97,8 @@ class HealthResponse(BaseModel):
 
 class CopilotService(Protocol):
     def ask(self, question: str, session_id: UUID) -> tuple[Reply, UUID]: ...
+
+    def handoff(self, session_id: UUID) -> tuple[Reply, UUID]: ...
 
     def health(self) -> dict[str, bool]: ...
 
@@ -177,13 +192,23 @@ def create_app(copilot: CopilotService | None = None) -> FastAPI:
             conversation_id,
             reply.latency_ms,
         )
-        return ChatResponse(
-            session_id=session_id,
-            conversation_id=conversation_id,
-            outcome=reply.outcome,
-            answer=reply.text,
-            sources=[Source(title=s.title, article=s.article) for s in reply.sources],
+        return _to_response(reply, conversation_id, session_id)
+
+    @app.post("/handoff")
+    def handoff(body: HandoffRequest, request: Request) -> ChatResponse:
+        # Endereço próprio, e não uma pergunta ao modelo: pedir uma pessoa tem de funcionar
+        # sempre, mesmo com o modelo ocupado ou fora do ar (na avaliação, P028 foi respondida).
+        _enforce(limiter, request, "Muitas perguntas seguidas. Aguarde um pouco.")
+        session_id = body.session_id or uuid4()
+        reply, conversation_id = request.app.state.copilot.handoff(session_id)
+        logger.info(
+            "request_id=%s outcome=%s reason=%s conversation_id=%s",
+            request.state.request_id,
+            reply.outcome,
+            reply.reason,
+            conversation_id,
         )
+        return _to_response(reply, conversation_id, session_id)
 
     @app.get("/health")
     def health(request: Request) -> JSONResponse:
@@ -238,6 +263,30 @@ def create_app(copilot: CopilotService | None = None) -> FastAPI:
         )
 
     return app
+
+
+def _to_response(reply: Reply, conversation_id: UUID, session_id: UUID) -> ChatResponse:
+    return ChatResponse(
+        session_id=session_id,
+        conversation_id=conversation_id,
+        outcome=reply.outcome,
+        answer=reply.text,
+        sources=[
+            Source(title=s.title, article=s.article, quote=_quote(s.body)) for s in reply.sources
+        ],
+        question_masked=reply.question_masked,
+        pii_masked=list(reply.pii_found),
+    )
+
+
+def _quote(text: str, limit: int = QUOTE_CHARS) -> str:
+    """Corta o trecho num espaço, para não partir palavra nem valor ao meio."""
+    if len(text) <= limit:
+        return text
+    cut = text[:limit]
+    if text[limit] != " ":  # o corte caiu no meio de uma palavra: volta até o espaço
+        cut = cut.rsplit(" ", 1)[0]
+    return cut.rstrip(",;: ") + "…"
 
 
 def _error(
