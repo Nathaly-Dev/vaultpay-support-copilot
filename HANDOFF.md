@@ -78,8 +78,8 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 13. `.gitattributes` (fim dos avisos de LF/CRLF), `CHANGELOG.md` e tag `v1.0.0`.
 
 **E. Interface (rodada pequena)**
-14. Menu no celular: hoje some, e com ele a lista "Conversas nesta aba" e o seletor de tema.
-15. Design system v0.3.0: botão com cara de link ("Apagar conversa"), hoje no CSS do Assist.
+14. ✅ Menu no celular: gaveta lateral com o mesmo menu do PC (branch `feat/mobile-menu`).
+15. Design system v0.3.0: botão com cara de link ("Apagar conversa") e a gaveta do celular com o fundo escurecido (sem token próprio, hoje feito com `color-mix` do grafite da marca), os dois no CSS do Assist.
 
 **F. Aula final** (combinado: não fechar o projeto sem ela) → ver a seção abaixo.
 
