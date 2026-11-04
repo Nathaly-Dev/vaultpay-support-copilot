@@ -207,7 +207,7 @@ export function App() {
       <dialog
         ref={drawer}
         id="menu-drawer"
-        className="drawer"
+        className="vp-drawer"
         aria-label="Menu"
         // O aviso de "fechou" chega depois; se a gaveta já foi reaberta, ele é de um fechamento antigo.
         onClose={() => {
