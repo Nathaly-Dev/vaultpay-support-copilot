@@ -96,6 +96,8 @@ h1, h2, p { margin: 0; }
   .hide-small { display: none; }
   .show-small { display: initial; }
   .chat__mark.show-small { display: block; }
+  /* O topo já mostra o símbolo: um segundo logo logo abaixo seria repetição. */
+  .welcome__icon { display: none; }
   .quick { flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--vp-space-1); }
   .quick .vp-chip { flex: none; }
   .chat__header .vp-btn--icon.show-small { display: inline-flex; margin-left: calc(-1 * var(--vp-space-2)); }
