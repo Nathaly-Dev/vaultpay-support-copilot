@@ -83,8 +83,9 @@ def answer(question: str, retrieve: Retrieve, llm: Llm, min_similarity: float) -
 
     chunks = retrieve(masked)
 
-    # Trava 1
-    if not chunks or chunks[0].similarity < min_similarity:
+    # Trava 1: algum trecho parecido o bastante? Olha o maior valor, não o primeiro: na busca
+    # híbrida o primeiro pode ter vindo da busca por palavra, com similaridade menor.
+    if not chunks or max(c.similarity for c in chunks) < min_similarity:
         return reply("escalated", ESCALATION_TEXT, reason="no_context")
 
     try:
@@ -151,7 +152,7 @@ def main(question: str) -> None:
         register_vector(conn)
         result = answer(
             question,
-            lambda q: search(conn, embed(q), embed.model_name),
+            lambda q: search(conn, q, embed(q), embed.model_name),
             llm,
             llm_settings.min_similarity,
         )

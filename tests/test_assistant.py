@@ -73,6 +73,15 @@ def test_trava1_encaminha_sem_chamar_o_modelo_quando_nada_e_parecido():
     assert reply.llm_model is None
 
 
+def test_trava1_olha_o_trecho_mais_parecido_mesmo_que_nao_seja_o_primeiro():
+    # Na busca híbrida, o primeiro pode ter vindo da busca por palavra, com similaridade menor.
+    chunks = [chunk("Art. 3. Por palavra", 0.70, 1), chunk("Art. 2. Limites", 0.89, 2)]
+    llm = llm_says(True, "O limite é R$ 5.000,00.", [2])
+    reply = run("Qual o limite do Pix?", llm, chunks=chunks)
+
+    assert reply.outcome == "answered"
+
+
 def test_trava1_encaminha_quando_a_busca_vem_vazia():
     llm = llm_says(True, "qualquer coisa", [1])
 

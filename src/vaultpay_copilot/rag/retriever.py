@@ -1,4 +1,4 @@
-"""Busca, no banco, os trechos de política mais parecidos com a pergunta."""
+"""Busca, no banco, os trechos de política que respondem à pergunta (busca híbrida, ADR 0004)."""
 
 import sys
 from dataclasses import dataclass
@@ -12,15 +12,46 @@ from vaultpay_copilot.rag.pii import mask_pii
 
 DEFAULT_K = 4
 MAX_K = 20
+# Cada busca indica até 20 candidatos; a junção escolhe os k finais entre eles.
+CANDIDATES = 20
+# Constante padrão do RRF (Cormack et al., 2009): suaviza a diferença entre 1º e 2º lugar.
+RRF_K = 60
 
-# <=> é a distância de cosseno do pgvector (0 = mesma direção); similaridade = 1 - distância.
+# Duas buscas, juntadas pela posição de cada trecho em cada uma (RRF):
+# - por significado: <=> é a distância de cosseno do pgvector; similaridade = 1 - distância;
+# - por palavra: raízes da pergunta (vaultpay_pt, sem acento) contra content_tsv (migration 003),
+#   com OU entre as palavras ("empréstimo consignado" acha o trecho que só fala de empréstimo).
+# Junta por posição, não por nota: as notas das duas buscas estão em escalas diferentes.
 # O filtro por modelo impede comparar vetores de modelos diferentes, que não são comparáveis.
 _SEARCH = """
+WITH query AS (
+    SELECT replace(plainto_tsquery('vaultpay_pt', %(text)s)::text, '&', '|')::tsquery AS words
+),
+semantic AS (
+    SELECT c.id, row_number() OVER (ORDER BY c.embedding <=> %(q)s, c.id) AS position
+    FROM chunks c
+    WHERE c.embedding_model = %(model)s
+    ORDER BY c.embedding <=> %(q)s, c.id
+    LIMIT %(candidates)s
+),
+keyword AS (
+    SELECT c.id,
+           row_number() OVER (ORDER BY ts_rank(c.content_tsv, query.words) DESC, c.id) AS position
+    FROM chunks c, query
+    WHERE c.embedding_model = %(model)s AND c.content_tsv @@ query.words
+    ORDER BY ts_rank(c.content_tsv, query.words) DESC, c.id
+    LIMIT %(candidates)s
+),
+fused AS (
+    SELECT id, sum(1.0 / (%(rrf_k)s + position)) AS score
+    FROM (SELECT * FROM semantic UNION ALL SELECT * FROM keyword) AS both_lists
+    GROUP BY id
+)
 SELECT c.id, d.slug, d.title, c.chunk_index, c.content, 1 - (c.embedding <=> %(q)s) AS similarity
-FROM chunks c
+FROM fused f
+JOIN chunks c ON c.id = f.id
 JOIN documents d ON d.id = c.document_id
-WHERE c.embedding_model = %(model)s
-ORDER BY c.embedding <=> %(q)s
+ORDER BY f.score DESC, similarity DESC, c.id
 LIMIT %(k)s
 """
 
@@ -51,13 +82,24 @@ class RetrievedChunk:
 
 
 def search(
-    conn: psycopg.Connection, query_vector: list[float], model_name: str, k: int = DEFAULT_K
+    conn: psycopg.Connection,
+    query_text: str,
+    query_vector: list[float],
+    model_name: str,
+    k: int = DEFAULT_K,
 ) -> list[RetrievedChunk]:
+    """query_text já mascarado (vai para a busca por palavra); query_vector, o vetor dele."""
     if not 1 <= k <= MAX_K:
         raise ValueError(f"k deve estar entre 1 e {MAX_K}, recebido {k}")
-    rows = conn.execute(
-        _SEARCH, {"q": Vector(query_vector), "model": model_name, "k": k}
-    ).fetchall()
+    params = {
+        "text": query_text,
+        "q": Vector(query_vector),
+        "model": model_name,
+        "k": k,
+        "candidates": CANDIDATES,
+        "rrf_k": RRF_K,
+    }
+    rows = conn.execute(_SEARCH, params).fetchall()
     return [RetrievedChunk(*row) for row in rows]
 
 
@@ -68,7 +110,7 @@ def main(question: str) -> None:
     embed = QueryEmbedder()
     with psycopg.connect(Settings.from_env().conninfo()) as conn:
         register_vector(conn)
-        results = search(conn, embed(masked.text), embed.model_name)
+        results = search(conn, masked.text, embed(masked.text), embed.model_name)
 
     print(f"pergunta (mascarada): {masked.text}")
     for r in results:

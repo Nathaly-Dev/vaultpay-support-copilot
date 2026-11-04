@@ -81,7 +81,9 @@ def main() -> None:
         register_vector(conn)
 
         def retrieve(question: str):
-            return search_watch.time(lambda: search(conn, embed(question), embed.model_name))
+            return search_watch.time(
+                lambda: search(conn, question, embed(question), embed.model_name)
+            )
 
         for question in QUESTIONS:
             llm_watch.ms = 0.0

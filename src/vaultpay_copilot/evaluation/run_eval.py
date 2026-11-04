@@ -24,6 +24,9 @@ from vaultpay_copilot.rag.retriever import RetrievedChunk
 EVAL_DIR = Path(__file__).resolve().parents[3] / "data" / "eval"
 DEFAULT_CASES = EVAL_DIR / "perguntas-v1.csv"
 RESULTS_DIR = EVAL_DIR / "results"
+# Tipo de busca do rag/retriever.py, no relatório e no nome do arquivo. A linha de base
+# (2026-10-30) usou só a busca por significado.
+RETRIEVAL = "hibrida-rrf"
 
 Source = tuple[str, int]  # (slug da política, número do artigo)
 
@@ -101,7 +104,7 @@ def score(case: EvalCase, reply: Reply, retrieved: list[RetrievedChunk]) -> Case
             bool(set(cited) & set(case.expected_sources)) if answered and case.has_answer else None
         ),
         retrieval_hit=case.expected_sources[0] in found if case.has_answer else None,
-        top_similarity=round(retrieved[0].similarity, 4) if retrieved else None,
+        top_similarity=round(max(r.similarity for r in retrieved), 4) if retrieved else None,
         cited=[f"{slug}, Art. {n}" for slug, n in cited],
         answer=reply.text,
         latency_ms=reply.latency_ms,
@@ -179,7 +182,7 @@ def main() -> None:
         last_search: list[RetrievedChunk] = []
 
         def retrieve(masked: str) -> list[RetrievedChunk]:
-            last_search[:] = search(conn, embed(masked), embed.model_name)
+            last_search[:] = search(conn, masked, embed(masked), embed.model_name)
             return list(last_search)
 
         for case in cases:
@@ -189,7 +192,7 @@ def main() -> None:
             results.append(result)
             print(f"{case.id} {'ok ' if result.decision_ok else 'ERR'} {reply.outcome}")
 
-    run_id = f"{date.today()}-{re.sub(r'[^a-z0-9.]+', '-', s.model)}-{PROMPT_VERSION}"
+    run_id = f"{date.today()}-{re.sub(r'[^a-z0-9.]+', '-', s.model)}-{PROMPT_VERSION}-{RETRIEVAL}"
     RESULTS_DIR.mkdir(exist_ok=True)
     summary = summarize(results)
     report = {
@@ -199,6 +202,7 @@ def main() -> None:
         "prompt": PROMPT_VERSION,
         "min_similarity": s.min_similarity,
         "embedding": embed.model_name,
+        "busca": RETRIEVAL,
         "resumo": summary,
         "casos": [asdict(r) for r in results],
     }
