@@ -59,7 +59,7 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 **B. Terminar a Fase 4 (avaliação)**
 4. 🙋 A Nathaly marca a planilha de revisão → publicar "texto correto: X/19" no README.
 5. Uma melhoria por vez, medida contra a linha de base (o resultado vira um arquivo novo em `data/eval/results/`):
-   - busca híbrida (palavra-chave + significado) para P016, P017 e P029;
+   - ✅ busca híbrida (ADR 0004, branch `feat/hybrid-search`): busca 18/22 → 21/22, decisão 25/30 → 27/30, fonte 17/18 → 20/20, sem base 1/8 igual; P016 e P029 resolvidas, P017 não (sem palavra em comum). Próximo passo do padrão: reranker, medido separado;
    - prompt `answer-v2` ("a resposta é não" ainda é resposta; não improvisar sem base) para P010 e P013;
    - decidir o destino da trava 1 (`MIN_SIMILARITY`) e se a trava 3 passa a conferir relevância da fonte.
 6. 🙋 Deepeval: decidido usar só na Fase 5, com a OpenAI como juiz.
