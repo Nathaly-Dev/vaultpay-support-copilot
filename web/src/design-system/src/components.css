@@ -27,7 +27,8 @@
 /* Um só por tela: a ação principal (no chat, enviar). */
 .vp-btn--primary { background: var(--vp-accent); color: var(--vp-on-accent); border-color: transparent; }
 .vp-btn--primary:hover { background: var(--vp-accent-hover); }
-.vp-btn--icon { width: var(--vp-touch); padding: 0; border-radius: var(--vp-radius-md); }
+/* Mesmo formato redondo do botão comum: botões lado a lado nunca têm cantos diferentes. */
+.vp-btn--icon { width: var(--vp-touch); padding: 0; }
 .vp-btn:disabled { color: var(--vp-text-disabled); cursor: not-allowed; }
 .vp-btn--primary:disabled { background: var(--vp-surface-2); }
 

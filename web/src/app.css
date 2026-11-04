@@ -101,6 +101,8 @@ h1, h2, p { margin: 0; }
   .quick { flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--vp-space-1); }
   .quick .vp-chip { flex: none; }
   .chat__header .vp-btn--icon.show-small { display: inline-flex; margin-left: calc(-1 * var(--vp-space-2)); }
+  /* Sem o texto, o botão de atendente vira só ícone: mesmo tamanho do ☰, círculo perfeito. */
+  .chat__header .vp-btn { width: var(--vp-touch); padding: 0; }
 }
 
 /* Gaveta do celular (vp-drawer, do design system): o mesmo menu do PC dentro dela. */
