@@ -23,7 +23,7 @@ function listFiles(dir: string): string[] {
 }
 
 describe("cópia do design system", () => {
-  it("é a v0.1.0 sem nenhuma alteração", () => {
+  it(`é a ${manifest.version} sem nenhuma alteração`, () => {
     const changed = Object.entries(manifest.files)
       .filter(([name, hash]) => digest(join(copyRoot, name)) !== hash)
       .map(([name]) => name);
@@ -56,6 +56,14 @@ describe("app.css só usa tokens", () => {
   it("px só para linha fina e contorno de foco", () => {
     const sizes = css.match(/\b\d+(?:\.\d+)?px\b/g) ?? [];
     expect(sizes.filter((v) => !["1px", "2px"].includes(v))).toEqual([]);
+  });
+
+  // Variável CSS não funciona em @media: o valor é escrito, mas tem de ser um dos combinados.
+  it("regras de tamanho de tela só usam os tamanhos do design system", () => {
+    const breakpoints = new Set([...tokens.matchAll(/--vp-breakpoint-[a-z]+:\s*([^;]+);/g)].map((m) => m[1]!.trim()));
+    const used = [...css.matchAll(/\((?:max|min)-(?:width|height):\s*([^)]+)\)/g)].map((m) => m[1]!.trim());
+    expect(used.length).toBeGreaterThan(0);
+    expect(used.filter((value) => !breakpoints.has(value))).toEqual([]);
   });
 
   it("toda variável usada existe no design system", () => {

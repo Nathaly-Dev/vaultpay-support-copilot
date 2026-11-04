@@ -1,5 +1,5 @@
 {
-  "version": "v0.2.0",
+  "version": "v0.3.0",
   "files": {
     "LICENSE": "5053aa18362814797701304afc64b5d7bb3cefdf4c1f5c4834fb789cb487d1a2",
     "fonts/LICENSE-IBMPlexMono-OFL.txt": "23b0a9d0c6d3f140a0b77e483c5cfa6bba574325ef5cb189ed9f2fec4884533f",
@@ -18,8 +18,8 @@
     "logo/vaultpay-mark.svg": "933361ccd546cbfa750b9930471fcb023638e21e9910098a6d4b929b7a16926d",
     "logo/vaultpay-wordmark-on-dark.svg": "db6128647c6ed97b3c9ab3484d491e9bb21ce4e570169badf5b2c964ada4b020",
     "logo/vaultpay-wordmark-on-light.svg": "0a35120e95dba027dbe7776c2d9cd227484a26355c752389e618a7607fbda75a",
-    "src/components.css": "ab2e604129da6ba4894e4d88239f4a62eda380e39ab312fa7cdcf71f9493bef3",
+    "src/components.css": "c994a54eeae069eb661d17493ca0a2680d411868b600ceed94976b119f7e6542",
     "src/fonts.css": "f5c1af2bc9adc00f9151ef45861cfb4b3081e43759c8aaf0ecd989a83de00c76",
-    "src/tokens.css": "4978c1b5c7c25b06a51f237419edc7ade22e00757bb018880e4f7a700103667f"
+    "src/tokens.css": "38ffbb1a969e0f62538972f4ba4d539619dec9fed3a2bc2c829dfa075ec17687"
   }
 }

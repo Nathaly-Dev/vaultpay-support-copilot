@@ -221,6 +221,19 @@
 .vp-suggestion__title { font-size: var(--vp-text-sm); font-weight: var(--vp-weight-bold); }
 .vp-suggestion__hint { font-size: var(--vp-text-xs); color: var(--vp-text-secondary); }
 
+/* Celular ou tela baixa: uma linha só (ícone + título), para todas caberem sem rolar.
+   A pergunta completa sai da vista, mas continua sendo lida por quem usa leitor de tela. */
+@media (max-width: 30rem), (max-height: 40rem) {
+  .vp-suggestion {
+    grid-auto-flow: column; justify-content: start; align-items: center; gap: var(--vp-space-3);
+    min-height: var(--vp-touch); padding: var(--vp-space-3) var(--vp-space-4);
+  }
+  .vp-suggestion__hint {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+}
+
 /* Etiqueta de 1 clique (durante a conversa). */
 .vp-chip {
   display: inline-flex; align-items: center; gap: var(--vp-space-2);
@@ -233,3 +246,21 @@
 .vp-chip:hover { border-color: var(--vp-border-accent); color: var(--vp-text-primary); }
 .vp-chip .vp-icon { color: var(--vp-text-accent); }
 .vp-chip:disabled { color: var(--vp-text-disabled); cursor: not-allowed; }
+
+/* ---------- Gaveta (menu no celular) ---------- */
+
+/* Para um <dialog> aberto com showModal(): o navegador já fecha no Esc e prende o foco dentro.
+   Fica presa à esquerda, com o resto da tela escurecido atrás. O conteúdo (ex.: um
+   vp-brand-panel) ocupa a altura toda. */
+.vp-drawer {
+  margin: 0; padding: 0; border: 0;
+  width: min(var(--vp-drawer-width), 85vw); max-width: none; height: 100dvh; max-height: none;
+  background: transparent; color: inherit;
+}
+.vp-drawer > * { height: 100%; }
+.vp-drawer::backdrop { background: var(--vp-scrim); }
+.vp-drawer[open] { animation: vp-drawer-in var(--vp-duration-base) var(--vp-ease-out); }
+@keyframes vp-drawer-in { from { transform: translateX(-100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .vp-drawer[open] { animation: none; }
+}

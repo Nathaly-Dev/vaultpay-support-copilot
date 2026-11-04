@@ -1,5 +1,5 @@
 /* GERADO por scripts/build-tokens.mjs a partir de tokens/tokens.json. Não edite à mão. */
-/* VaultPay Design System v0.2.0 */
+/* VaultPay Design System v0.3.0 */
 
 :root {
   --vp-gold-50: #FFF6E3;
@@ -90,6 +90,10 @@
   --vp-duration-slow: 320ms;
   --vp-ease-out: cubic-bezier(0.2, 0, 0, 1);
   --vp-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --vp-breakpoint-sm: 30rem;
+  --vp-breakpoint-md: 48rem;
+  --vp-breakpoint-short: 40rem;
+  --vp-drawer-width: 18rem;
 }
 
 /* Tema claro (padrão) */
@@ -146,6 +150,7 @@
   --vp-on-brand-strong: var(--vp-neutral-100);
   --vp-brand-active-bg: var(--vp-gold-900);
   --vp-brand-active-text: var(--vp-gold-200);
+  --vp-scrim: rgb(20 17 13 / 0.6);
 }
 
 /* Tema escuro automático, a menos que o produto force o claro */
@@ -202,6 +207,7 @@
     --vp-on-brand-strong: var(--vp-neutral-100);
     --vp-brand-active-bg: var(--vp-gold-900);
     --vp-brand-active-text: var(--vp-gold-200);
+    --vp-scrim: rgb(0 0 0 / 0.7);
   }
 }
 
@@ -258,4 +264,5 @@
   --vp-on-brand-strong: var(--vp-neutral-100);
   --vp-brand-active-bg: var(--vp-gold-900);
   --vp-brand-active-text: var(--vp-gold-200);
+  --vp-scrim: rgb(0 0 0 / 0.7);
 }
