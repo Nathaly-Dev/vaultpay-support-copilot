@@ -78,8 +78,8 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 13. `.gitattributes` (fim dos avisos de LF/CRLF), `CHANGELOG.md` e tag `v1.0.0`.
 
 **E. Interface (rodada pequena)**
-14. ✅ Menu no celular: gaveta lateral com o mesmo menu do PC (branch `feat/mobile-menu`).
-15. Design system v0.3.0 (PR #6 do design system; branch `feat/responsive` do Assist): tamanhos de tela combinados, cartão de sugestão de uma linha no celular e em tela baixa, gaveta `vp-drawer` e token `scrim`. **Falta:** merge do PR #6, tag `v0.3.0` e, então, o PR do Assist. Fica para a v0.4.0: botão com cara de link ("Apagar conversa"), hoje no CSS do Assist.
+14. ✅ Menu no celular: gaveta lateral com o mesmo menu do PC (PR #14, mergeado em 2026-11-10).
+15. Design system v0.3.0 (PR #6 do design system; branch `feat/responsive` do Assist): tamanhos de tela combinados, cartão de sugestão de uma linha no celular e em tela baixa, gaveta `vp-drawer` e token `scrim`. PR #6 mergeado e tag `v0.3.0` publicada em 2026-11-10 (cópia do Assist conferida contra a tag: 20 arquivos iguais); falta o merge do PR #15 do Assist. Fica para a v0.4.0: botão com cara de link ("Apagar conversa"), hoje no CSS do Assist.
 
 **F. Aula final** (combinado: não fechar o projeto sem ela) → ver a seção abaixo.
 
