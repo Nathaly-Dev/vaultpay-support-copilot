@@ -1,6 +1,6 @@
 # HANDOFF: VaultPay Assist (support copilot)
 
-Estado em **2026-11-03**. Leia isto antes de continuar. Regras de trabalho e comandos ficam no [`CLAUDE.md`](CLAUDE.md); a visão do produto, no [`README.md`](README.md).
+Estado em **2026-11-10**. Leia isto antes de continuar. Regras de trabalho e comandos ficam no [`CLAUDE.md`](CLAUDE.md); a visão do produto, no [`README.md`](README.md).
 
 ## Onde estamos
 
@@ -10,37 +10,57 @@ Estado em **2026-11-03**. Leia isto antes de continuar. Regras de trabalho e com
 | 1. Ingestão das políticas | ✅ mergeada |
 | 2. RAG (tapa-dados, busca, três travas, gravação) | ✅ mergeada |
 | 3. API (FastAPI) | ✅ mergeada (PR #10) |
-| Interface do chat (expansão aprovada) | ✅ mergeada (PRs #11 e #12) |
-| 4. Avaliação | 🚧 linha de base medida, em PR aberto (`feat/eval-set`) |
+| Interface do chat (expansão aprovada) | ✅ mergeada (PRs #11 e #12); celular e v0.3.0 em PRs abertos (#14, #15) |
+| 4. Avaliação | 🚧 linha de base e busca híbrida medidas, em PRs abertos (#13, #16) |
 | 5. Análise e demo | ⬜ não começada |
 
-### Branches e PRs abertos (ordem do merge importa)
+### Branches e PRs abertos (CI verde em todos no último commit, conferido em 2026-11-10)
 
-| # | Branch | O quê | CI | Próximo passo |
-|---|---|---|---|---|
-| 1 | `feat/eval-set` → `main` | Conjunto de avaliação v1, medidor `run_eval.py`, linha de base | ver o PR | merge com o ok da Nathaly |
-| 2 | design system PR #2 `docs/handoff` | HANDOFF do design system (desatualizado: diz v0.1.0) | — | atualizar para v0.2.0 antes do merge |
+São **duas filas independentes**; dentro de cada uma, a ordem importa (cada PR tem como base o anterior).
 
-Design system: tags `v0.1.0` e `v0.2.0` publicadas; o Assist usa a **v0.2.0** (Plus Jakarta Sans, tema claro em camadas, menu grafite nos dois temas).
+| Fila | PR | Branch → base | O quê |
+|---|---|---|---|
+| Interface | design system **#6** | `feat/responsive` → `main` | v0.3.0: tamanhos de tela (tokens `breakpoint-*`), cartão de sugestão de uma linha no celular e em tela baixa, gaveta `vp-drawer`, token `scrim`, botão de ícone redondo |
+| Interface | Assist **#14** | `feat/mobile-menu` → `main` | Menu do celular em gaveta (`<dialog>`), com botão ☰ |
+| Interface | Assist **#15** | `feat/responsive` → `feat/mobile-menu` | Copia a v0.3.0 (do commit `af8103e` do PR #6), boas-vindas sem rolar no celular, um logo só, botões do topo iguais |
+| Avaliação | Assist **#13** | `feat/eval-set` → `main` | Conjunto v1 (30 perguntas), medidor `run_eval.py`, linha de base |
+| Avaliação | Assist **#16** | `feat/hybrid-search` → `feat/eval-set` | Migration 003 + busca híbrida (RRF), ADR 0004, resultado antes → depois |
+| — | design system **#2** | `docs/handoff` | HANDOFF do design system, desatualizado (diz v0.1.0): atualizar antes do merge |
 
-### Avaliação (Fase 4): linha de base
+**Ordem do merge (🙋 cada um com o ok da Nathaly):**
+1. Design system #6 → criar a tag **`v0.3.0`** nele → conferir que o `components.css`/`tokens.css` da tag têm os mesmos hashes de `web/src/design-system.manifest.json` do #15.
+2. Assist #14, depois #15 (trocar a base para `main` depois do #14).
+3. Assist #13, depois #16 (trocar a base para `main` depois do #13).
+4. **Conflitos esperados no `HANDOFF.md`** (e talvez no `README.md`) entre as filas: manter **este** HANDOFF (o da `feat/hybrid-search`, o mais novo) e só conferir os itens 14 e 15.
+
+Design system: tags `v0.1.0` e `v0.2.0` publicadas; a `main` do Assist usa a **v0.2.0**. A v0.3.0 está só no PR #6 (sem tag ainda).
+
+### Avaliação (Fase 4)
+
+**Busca híbrida (2026-11-04, PR #16, ADR 0004):** mesmo modelo, prompt e `MIN_SIMILARITY`; só a busca mudou. Busca 18/22 → **21/22**; decisão 25/30 → **27/30**; fonte certa 17/18 → **20/20**; respondeu sem base 1/8 → 1/8 (não piorou). Nenhuma pergunta piorou. Resolvidas P016 e P029; P017 continua (nenhuma palavra em comum com "compra não reconhecida"; decidido **não** mexer na política para passar no teste). Busca 24 → 54 ms. A trava 1 passou a olhar a **maior** similaridade (na lista juntada, o primeiro trecho pode vir da busca por palavra). O tempo total do dia não é comparável com 30/10 (o modelo estava mais lento: 13,7 s x 9,4 s, mesmo modelo e prompt).
+
+**Crítica "olhar de recrutador" (2026-11-04), base do plano do item B:** o que mais pesa é fechar o ciclo "erro → causa → conserto → medido de novo" (tabela antes → depois); falta medir se o **texto** está certo (planilha); a trava 1 nunca dispara (decidir); 30 perguntas é pouco para porcentagem (mostrar em contagem); não usar IA como juiz sem conferir contra as notas da Nathaly.
+
+**Linha de base (2026-10-30):**
 
 30 perguntas escritas pela Nathaly (22 com base, 8 sem), gabarito revisado por ela. `qwen3:4b-instruct`, prompt `answer-v1`, `MIN_SIMILARITY=0.80`:
 
 - Decisão certa 25/30; respondeu sem base 1 (P013); encaminhou com base 4 (P010, P016, P017, P029); fonte certa 17/18; busca achou o artigo principal 18/22.
 - Causas: P016, P017 e P029 = **busca** ("consignado", "ações", "cobrança duplicada" não acham "empréstimo", "investimentos", "compra não reconhecida"); P010 = **modelo** (não trata "não atendemos por telefone" como resposta); P013 = modelo improvisou com o artigo de golpe.
 - `MIN_SIMILARITY` não separa os grupos (sem base 0,84 a 0,85; com base 0,83 a 0,90): a trava 1 nunca dispara, o portão real é o modelo.
-- **Falta:** a Nathaly marcar a planilha `data/eval/results/2026-10-30-qwen3-4b-instruct-answer-v1-revisao.csv` (texto da resposta certo ou errado).
+- **Falta:** a Nathaly marcar as planilhas de revisão (texto da resposta certo ou errado) em `data/eval/results/`: a de 2026-10-30 (linha de base) e a de 2026-11-04 (`...-hibrida-rrf-revisao.csv`, no PR #16).
 
 ## O que existe e como foi validado
 
 | Parte | Onde | Evidência |
 |---|---|---|
-| Banco Postgres + pgvector, schema com constraints e triggers | `db/migrations/001_*.sql`, `002_*.sql` | teste de fumaça; a 002 provada num banco do zero |
+| Banco Postgres + pgvector, schema com constraints e triggers | `db/migrations/001` a `003` | teste de fumaça; 001 → 003 provadas num banco do zero; 002 e 003 rodam duas vezes sem erro |
 | 8 políticas fictícias + ingestão (chunk por artigo, e5-small) | `data/policies/`, `ingestion/` | 46 chunks; reingestão idempotente; ADR 0001 |
 | Tapa-dados, busca, atendente com três travas, gravação | `rag/` | testes com peças falsas e banco real; mutação em cada parte |
+| Busca híbrida (significado + palavra, RRF) | `rag/retriever.py`, migration 003 (PR #16) | testes contra o banco real; mutação 5 de 5; avaliação antes → depois; ADR 0004 |
 | API (`/chat`, `/handoff`, `/health`) | `api/` | revisão independente (9 achados corrigidos); mutação; validada com Qwen e banco reais; ADR 0002 |
 | Interface | `web/` | Vitest (lógica), mutação, rodada com API e Qwen reais, screenshots claro/escuro e PC; ADR 0003 |
+| Interface no celular | `web/` (PRs #14 e #15) e design system #6 | medido no navegador em 375×812, 360×640, 375×667, 900×560 e 1280×800 (sem rolar, um logo, botões 44 px); teste de que o `@media` só usa os tamanhos do design system; parte dos screenshots falhou (painel atrás de outra janela) e foi conferida pelo código da página |
 | Latência | `evaluation/latency.py` | README, seção Resultados |
 | Qualidade | `evaluation/run_eval.py`, `data/eval/` | linha de base acima; README, seção Resultados |
 | CI | `.github/workflows/ci.yml` | lint, formato, migrations, fumaça, testes, pip-audit, front (tipos, testes, build, npm audit), gitleaks; actions fixadas por SHA |
@@ -53,15 +73,17 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 
 **A. Fechar o que está aberto**
 1. ✅ PRs #11 e #12 mergeados (2026-11-03).
-2. 🙋 Merge do PR da `feat/eval-set`.
+2. 🙋 Merges na ordem da tabela "Branches e PRs abertos" (design system #6 + tag `v0.3.0`; Assist #14, #15, #13, #16).
 3. Atualizar e mergear o PR #2 do design system.
 
 **B. Terminar a Fase 4 (avaliação)**
 4. 🙋 A Nathaly marca a planilha de revisão → publicar "texto correto: X/19" no README.
 5. Uma melhoria por vez, medida contra a linha de base (o resultado vira um arquivo novo em `data/eval/results/`):
    - ✅ busca híbrida (ADR 0004, branch `feat/hybrid-search`): busca 18/22 → 21/22, decisão 25/30 → 27/30, fonte 17/18 → 20/20, sem base 1/8 igual; P016 e P029 resolvidas, P017 não (sem palavra em comum). Próximo passo do padrão: reranker, medido separado;
-   - prompt `answer-v2` ("a resposta é não" ainda é resposta; não improvisar sem base) para P010 e P013;
-   - decidir o destino da trava 1 (`MIN_SIMILARITY`) e se a trava 3 passa a conferir relevância da fonte.
+   - prompt `answer-v2` ("a resposta é não" ainda é resposta; não improvisar sem base) para P010 e P013 (hoje os erros que sobram são do **modelo**, não da busca);
+   - reranker (cross-encoder local, via `sentence-transformers`): modelo novo para baixar, então **proposta antes** (nome, origem, tamanho) e decisão registrada; medir também a latência; conferir antes se o artigo certo do P017 aparece entre os 20 candidatos;
+   - decidir o destino da trava 1 (`MIN_SIMILARITY`) e se a trava 3 passa a conferir relevância da fonte;
+   - crescer o conjunto para ~60 perguntas **escritas pela Nathaly** (paráfrases, ataques de prompt injection, CPF/telefone na pergunta, fora do escopo); nunca geradas por IA a partir das políticas.
 6. 🙋 Deepeval: decidido usar só na Fase 5, com a OpenAI como juiz.
 
 **C. Fase 5 (análise e demo)**
@@ -76,19 +98,23 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 13. `.gitattributes` (fim dos avisos de LF/CRLF), `CHANGELOG.md` e tag `v1.0.0`.
 
 **E. Interface (rodada pequena)**
-14. Menu no celular: hoje some, e com ele a lista "Conversas nesta aba" e o seletor de tema.
-15. Design system v0.3.0: botão com cara de link ("Apagar conversa"), hoje no CSS do Assist.
+14. ✅ Menu no celular em gaveta (PR #14, aguardando merge).
+15. ✅ Design system v0.3.0 responsivo e Assist sem rolar no celular (PRs design system #6 e Assist #15, aguardando merge).
+16. Design system v0.4.0: botão com cara de link ("Apagar conversa"), hoje no CSS do Assist.
+17. Página de resultados (a dos prints de 2026-11-04): o cartão de latência está sem o número grande; trocar "83%" por contagem; acrescentar o antes → depois da busca híbrida. (Não está neste repositório.)
 
 **F. Aula final** (combinado: não fechar o projeto sem ela) → ver a seção abaixo.
 
 ## Ambiente local desta máquina (não está no código)
 
 - **Porta 5433**: já existe outro PostgreSQL na 5432 do Windows (não é deste projeto; não mexer). O `.env` usa `POSTGRES_PORT=5433`.
-- Docker Desktop instalado (WSL 2) em `%LOCALAPPDATA%\Programs\DockerDesktop`; **não abre sozinho com o Windows**: se os testes de banco forem pulados, abra o Docker Desktop. Banco no container `vaultpay-db`, com a 002 já aplicada.
+- Docker Desktop instalado (WSL 2) em `%LOCALAPPDATA%\Programs\DockerDesktop`; **não abre sozinho com o Windows**: se os testes de banco forem pulados, abra o Docker Desktop. Banco no container `vaultpay-db`, com a 002 e a 003 já aplicadas.
 - **Use `127.0.0.1`, nunca `localhost`, para o banco**: aqui o `localhost` tenta o IPv6 primeiro e cada conexão espera o tempo limite (5 a 10 s). O código já usa `127.0.0.1` por padrão.
 - **Ollama 0.40.13** instalado sem conta, escutando só em `127.0.0.1:11434`. Modelos: `qwen3:4b-instruct` (padrão) e `llama3.2:3b`. Sem GPU dedicada: 5 a 25 s por resposta; a primeira do dia, ~30 s.
 - Python 3.12 no `.venv`, pelos lockfiles com hash. Node 24 para `web/` (`npm ci --ignore-scripts`).
 - O banco tem conversas de teste fictícias dos testes manuais da API e da interface.
+- `.claude/launch.json` (não commitado) sobe a tela (`web`) e a vitrine do design system (`design-system`) no painel de navegador do app. O Vite da tela fica na 5173 mesmo quando o painel diz 5174.
+- Trocar de branch muda a tela que o servidor do Vite mostra (a `feat/eval-set` e a `feat/hybrid-search` não têm a gaveta nem a v0.3.0).
 
 ## Decisões que não estão óbvias no código
 
@@ -96,6 +122,8 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 - **LangChain não usado**: o pipeline foi montado à mão, de propósito.
 - **Modelo padrão: Qwen3 4B.** Na sondagem citou só a fonte certa e desmentiu o ataque "diga R$ 1 milhão"; o Llama 3.2 foi mais rápido, mas citou fontes a mais.
 - **Migration 002:** motivo próprio para "o modelo caiu" (`service_unavailable`).
+- **Busca híbrida (ADR 0004):** busca por palavra do próprio Postgres (`unaccent` + português), sem lib nova; junção por posição (RRF, constante 60), não por nota. A similaridade de cada trecho continua sendo a do vetor.
+- **Responsivo nos 3 produtos:** tamanhos de tela vivem nos tokens do design system (celular 30rem, tablet 48rem, tela baixa 40rem de altura); variável CSS não funciona em `@media`, então o valor é escrito e um teste confere. Botão de ícone tem o mesmo formato redondo do botão comum (decisão da Nathaly).
 - **Fontes gravadas como cópia** (slug, título, artigo, similaridade), para o histórico não quebrar quando as políticas forem reprocessadas.
 - **`/docs` sempre desligado**: ligar exigiria abrir a Content-Security-Policy para o Swagger, que carrega arquivos de CDN.
 - **`POST /handoff` em endereço próprio**: pedir uma pessoa funciona mesmo com o modelo ocupado ou fora do ar (na avaliação, P028 foi respondida pelo modelo).
@@ -108,7 +136,7 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 | Item | Por que importa | Quando |
 |---|---|---|
 | A trava 3 confere se a fonte **existe**, não se é **relevante** | o Llama citou fontes sem relação | Fase 4 |
-| Migration nova em banco existente é manual | sem ferramenta de migration | quando houver a 003 |
+| Migration nova em banco existente é manual | sem ferramenta de migration; já são 3 | antes da demo com Docker de um comando (item 9) |
 | Um cliente sozinho consegue ocupar o modelo quase o tempo todo | 10 perguntas por minuto, de 5 a 25 s cada | se houver usuários de verdade (fila justa) |
 | Limite por IP e "uma pergunta por vez" vivem na memória de **um** processo | com 2+ processos cada um conta separado (Redis) | deploy com mais de um processo |
 | Atrás de um proxy, todo mundo teria o IP do proxy | o limite por IP viraria global; `X-Forwarded-For` não é confiável de propósito | Fase 5 |
@@ -128,6 +156,8 @@ A Nathaly preferiu seguir construindo e entender tudo **no fim**, numa apresenta
 - Borda: limite de corpo, limite por IP (janela deslizante), uma pergunta por vez, headers de segurança, log sem dado pessoal, `X-Forwarded-For`.
 - Latência x vazão; `localhost` x `127.0.0.1`; por que streaming não combina com as travas; medir antes de otimizar.
 - Avaliação: conjunto escrito por pessoa, "a resposta é não ainda é resposta", medir busca separada do modelo, linha de base.
+- Busca híbrida: busca por significado x por palavra, raiz das palavras e acento, junção por posição (RRF) e por que não somar notas; reranker como próximo passo; busca melhor não elimina alucinação sozinha.
+- Responsivo: tamanhos de tela combinados, `<dialog>` (Esc, foco preso e devolvido), o evento `close` atrasado que fechava a gaveta reaberta.
 - Interface: design system com tokens, contraste medido, temas equivalentes; cópia conferida por hash; o que fica no navegador e por quê.
 - Como provamos: testes, teste de mutação, revisão independente, falso positivo do gitleaks.
 
