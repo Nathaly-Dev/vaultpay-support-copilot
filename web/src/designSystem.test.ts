@@ -66,6 +66,12 @@ describe("app.css só usa tokens", () => {
     expect(used.filter((value) => !breakpoints.has(value))).toEqual([]);
   });
 
+  // Claro como padrão sempre (design system v0.4.0): o escuro só com a escolha da pessoa.
+  it("a tela não segue o tema do sistema", () => {
+    expect(css).not.toMatch(/prefers-color-scheme/);
+    expect(tokens).not.toMatch(/prefers-color-scheme/);
+  });
+
   it("toda variável usada existe no design system", () => {
     const defined = new Set([...`${tokens}\n${components}`.matchAll(/(--vp-[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
     const used = [...css.matchAll(/var\((--vp-[a-z0-9-]+)\)/g)].map((m) => m[1]);

@@ -18,13 +18,13 @@ Estado em **2026-11-10**. Leia isto antes de continuar. Regras de trabalho e com
 
 | PR | Branch → base | O quê | Estado |
 |---|---|---|---|
-| design system **#2** | `docs/handoff` | HANDOFF do design system, desatualizado (diz v0.1.0) | atualizar antes do merge |
+| (nenhum) | | | |
 
 **Mergeados em 2026-11-10:** design system #6 (+ tag `v0.3.0`, cópia do Assist conferida contra a tag: 20 arquivos iguais), Assist #14 (gaveta), #15 (v0.3.0 no Assist), #13 (conjunto de avaliação e linha de base) e #16 (busca híbrida). O CI da `main` passou depois de cada um. Antes do #13, a `main` com o #13 junto foi testada localmente (o CI dele era de antes do #14 e #15).
 
 **Cuidado aprendido:** depois de um erro 500 do GitHub num envio, o PR pode continuar apontando para o commit antigo mesmo com a branch certa (aconteceu no design system #6). Antes de mergear, comparar o commit do PR com o da branch; se diferirem, fechar e reabrir o PR e esperar o CI.
 
-Design system: tags `v0.1.0`, `v0.2.0` e `v0.3.0` publicadas; a `main` do Assist usa a **v0.3.0**. Há regras novas, sem commit, no `CLAUDE.md` do design system ("claro como padrão sempre", "uma seção por tela", "qualquer aparelho", "sem repetição por tela"), que não vieram desta sessão; "claro como padrão sempre" contradiz o código atual (os temas seguem `prefers-color-scheme`).
+Design system: tags `v0.1.0` a `v0.4.0` publicadas; a `main` do Assist usa a **v0.4.0**. Desde a v0.4.0, **claro como padrão sempre**: a tela abre clara mesmo com o sistema no escuro, e o escuro só aparece quando a pessoa escolhe (botão Claro/Escuro, sem a opção "Sistema"). PR #2 do design system fechado e substituído pelo HANDOFF da v0.4.0 (PR #7).
 
 ### Avaliação (Fase 4)
 
@@ -65,7 +65,7 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 **A. Fechar o que está aberto**
 1. ✅ PRs #11 e #12 mergeados (2026-11-03).
 2. ✅ Design system #6 (+ tag `v0.3.0`), Assist #14, #15, #13 e #16 mergeados (2026-11-10).
-3. Atualizar e mergear o PR #2 do design system.
+3. ✅ HANDOFF do design system atualizado (PR #7, v0.4.0); o PR #2 foi fechado.
 
 **B. Terminar a Fase 4 (avaliação)**
 4. 🙋 A Nathaly marca a planilha de revisão → publicar "texto correto: X/19" no README.

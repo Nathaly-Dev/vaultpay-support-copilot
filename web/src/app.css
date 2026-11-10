@@ -36,14 +36,10 @@ h1, h2, p { margin: 0; }
 .sidebar__footer { margin-top: auto; display: grid; gap: var(--vp-space-3); }
 .sidebar__disclaimer { font-size: var(--vp-text-xs); padding: 0 var(--vp-space-2); }
 
-/* Cada versão do símbolo aparece só no tema certo: o escolhido no botão ou, sem escolha, o do sistema. */
+/* Cada versão do símbolo aparece só no tema certo: claro, salvo se a pessoa escolher o escuro. */
 .on-dark { display: none; }
 :root[data-theme="dark"] .on-dark { display: inline-block; }
 :root[data-theme="dark"] .on-light { display: none; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .on-dark { display: inline-block; }
-  :root:not([data-theme="light"]) .on-light { display: none; }
-}
 
 /* ---------- Conversa ---------- */
 
