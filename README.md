@@ -68,10 +68,12 @@ Pré-requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/
    docker compose cp db/smoke_test.sql db:/tmp/smoke_test.sql
    docker compose exec db psql -U vaultpay -d vaultpay_copilot -v ON_ERROR_STOP=1 -f /tmp/smoke_test.sql
    ```
-4. Banco criado antes de uma migration nova? O Docker só aplica `db/migrations/` na criação do banco; aplique a nova à mão (exemplo com a 002, que pode rodar mais de uma vez sem erro):
+4. Banco criado antes de uma migration nova? O Docker só aplica `db/migrations/` na criação do banco; aplique as novas à mão, em ordem (a 002 e a 003 podem rodar mais de uma vez sem erro):
    ```bash
    docker compose cp db/migrations/002_escalation_service_unavailable.sql db:/tmp/002.sql
    docker compose exec db psql -U vaultpay -d vaultpay_copilot -v ON_ERROR_STOP=1 -f /tmp/002.sql
+   docker compose cp db/migrations/003_keyword_search.sql db:/tmp/003.sql
+   docker compose exec db psql -U vaultpay -d vaultpay_copilot -v ON_ERROR_STOP=1 -f /tmp/003.sql
    ```
 
 ## Ingestão das políticas
@@ -174,22 +176,30 @@ Abra `http://127.0.0.1:5173`. Em desenvolvimento, o Vite repassa `/chat`, `/hand
 
 ## Resultados
 
-**Qualidade** (linha de base, 2026-10-30, `qwen3:4b-instruct`, prompt `answer-v1`, `MIN_SIMILARITY=0.80`). Conjunto de 30 perguntas escritas à mão ([`data/eval/`](data/eval/)): 22 com resposta nas políticas, 8 sem.
+**Qualidade.** Conjunto de 30 perguntas escritas à mão ([`data/eval/`](data/eval/)): 22 com resposta nas políticas, 8 sem. Mesmo modelo (`qwen3:4b-instruct`), prompt (`answer-v1`) e `MIN_SIMILARITY=0.80` nas duas colunas; só a busca mudou. Com 30 perguntas, cada uma vale 3,3 pontos: por isso os números vão em contagem.
 
 ```bash
 PYTHONPATH=src .venv/Scripts/python -m vaultpay_copilot.evaluation.run_eval
 ```
 
-| Medida | Resultado |
-|---|---|
-| Decisão certa (respondeu quando havia base, encaminhou quando não havia) | 25/30 (83,3%) |
-| Respondeu sem base (o erro mais grave) | 1/8 (P013) |
-| Encaminhou mesmo havendo base | 4/22 |
-| Citou a fonte certa, quando respondeu com base | 17/18 (94,4%) |
-| A busca achou o artigo principal entre os 4 trechos | 18/22 (81,8%) |
-| Texto da resposta correto (revisão humana) | em revisão |
+| Medida | Linha de base (2026-10-30): busca por significado | Busca híbrida (2026-11-04, [ADR 0004](docs/decisions/0004-busca-hibrida.md)) |
+|---|---|---|
+| A busca achou o artigo principal entre os 4 trechos | 18/22 | **21/22** |
+| Decisão certa (respondeu quando havia base, encaminhou quando não havia) | 25/30 | **27/30** |
+| Encaminhou mesmo havendo base | 4/22 (P010, P016, P017, P029) | **2/22** (P010, P017) |
+| Respondeu sem base (o erro mais grave) | 1/8 (P013) | 1/8 (P013) |
+| Citou a fonte certa, quando respondeu com base | 17/18 | **20/20** |
+| Texto da resposta correto (revisão humana) | em revisão | em revisão |
 
-O que os erros mostram: 3 dos 4 encaminhamentos indevidos são falha da **busca** (as palavras "consignado", "ações" e "cobrança duplicada" não encontram "empréstimo", "investimentos" e "compra não reconhecida"); o outro é o **modelo** não tratar "não atendemos por telefone" como resposta. A nota mínima de similaridade não separa os grupos: as perguntas sem base ficaram entre 0,84 e 0,85, no meio das com base (0,83 a 0,90), então subir o `MIN_SIMILARITY` cortaria respostas certas. Resultado completo em [`data/eval/results/`](data/eval/results/).
+O que mudou: "empréstimo consignado" (P016) e "investir em ações" (P029) passaram a achar o artigo "não oferece empréstimo, investimentos" pela palavra e foram respondidas certo ("Não, a VaultPay não oferece…"); P028 passou a citar o artigo certo. Nenhuma pergunta piorou. A busca ficou de 24 para 54 ms (mediana), irrelevante perto do modelo.
+
+O que continua errado, e por quê:
+- **P017** ("fui cobrada duas vezes"): nenhuma palavra em comum com "compra não reconhecida"; a busca por palavra não ajuda. Não alteramos a política só para passar no teste.
+- **P010** ("telefone da central"): a busca acha o artigo; o **modelo** não trata "não atendemos por telefone" como resposta.
+- **P013** (celular roubado, sem base): o **modelo** improvisou com o artigo de golpe.
+- A nota mínima de similaridade (trava 1) não separa os grupos: sem base 0,84 a 0,85, com base 0,82 a 0,90. Hoje o portão real é o modelo.
+
+Resultados completos em [`data/eval/results/`](data/eval/results/).
 
 **Latência** (2026-10-30, Ryzen 7 5825U sem GPU dedicada, 16 GB, `qwen3:4b-instruct` no Ollama). É medida de velocidade, não de qualidade: as 10 perguntas do medidor só servem de carga.
 

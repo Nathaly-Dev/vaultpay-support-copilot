@@ -43,7 +43,7 @@ class Copilot:
             register_vector(conn)
             reply = answer(
                 question,
-                lambda q: search(conn, self.embed(q), self.embed.model_name),
+                lambda q: search(conn, q, self.embed(q), self.embed.model_name),
                 self.llm,
                 self.min_similarity,
             )
