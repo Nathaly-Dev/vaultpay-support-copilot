@@ -11,17 +11,16 @@ Estado em **2026-11-10**. Leia isto antes de continuar. Regras de trabalho e com
 | 2. RAG (tapa-dados, busca, três travas, gravação) | ✅ mergeada |
 | 3. API (FastAPI) | ✅ mergeada (PR #10) |
 | Interface do chat (expansão aprovada) | ✅ mergeada (PRs #11, #12, #14 e #15: celular e design system v0.3.0) |
-| 4. Avaliação | 🚧 conjunto e linha de base mergeados (#13); busca híbrida medida, em PR aberto (#16) |
+| 4. Avaliação | 🚧 conjunto, linha de base (#13) e busca híbrida (#16) mergeados; faltam revisão do texto e as próximas melhorias (item B) |
 | 5. Análise e demo | ⬜ não começada |
 
 ### Branches e PRs abertos
 
 | PR | Branch → base | O quê | Estado |
 |---|---|---|---|
-| Assist **#16** | `feat/hybrid-search` → `main` | Migration 003 + busca híbrida (RRF), ADR 0004, resultado antes → depois | 🙋 merge com o ok da Nathaly (é o último da fila) |
 | design system **#2** | `docs/handoff` | HANDOFF do design system, desatualizado (diz v0.1.0) | atualizar antes do merge |
 
-**Mergeados em 2026-11-10:** design system #6 (+ tag `v0.3.0`, cópia do Assist conferida contra a tag: 20 arquivos iguais), Assist #14 (gaveta), #15 (v0.3.0 no Assist) e #13 (conjunto de avaliação e linha de base). Antes do #13, a `main` com o #13 junto foi testada localmente (o CI dele era de antes do #14 e #15).
+**Mergeados em 2026-11-10:** design system #6 (+ tag `v0.3.0`, cópia do Assist conferida contra a tag: 20 arquivos iguais), Assist #14 (gaveta), #15 (v0.3.0 no Assist), #13 (conjunto de avaliação e linha de base) e #16 (busca híbrida). O CI da `main` passou depois de cada um. Antes do #13, a `main` com o #13 junto foi testada localmente (o CI dele era de antes do #14 e #15).
 
 **Cuidado aprendido:** depois de um erro 500 do GitHub num envio, o PR pode continuar apontando para o commit antigo mesmo com a branch certa (aconteceu no design system #6). Antes de mergear, comparar o commit do PR com o da branch; se diferirem, fechar e reabrir o PR e esperar o CI.
 
@@ -65,13 +64,13 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 
 **A. Fechar o que está aberto**
 1. ✅ PRs #11 e #12 mergeados (2026-11-03).
-2. ✅ Design system #6 (+ tag `v0.3.0`), Assist #14, #15 e #13 mergeados (2026-11-10). 🙋 Falta o #16.
+2. ✅ Design system #6 (+ tag `v0.3.0`), Assist #14, #15, #13 e #16 mergeados (2026-11-10).
 3. Atualizar e mergear o PR #2 do design system.
 
 **B. Terminar a Fase 4 (avaliação)**
 4. 🙋 A Nathaly marca a planilha de revisão → publicar "texto correto: X/19" no README.
 5. Uma melhoria por vez, medida contra a linha de base (o resultado vira um arquivo novo em `data/eval/results/`):
-   - ✅ busca híbrida (ADR 0004, branch `feat/hybrid-search`): busca 18/22 → 21/22, decisão 25/30 → 27/30, fonte 17/18 → 20/20, sem base 1/8 igual; P016 e P029 resolvidas, P017 não (sem palavra em comum). Próximo passo do padrão: reranker, medido separado;
+   - ✅ busca híbrida (ADR 0004, PR #16): busca 18/22 → 21/22, decisão 25/30 → 27/30, fonte 17/18 → 20/20, sem base 1/8 igual; P016 e P029 resolvidas, P017 não (sem palavra em comum). Próximo passo do padrão: reranker, medido separado;
    - prompt `answer-v2` ("a resposta é não" ainda é resposta; não improvisar sem base) para P010 e P013 (hoje os erros que sobram são do **modelo**, não da busca);
    - reranker (cross-encoder local, via `sentence-transformers`): modelo novo para baixar, então **proposta antes** (nome, origem, tamanho) e decisão registrada; medir também a latência; conferir antes se o artigo certo do P017 aparece entre os 20 candidatos;
    - decidir o destino da trava 1 (`MIN_SIMILARITY`) e se a trava 3 passa a conferir relevância da fonte;
