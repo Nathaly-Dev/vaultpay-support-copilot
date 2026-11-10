@@ -1,25 +1,24 @@
-// Tema da tela: claro, escuro ou o do sistema. Os tokens do design system leem
-// <html data-theme="light|dark">; sem o atributo, vale o tema do sistema.
+// Tema da tela: claro como padrão sempre (design system v0.4.0). O escuro só aparece quando a
+// pessoa escolhe; nunca segue o tema do sistema. Os tokens leem <html data-theme="light|dark">.
 
-export type Theme = "light" | "dark" | "system";
+export type Theme = "light" | "dark";
 
 export const THEMES: { value: Theme; label: string }[] = [
   { value: "light", label: "Claro" },
   { value: "dark", label: "Escuro" },
-  { value: "system", label: "Sistema" },
 ];
 
 const KEY = "vaultpay-assist-theme";
 
 type Storage = Pick<globalThis.Storage, "getItem" | "setItem">;
 
-/** Só a preferência de tema fica no navegador (a conversa nunca). Sem acesso, vale "system". */
+/** Só a preferência de tema fica no navegador (a conversa nunca). Sem escolha, vale o claro. */
 export function loadTheme(storage: Storage | undefined = globalThis.localStorage): Theme {
   try {
-    const value = storage?.getItem(KEY);
-    return value === "light" || value === "dark" ? value : "system";
+    // "system", de versões antigas, também vira claro.
+    return storage?.getItem(KEY) === "dark" ? "dark" : "light";
   } catch {
-    return "system"; // janela privada ou armazenamento bloqueado
+    return "light"; // janela privada ou armazenamento bloqueado
   }
 }
 
@@ -32,6 +31,5 @@ export function saveTheme(theme: Theme, storage: Storage | undefined = globalThi
 }
 
 export function applyTheme(theme: Theme, root: { dataset: DOMStringMap } = document.documentElement): void {
-  if (theme === "system") delete root.dataset.theme;
-  else root.dataset.theme = theme;
+  root.dataset.theme = theme;
 }

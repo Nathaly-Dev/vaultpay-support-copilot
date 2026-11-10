@@ -1,5 +1,5 @@
 /* GERADO por scripts/build-tokens.mjs a partir de tokens/tokens.json. Não edite à mão. */
-/* VaultPay Design System v0.3.0 */
+/* VaultPay Design System v0.4.0 */
 
 :root {
   --vp-gold-50: #FFF6E3;
@@ -96,7 +96,7 @@
   --vp-drawer-width: 18rem;
 }
 
-/* Tema claro (padrão) */
+/* Tema claro: o padrão sempre, mesmo com o sistema no escuro. */
 :root,
 :root[data-theme="light"] {
   color-scheme: light;
@@ -153,65 +153,7 @@
   --vp-scrim: rgb(20 17 13 / 0.6);
 }
 
-/* Tema escuro automático, a menos que o produto force o claro */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --vp-surface-0: var(--vp-neutral-900);
-    --vp-surface-1: var(--vp-neutral-850);
-    --vp-surface-2: var(--vp-neutral-800);
-    --vp-surface-3: var(--vp-neutral-700);
-    --vp-text-primary: var(--vp-neutral-100);
-    --vp-text-secondary: var(--vp-neutral-300);
-    --vp-text-muted: var(--vp-neutral-400);
-    --vp-text-disabled: var(--vp-neutral-500);
-    --vp-border: var(--vp-neutral-700);
-    --vp-border-strong: var(--vp-neutral-600);
-    --vp-border-input: var(--vp-neutral-400);
-    --vp-accent: var(--vp-gold-500);
-    --vp-accent-hover: var(--vp-gold-400);
-    --vp-on-accent: var(--vp-neutral-900);
-    --vp-text-accent: var(--vp-gold-400);
-    --vp-accent-subtle: var(--vp-gold-900);
-    --vp-text-on-accent-subtle: var(--vp-gold-200);
-    --vp-border-accent: var(--vp-gold-700);
-    --vp-focus: var(--vp-gold-400);
-    --vp-brand-mark: var(--vp-neutral-100);
-    --vp-brand-coin: var(--vp-gold-500);
-    --vp-brand-coin-edge: var(--vp-gold-700);
-    --vp-success-fill: var(--vp-green-400);
-    --vp-on-success: var(--vp-neutral-900);
-    --vp-success-bg: var(--vp-green-900);
-    --vp-success-text: var(--vp-green-300);
-    --vp-success-border: var(--vp-green-700);
-    --vp-warning-fill: var(--vp-orange-400);
-    --vp-on-warning: var(--vp-neutral-900);
-    --vp-warning-bg: var(--vp-orange-900);
-    --vp-warning-text: var(--vp-orange-300);
-    --vp-warning-border: var(--vp-orange-700);
-    --vp-danger-fill: var(--vp-red-400);
-    --vp-on-danger: var(--vp-neutral-900);
-    --vp-danger-bg: var(--vp-red-900);
-    --vp-danger-text: var(--vp-red-300);
-    --vp-danger-border: var(--vp-red-700);
-    --vp-info-fill: var(--vp-blue-400);
-    --vp-on-info: var(--vp-neutral-900);
-    --vp-info-bg: var(--vp-blue-900);
-    --vp-info-text: var(--vp-blue-300);
-    --vp-info-border: var(--vp-blue-700);
-    --vp-shadow-popover: 0 8px 24px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);
-    --vp-brand-surface: var(--vp-neutral-950);
-    --vp-brand-surface-hover: var(--vp-neutral-850);
-    --vp-brand-border: var(--vp-neutral-500);
-    --vp-on-brand: var(--vp-neutral-300);
-    --vp-on-brand-strong: var(--vp-neutral-100);
-    --vp-brand-active-bg: var(--vp-gold-900);
-    --vp-brand-active-text: var(--vp-gold-200);
-    --vp-scrim: rgb(0 0 0 / 0.7);
-  }
-}
-
-/* Tema escuro forçado */
+/* Tema escuro: só quando a pessoa escolhe (data-theme="dark"); não segue o sistema. */
 :root[data-theme="dark"] {
   color-scheme: dark;
   --vp-surface-0: var(--vp-neutral-900);

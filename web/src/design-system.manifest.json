@@ -1,5 +1,5 @@
 {
-  "version": "v0.3.0",
+  "version": "v0.4.0",
   "files": {
     "LICENSE": "5053aa18362814797701304afc64b5d7bb3cefdf4c1f5c4834fb789cb487d1a2",
     "fonts/LICENSE-IBMPlexMono-OFL.txt": "23b0a9d0c6d3f140a0b77e483c5cfa6bba574325ef5cb189ed9f2fec4884533f",
@@ -20,6 +20,6 @@
     "logo/vaultpay-wordmark-on-light.svg": "0a35120e95dba027dbe7776c2d9cd227484a26355c752389e618a7607fbda75a",
     "src/components.css": "33108e744a45e98910ee3adebed3ab4e122a2b60193298fd4308d84904da2a33",
     "src/fonts.css": "f5c1af2bc9adc00f9151ef45861cfb4b3081e43759c8aaf0ecd989a83de00c76",
-    "src/tokens.css": "38ffbb1a969e0f62538972f4ba4d539619dec9fed3a2bc2c829dfa075ec17687"
+    "src/tokens.css": "c06a31e0951aee5d6e62f72b7c691339a54440c47de72bb30e3caaab82e5ef12"
   }
 }

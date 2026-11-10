@@ -27,16 +27,17 @@ describe("loadTheme e saveTheme", () => {
     expect(loadTheme(storage)).toBe("dark");
   });
 
-  it("sem escolha, segue o sistema", () => {
-    expect(loadTheme(memoryStorage())).toBe("system");
+  it("sem escolha, abre claro (mesmo com o sistema no escuro)", () => {
+    expect(loadTheme(memoryStorage())).toBe("light");
   });
 
-  it("valor estranho guardado vira sistema", () => {
-    expect(loadTheme(memoryStorage({ "vaultpay-assist-theme": "roxo" }))).toBe("system");
+  it("valor estranho ou o antigo \"system\" viram claro", () => {
+    expect(loadTheme(memoryStorage({ "vaultpay-assist-theme": "roxo" }))).toBe("light");
+    expect(loadTheme(memoryStorage({ "vaultpay-assist-theme": "system" }))).toBe("light");
   });
 
   it("armazenamento bloqueado não quebra a tela", () => {
-    expect(loadTheme(broken)).toBe("system");
+    expect(loadTheme(broken)).toBe("light");
     expect(() => saveTheme("light", broken)).not.toThrow();
   });
 });
@@ -50,13 +51,5 @@ describe("applyTheme", () => {
 
     applyTheme("light", root);
     expect(root.dataset.theme).toBe("light");
-  });
-
-  it("sistema tira a marca", () => {
-    const root = { dataset: { theme: "dark" } as DOMStringMap };
-
-    applyTheme("system", root);
-
-    expect(root.dataset.theme).toBeUndefined();
   });
 });
