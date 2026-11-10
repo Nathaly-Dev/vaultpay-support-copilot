@@ -1,6 +1,6 @@
-# Cópia do VaultPay Design System v0.2.0
+# Cópia do VaultPay Design System v0.3.0
 
-Copiado da tag `v0.2.0` (commit `746300f2c382b820fd09ad6ea9ab2091be830006`) de
+Copiado da tag `v0.3.0` (commit `ead208de820aafc751a286e43a663911295a5c68`) de
 https://github.com/Nathaly-Dev/vaultpay-design-system.
 
 **Não edite nada aqui.** Mudança de estilo acontece no design system, ganha uma tag nova

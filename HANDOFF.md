@@ -23,7 +23,7 @@ Estado em **2026-11-03**. Leia isto antes de continuar. Regras de trabalho e com
 | 3 | `feat/eval-set` (só local, **sem push**) | Conjunto de avaliação v1, medidor `run_eval.py`, linha de base | não rodou | push e PR depois do #12. **Vai dar conflito** em `README.md` e `HANDOFF.md`: manter o texto da `main` e acrescentar as partes da avaliação |
 | — | design system PR #2 `docs/handoff` | HANDOFF do design system (desatualizado: diz v0.1.0) | — | atualizar para v0.2.0 antes do merge |
 
-Design system: tags `v0.1.0` e `v0.2.0` publicadas; o Assist usa a **v0.2.0** (Plus Jakarta Sans, tema claro em camadas, menu grafite nos dois temas).
+Design system: tags `v0.1.0` e `v0.2.0` publicadas; a v0.3.0 (responsiva) está no PR #6. O Assist usa a **v0.2.0** na `main` (Plus Jakarta Sans, tema claro em camadas, menu grafite nos dois temas).
 
 ### Avaliação (Fase 4): linha de base
 
@@ -78,8 +78,8 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 13. `.gitattributes` (fim dos avisos de LF/CRLF), `CHANGELOG.md` e tag `v1.0.0`.
 
 **E. Interface (rodada pequena)**
-14. ✅ Menu no celular: gaveta lateral com o mesmo menu do PC (branch `feat/mobile-menu`).
-15. Design system v0.3.0: botão com cara de link ("Apagar conversa") e a gaveta do celular com o fundo escurecido (sem token próprio, hoje feito com `color-mix` do grafite da marca), os dois no CSS do Assist.
+14. ✅ Menu no celular: gaveta lateral com o mesmo menu do PC (PR #14, mergeado em 2026-11-10).
+15. Design system v0.3.0 (PR #6 do design system; branch `feat/responsive` do Assist): tamanhos de tela combinados, cartão de sugestão de uma linha no celular e em tela baixa, gaveta `vp-drawer` e token `scrim`. PR #6 mergeado e tag `v0.3.0` publicada em 2026-11-10 (cópia do Assist conferida contra a tag: 20 arquivos iguais); falta o merge do PR #15 do Assist. Fica para a v0.4.0: botão com cara de link ("Apagar conversa"), hoje no CSS do Assist.
 
 **F. Aula final** (combinado: não fechar o projeto sem ela) → ver a seção abaixo.
 
