@@ -32,6 +32,7 @@ h1, h2, p { margin: 0; }
 .history-item__text { display: grid; min-width: 0; text-align: left; }
 .history-item__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .history-item__meta { font-size: var(--vp-text-xs); font-weight: var(--vp-weight-regular); }
+.brand__close { margin-left: auto; align-self: center; }
 .sidebar__footer { margin-top: auto; display: grid; gap: var(--vp-space-3); }
 .sidebar__disclaimer { font-size: var(--vp-text-xs); padding: 0 var(--vp-space-2); }
 
@@ -95,6 +96,25 @@ h1, h2, p { margin: 0; }
   .hide-small { display: none; }
   .show-small { display: initial; }
   .chat__mark.show-small { display: block; }
+  /* O topo já mostra o símbolo: um segundo logo logo abaixo seria repetição. */
+  .welcome__icon { display: none; }
   .quick { flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--vp-space-1); }
   .quick .vp-chip { flex: none; }
+  .chat__header .vp-btn--icon.show-small { display: inline-flex; margin-left: calc(-1 * var(--vp-space-2)); }
+  /* Sem o texto, o botão de atendente vira só ícone: mesmo tamanho do ☰, círculo perfeito. */
+  .chat__header .vp-btn { width: var(--vp-touch); padding: 0; }
+}
+
+/* Gaveta do celular (vp-drawer, do design system): o mesmo menu do PC dentro dela. */
+.vp-drawer .sidebar { display: flex; }
+
+/* ---------- Tela baixa ou celular: boas-vindas compactas ---------- */
+
+/* Junto com o cartão de uma linha (design system), as sugestões cabem sem rolar. */
+@media (max-width: 30rem), (max-height: 40rem) {
+  .welcome { gap: var(--vp-space-2); padding: var(--vp-space-4) 0; }
+  .welcome__icon { width: var(--vp-space-10); height: var(--vp-space-10); }
+  .welcome h1 { font-size: var(--vp-text-2xl); }
+  .welcome__lead { font-size: var(--vp-text-md); }
+  .welcome__grid { gap: var(--vp-space-2); margin-top: var(--vp-space-2); }
 }

@@ -10,30 +10,22 @@ Estado em **2026-11-10**. Leia isto antes de continuar. Regras de trabalho e com
 | 1. Ingestão das políticas | ✅ mergeada |
 | 2. RAG (tapa-dados, busca, três travas, gravação) | ✅ mergeada |
 | 3. API (FastAPI) | ✅ mergeada (PR #10) |
-| Interface do chat (expansão aprovada) | ✅ mergeada (PRs #11 e #12); celular e v0.3.0 em PRs abertos (#14, #15) |
-| 4. Avaliação | 🚧 linha de base e busca híbrida medidas, em PRs abertos (#13, #16) |
+| Interface do chat (expansão aprovada) | ✅ mergeada (PRs #11, #12, #14 e #15: celular e design system v0.3.0) |
+| 4. Avaliação | 🚧 conjunto e linha de base mergeados (#13); busca híbrida medida, em PR aberto (#16) |
 | 5. Análise e demo | ⬜ não começada |
 
-### Branches e PRs abertos (CI verde em todos no último commit, conferido em 2026-11-10)
+### Branches e PRs abertos
 
-São **duas filas independentes**; dentro de cada uma, a ordem importa (cada PR tem como base o anterior).
-
-| Fila | PR | Branch → base | O quê |
+| PR | Branch → base | O quê | Estado |
 |---|---|---|---|
-| Interface | design system **#6** | `feat/responsive` → `main` | v0.3.0: tamanhos de tela (tokens `breakpoint-*`), cartão de sugestão de uma linha no celular e em tela baixa, gaveta `vp-drawer`, token `scrim`, botão de ícone redondo |
-| Interface | Assist **#14** | `feat/mobile-menu` → `main` | Menu do celular em gaveta (`<dialog>`), com botão ☰ |
-| Interface | Assist **#15** | `feat/responsive` → `feat/mobile-menu` | Copia a v0.3.0 (do commit `af8103e` do PR #6), boas-vindas sem rolar no celular, um logo só, botões do topo iguais |
-| Avaliação | Assist **#13** | `feat/eval-set` → `main` | Conjunto v1 (30 perguntas), medidor `run_eval.py`, linha de base |
-| Avaliação | Assist **#16** | `feat/hybrid-search` → `feat/eval-set` | Migration 003 + busca híbrida (RRF), ADR 0004, resultado antes → depois |
-| — | design system **#2** | `docs/handoff` | HANDOFF do design system, desatualizado (diz v0.1.0): atualizar antes do merge |
+| Assist **#16** | `feat/hybrid-search` → `main` | Migration 003 + busca híbrida (RRF), ADR 0004, resultado antes → depois | 🙋 merge com o ok da Nathaly (é o último da fila) |
+| design system **#2** | `docs/handoff` | HANDOFF do design system, desatualizado (diz v0.1.0) | atualizar antes do merge |
 
-**Ordem do merge (🙋 cada um com o ok da Nathaly):**
-1. Design system #6 → criar a tag **`v0.3.0`** nele → conferir que o `components.css`/`tokens.css` da tag têm os mesmos hashes de `web/src/design-system.manifest.json` do #15.
-2. Assist #14, depois #15 (trocar a base para `main` depois do #14).
-3. Assist #13, depois #16 (trocar a base para `main` depois do #13).
-4. **Conflitos esperados no `HANDOFF.md`** (e talvez no `README.md`) entre as filas: manter **este** HANDOFF (o da `feat/hybrid-search`, o mais novo) e só conferir os itens 14 e 15.
+**Mergeados em 2026-11-10:** design system #6 (+ tag `v0.3.0`, cópia do Assist conferida contra a tag: 20 arquivos iguais), Assist #14 (gaveta), #15 (v0.3.0 no Assist) e #13 (conjunto de avaliação e linha de base). Antes do #13, a `main` com o #13 junto foi testada localmente (o CI dele era de antes do #14 e #15).
 
-Design system: tags `v0.1.0` e `v0.2.0` publicadas; a `main` do Assist usa a **v0.2.0**. A v0.3.0 está só no PR #6 (sem tag ainda).
+**Cuidado aprendido:** depois de um erro 500 do GitHub num envio, o PR pode continuar apontando para o commit antigo mesmo com a branch certa (aconteceu no design system #6). Antes de mergear, comparar o commit do PR com o da branch; se diferirem, fechar e reabrir o PR e esperar o CI.
+
+Design system: tags `v0.1.0`, `v0.2.0` e `v0.3.0` publicadas; a `main` do Assist usa a **v0.3.0**. Há regras novas, sem commit, no `CLAUDE.md` do design system ("claro como padrão sempre", "uma seção por tela", "qualquer aparelho", "sem repetição por tela"), que não vieram desta sessão; "claro como padrão sempre" contradiz o código atual (os temas seguem `prefers-color-scheme`).
 
 ### Avaliação (Fase 4)
 
@@ -73,7 +65,7 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 
 **A. Fechar o que está aberto**
 1. ✅ PRs #11 e #12 mergeados (2026-11-03).
-2. 🙋 Merges na ordem da tabela "Branches e PRs abertos" (design system #6 + tag `v0.3.0`; Assist #14, #15, #13, #16).
+2. ✅ Design system #6 (+ tag `v0.3.0`), Assist #14, #15 e #13 mergeados (2026-11-10). 🙋 Falta o #16.
 3. Atualizar e mergear o PR #2 do design system.
 
 **B. Terminar a Fase 4 (avaliação)**
@@ -98,8 +90,8 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 13. `.gitattributes` (fim dos avisos de LF/CRLF), `CHANGELOG.md` e tag `v1.0.0`.
 
 **E. Interface (rodada pequena)**
-14. ✅ Menu no celular em gaveta (PR #14, aguardando merge).
-15. ✅ Design system v0.3.0 responsivo e Assist sem rolar no celular (PRs design system #6 e Assist #15, aguardando merge).
+14. ✅ Menu no celular em gaveta (PR #14, mergeado em 2026-11-10).
+15. ✅ Design system v0.3.0 responsivo e Assist sem rolar no celular (design system #6 e Assist #15, mergeados em 2026-11-10).
 16. Design system v0.4.0: botão com cara de link ("Apagar conversa"), hoje no CSS do Assist.
 17. Página de resultados (a dos prints de 2026-11-04): o cartão de latência está sem o número grande; trocar "83%" por contagem; acrescentar o antes → depois da busca híbrida. (Não está neste repositório.)
 
@@ -114,7 +106,7 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 - Python 3.12 no `.venv`, pelos lockfiles com hash. Node 24 para `web/` (`npm ci --ignore-scripts`).
 - O banco tem conversas de teste fictícias dos testes manuais da API e da interface.
 - `.claude/launch.json` (não commitado) sobe a tela (`web`) e a vitrine do design system (`design-system`) no painel de navegador do app. O Vite da tela fica na 5173 mesmo quando o painel diz 5174.
-- Trocar de branch muda a tela que o servidor do Vite mostra (a `feat/eval-set` e a `feat/hybrid-search` não têm a gaveta nem a v0.3.0).
+- Trocar de branch muda a tela que o servidor do Vite mostra: branch criada antes de 2026-11-10 pode não ter a gaveta nem a v0.3.0.
 
 ## Decisões que não estão óbvias no código
 

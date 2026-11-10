@@ -35,6 +35,11 @@ export function App() {
   const [status, setStatus] = useState<ServiceStatus | null>(null);
   const [theme, setTheme] = useState<Theme>(loadTheme);
   const end = useRef<HTMLDivElement>(null);
+  // Gaveta do menu no celular. O <dialog> do navegador já fecha no Esc e prende o foco
+  // dentro dele; ao fechar, o foco volta ao botão do menu.
+  const drawer = useRef<HTMLDialogElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     void serviceStatus().then(setStatus);
@@ -60,6 +65,38 @@ export function App() {
     // Sem mensagens, a tela de boas-vindas começa do topo.
     if (entries.length > 0) end.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [entries, asking]);
+
+  // A tela alargou (celular deitado, janela maior): o menu fixo volta e a gaveta não faz sentido.
+  useEffect(() => {
+    const wide = window.matchMedia("(min-width: 48.0625rem)");
+    const close = () => {
+      if (!wide.matches) return;
+      drawer.current?.close();
+      setMenuOpen(false);
+    };
+    wide.addEventListener("change", close);
+    return () => wide.removeEventListener("change", close);
+  }, []);
+
+  function openMenu() {
+    drawer.current?.showModal();
+    setMenuOpen(true);
+  }
+
+  // O onClose do <dialog> cobre o Esc; aqui o estado muda na hora, sem esperar o evento.
+  function closeMenu() {
+    drawer.current?.close();
+    setMenuOpen(false);
+    menuButton.current?.focus();
+  }
+
+  // Escolher algo no menu do celular fecha a gaveta, para mostrar o resultado.
+  const closing =
+    <T extends unknown[]>(action: (...args: T) => void) =>
+    (...args: T) => {
+      action(...args);
+      closeMenu();
+    };
 
   async function run(call: () => Promise<ChatResponse>, userEntryId: string | null, retry: () => void) {
     try {
@@ -153,23 +190,59 @@ export function App() {
   const lastSource = lastReply?.kind === "reply" ? (lastReply.response.sources[0]?.title ?? null) : null;
   const quick = entries.length > 0 ? nextSuggestions(asked, topicId, lastSource) : [];
 
+  const menu = {
+    topicId,
+    status,
+    theme,
+    onTheme: setTheme,
+    conversations,
+    currentId: convId,
+    locked: asking,
+  };
+
   return (
     <div className="app">
-      <Sidebar
-        topicId={topicId}
-        onTopic={pickTopic}
-        onNewConversation={newConversation}
-        status={status}
-        theme={theme}
-        onTheme={setTheme}
-        conversations={conversations}
-        currentId={convId}
-        onOpen={openConversation}
-        locked={asking}
-      />
+      <Sidebar {...menu} onTopic={pickTopic} onNewConversation={newConversation} onOpen={openConversation} />
+
+      <dialog
+        ref={drawer}
+        id="menu-drawer"
+        className="vp-drawer"
+        aria-label="Menu"
+        // O aviso de "fechou" chega depois; se a gaveta já foi reaberta, ele é de um fechamento antigo.
+        onClose={() => {
+          if (drawer.current?.open) return;
+          setMenuOpen(false);
+          menuButton.current?.focus();
+        }}
+        // Toque na parte escura (fora do menu) chega aqui com o próprio <dialog> como alvo.
+        onClick={(event) => event.target === event.currentTarget && closeMenu()}
+      >
+        {menuOpen && (
+          <Sidebar
+            {...menu}
+            onTopic={closing(pickTopic)}
+            onNewConversation={closing(newConversation)}
+            onOpen={closing(openConversation)}
+            onClose={closeMenu}
+          />
+        )}
+      </dialog>
 
       <main className="chat">
         <header className="chat__header">
+          <button
+            ref={menuButton}
+            className="vp-btn vp-btn--icon show-small"
+            type="button"
+            aria-haspopup="dialog"
+            aria-expanded={menuOpen}
+            aria-controls="menu-drawer"
+            onClick={openMenu}
+          >
+            <Icon name="menu" />
+            <span className="vp-sr-only">Abrir menu</span>
+          </button>
           <img className="chat__mark show-small" src={appIcon} alt="VaultPay" />
           <h2 className="chat__title">Atendimento</h2>
           <button className="vp-btn" type="button" onClick={askForHuman} disabled={callingHuman}>
