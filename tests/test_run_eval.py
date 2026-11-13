@@ -90,12 +90,16 @@ def test_recusa_id_repetido(tmp_path):
         load_cases(path)
 
 
-def test_o_gabarito_v1_le_sem_erro_e_toda_fonte_existe():
-    cases = load_cases(DEFAULT_CASES)
+@pytest.mark.parametrize(
+    ("name", "total", "with_answer"),
+    [("perguntas-v1.csv", 30, 22), ("perguntas-v2.csv", 100, 50)],
+)
+def test_o_gabarito_le_sem_erro_e_toda_fonte_existe(name, total, with_answer):
+    cases = load_cases(DEFAULT_CASES.parent / name)
     policies = DEFAULT_CASES.parents[1] / "policies"
 
-    assert len(cases) == 30
-    assert sum(c.has_answer for c in cases) == 22
+    assert len(cases) == total
+    assert sum(c.has_answer for c in cases) == with_answer
     for case in cases:
         for slug, article in case.expected_sources:
             text = (policies / f"{slug}.md").read_text(encoding="utf-8")
