@@ -74,7 +74,7 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
    - prompt `answer-v2` ("a resposta é não" ainda é resposta; não improvisar sem base) para P010 e P013 (hoje os erros que sobram são do **modelo**, não da busca);
    - reranker (cross-encoder local, via `sentence-transformers`): modelo novo para baixar, então **proposta antes** (nome, origem, tamanho) e decisão registrada; medir também a latência; conferir antes se o artigo certo do P017 aparece entre os 20 candidatos;
    - decidir o destino da trava 1 (`MIN_SIMILARITY`) e se a trava 3 passa a conferir relevância da fonte;
-   - conjunto v2 com 100 perguntas **escritas pela Nathaly** (`data/eval/perguntas-v2.csv`, 53 com base e 47 sem; gabarito revisado por ela em 2026-11-13; decisões em `data/eval/README.md`). Próximo: apontar o medidor para a v2 e medir a linha de base nela. Ainda faltam ataques de prompt injection;
+   - conjunto v2 com 100 perguntas **escritas pela Nathaly** (`data/eval/perguntas-v2.csv`, 50 com base e 50 sem; gabarito revisado por ela em 2026-11-13; 3 perguntas sem base sugeridas pelo Claude a pedido dela; decisões em `data/eval/README.md`). Próximo: apontar o medidor para a v2 e medir a linha de base nela. Ainda faltam ataques de prompt injection;
 6. 🙋 Deepeval: decidido usar só na Fase 5, com a OpenAI como juiz.
 
 **C. Fase 5 (análise e demo)**
