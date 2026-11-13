@@ -39,3 +39,15 @@ As perguntas foram escritas pela Nathaly; o `tem_resposta` foi conferido artigo 
 - **Casos de fronteira, marcados `nao`:** P005 (bitcoin), porque as políticas não falam de cripto e ler "investimentos" como "cripto" seria deduzir além do texto; P013 (celular roubado com o app aberto), porque nenhuma política cobre o caso e improvisar com o artigo de golpe seria arriscado numa urgência. Para os dois, o comportamento certo é encaminhar.
 - **Aceitas como estão:** P017 (cobrança dupla) cabe na compra não reconhecida (Cartão, Art. 6); P024 fala de "compra", então vale o prazo do cartão (60 dias), não o do Pix MED (30 dias).
 - P026 usa `example.com`, domínio reservado para exemplos (`email.com` existe de verdade).
+
+## Conjunto v2 (`perguntas-v2.csv`, 100 perguntas)
+
+As 100 perguntas foram escritas pela Nathaly. P001 a P030 são as mesmas da v1, com o gabarito já revisado. Em P031 a P100, o `tem_resposta` foi conferido artigo por artigo contra as políticas (2026-11-13). `resposta_esperada` e `fonte_esperada` são um rascunho do Claude, **a revisar linha por linha pela Nathaly** antes de a v2 valer como gabarito. Resultado: 57 com base, 43 sem base.
+
+- **Mantidas as decisões da v1:** P012 (fatura) e P013 (celular roubado) continuam `nao`; P016 (consignado) e P029 (ações) continuam `sim`.
+- **Viraram `nao`** (as políticas não falam do assunto): fatura (P049, P050, P051), Pix que não chegou (P031), saque no exterior (P039), prazo da TED (P042), cartão recusado (P044), uso do cartão virtual (P052), senha (P055, P059), dois celulares (P058), motivo da recusa da conta (P062), reabrir conta (P066), contestação de boleto, destino do dinheiro, produto que não chegou e acompanhamento (P068, P070, P071, P072), e-mail de propaganda (P076), modo escuro (P093) e pagamento por aproximação (P094).
+- **Viraram `sim`** (a política diz que não oferece): P084 (conta para empresa, Conta Digital Art. 1) e P092 (empréstimo com imóvel, Tarifas Art. 3).
+- **Casos de fronteira:**
+  - **`nao`:** P036 (a política diz quantas chaves e de que tipo, não como cadastrar); P054 e P056 (mesmo critério da P013); P069 (a cliente reconhece a assinatura, não é compra não reconhecida); P086 (ler previdência como investimento ou seguro seria deduzir, como no P005).
+  - **`sim`:** P063 e P064 (direito de correção, Privacidade Art. 5); P073 (não vende e informa com quem compartilha, Privacidade Art. 2 e 5); P081 (atendimento exclusivamente pelo chat do app); P085 e P090 (financiamento e antecipação do FGTS são empréstimos).
+- **Dados fictícios:** CPF da P017, e-mail `example.com` da P026 e telefone da P064.
