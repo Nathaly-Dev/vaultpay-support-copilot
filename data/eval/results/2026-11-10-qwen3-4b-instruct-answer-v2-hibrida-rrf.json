@@ -1,0 +1,504 @@
+{
+  "run_id": "2026-11-10-qwen3-4b-instruct-answer-v2-hibrida-rrf",
+  "conjunto": "perguntas-v1.csv",
+  "modelo": "qwen3:4b-instruct",
+  "prompt": "answer-v2",
+  "min_similarity": 0.8,
+  "embedding": "intfloat/multilingual-e5-small",
+  "busca": "hibrida-rrf",
+  "resumo": {
+    "decisao_certa": {
+      "acertos": 27,
+      "total": 30,
+      "pct": 90.0
+    },
+    "respondeu_sem_base": [
+      "P013"
+    ],
+    "encaminhou_com_base": [
+      "P010",
+      "P017"
+    ],
+    "fonte_certa_quando_respondeu": {
+      "acertos": 19,
+      "total": 20,
+      "pct": 95.0
+    },
+    "busca_achou_a_fonte_principal": {
+      "acertos": 21,
+      "total": 22,
+      "pct": 95.5
+    },
+    "similaridade_com_base": [
+      0.8236,
+      0.8257,
+      0.8316,
+      0.8327,
+      0.8368,
+      0.843,
+      0.8461,
+      0.8463,
+      0.8493,
+      0.8614,
+      0.8614,
+      0.8664,
+      0.8695,
+      0.8713,
+      0.8759,
+      0.8788,
+      0.8826,
+      0.8837,
+      0.885,
+      0.8851,
+      0.8914,
+      0.8985
+    ],
+    "similaridade_sem_base": [
+      0.8419,
+      0.8429,
+      0.8429,
+      0.8437,
+      0.8439,
+      0.8441,
+      0.8447,
+      0.8453
+    ],
+    "latencia_mediana_ms": 14228.5
+  },
+  "casos": [
+    {
+      "id": "P001",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8788,
+      "cited": [
+        "politica-pix, Art. 5"
+      ],
+      "answer": "Sim, se você enviou o Pix para a pessoa errada, pode abrir um pedido de devolução no app em 'Ajuda > Enviei Pix errado'. A VaultPay entrará em contato com o banco do recebedor, mas a devolução depende da concordância do recebedor.",
+      "latency_ms": 35146
+    },
+    {
+      "id": "P002",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8695,
+      "cited": [
+        "tabela-tarifas, Art. 2"
+      ],
+      "answer": "Cobram R$ 6,90 por transferência TED.",
+      "latency_ms": 16363
+    },
+    {
+      "id": "P003",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8614,
+      "cited": [
+        "politica-cartao, Art. 5"
+      ],
+      "answer": "Você deve bloquear o cartão imediatamente pelo app e pedir a segunda via. A primeira segunda via de cada ano é gratuita.",
+      "latency_ms": 14266
+    },
+    {
+      "id": "P004",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8851,
+      "cited": [
+        "politica-seguranca-fraude, Art. 1"
+      ],
+      "answer": "Não, a VaultPay nunca pede sua senha por telefone. Isso é um golpe comum.",
+      "latency_ms": 18149
+    },
+    {
+      "id": "P005",
+      "has_answer": false,
+      "outcome": "escalated",
+      "reason": "no_context",
+      "decision_ok": true,
+      "source_ok": null,
+      "retrieval_hit": null,
+      "top_similarity": 0.8429,
+      "cited": [],
+      "answer": "Não sei responder isso com segurança. Vou encaminhar sua pergunta para um atendente.",
+      "latency_ms": 9581
+    },
+    {
+      "id": "P006",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8985,
+      "cited": [
+        "politica-pix, Art. 2"
+      ],
+      "answer": "O limite diário padrão para envio é de R$ 5.000,00, somando todos os Pix do dia. Entre 20h e 6h (período noturno), o limite total de envio é de R$ 1.000,00.",
+      "latency_ms": 18949
+    },
+    {
+      "id": "P007",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8664,
+      "cited": [
+        "politica-cartao, Art. 6"
+      ],
+      "answer": "Se o cliente não reconhece uma compra, deve contestá-la pelo app em até 60 dias corridos contados da data da compra. A VaultPay analisa a contestação em até 10 dias úteis.",
+      "latency_ms": 15389
+    },
+    {
+      "id": "P008",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8826,
+      "cited": [
+        "politica-privacidade, Art. 1"
+      ],
+      "answer": "Guardamos nome, CPF, data de nascimento, e-mail, telefone, endereço, documento de identidade e selfie (para confirmar a identidade).",
+      "latency_ms": 16806
+    },
+    {
+      "id": "P009",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8257,
+      "cited": [
+        "tabela-tarifas, Art. 3"
+      ],
+      "answer": "A VaultPay não oferece investimentos.",
+      "latency_ms": 10929
+    },
+    {
+      "id": "P010",
+      "has_answer": true,
+      "outcome": "escalated",
+      "reason": "no_context",
+      "decision_ok": false,
+      "source_ok": null,
+      "retrieval_hit": true,
+      "top_similarity": 0.8463,
+      "cited": [],
+      "answer": "Não sei responder isso com segurança. Vou encaminhar sua pergunta para um atendente.",
+      "latency_ms": 14415
+    },
+    {
+      "id": "P011",
+      "has_answer": false,
+      "outcome": "escalated",
+      "reason": "no_context",
+      "decision_ok": true,
+      "source_ok": null,
+      "retrieval_hit": null,
+      "top_similarity": 0.8453,
+      "cited": [],
+      "answer": "Não sei responder isso com segurança. Vou encaminhar sua pergunta para um atendente.",
+      "latency_ms": 12489
+    },
+    {
+      "id": "P012",
+      "has_answer": false,
+      "outcome": "escalated",
+      "reason": "no_context",
+      "decision_ok": true,
+      "source_ok": null,
+      "retrieval_hit": null,
+      "top_similarity": 0.8437,
+      "cited": [],
+      "answer": "Não sei responder isso com segurança. Vou encaminhar sua pergunta para um atendente.",
+      "latency_ms": 13895
+    },
+    {
+      "id": "P013",
+      "has_answer": false,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": false,
+      "source_ok": null,
+      "retrieval_hit": null,
+      "top_similarity": 0.8429,
+      "cited": [
+        "politica-seguranca-fraude, Art. 2",
+        "politica-cartao, Art. 5"
+      ],
+      "answer": "Em caso de roubo de celular com o app logado, você deve encerrar o contato com o golpe e falar com a VaultPay apenas pelo chat do app. O app pode ser usado para bloquear o cartão e pedir a segunda via. A primeira segunda via é gratuita.",
+      "latency_ms": 20157
+    },
+    {
+      "id": "P014",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8614,
+      "cited": [
+        "politica-conta-digital, Art. 1",
+        "politica-conta-digital, Art. 2"
+      ],
+      "answer": "Para abrir uma conta, você precisa ter 18 anos completos e CPF regular. A abertura é feita pelo app, com documento de identidade com foto e uma selfie. A VaultPay analisa o cadastro em até 2 dias úteis e avisa o resultado pelo app e por e-mail.",
+      "latency_ms": 17431
+    },
+    {
+      "id": "P015",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8837,
+      "cited": [
+        "politica-pix, Art. 2"
+      ],
+      "answer": "Sim, após as 22h, o limite é menor. Entre 20h e 6h, o limite total de envio é de R$ 1.000,00, conforme o Art. 2 da Política de Pix.",
+      "latency_ms": 14191
+    },
+    {
+      "id": "P016",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8316,
+      "cited": [
+        "tabela-tarifas, Art. 3"
+      ],
+      "answer": "A VaultPay não oferece empréstimo, conforme estabelecido no Art. 3 da Tabela de Tarifas.",
+      "latency_ms": 15009
+    },
+    {
+      "id": "P017",
+      "has_answer": true,
+      "outcome": "escalated",
+      "reason": "no_context",
+      "decision_ok": false,
+      "source_ok": null,
+      "retrieval_hit": false,
+      "top_similarity": 0.8461,
+      "cited": [],
+      "answer": "Não sei responder isso com segurança. Vou encaminhar sua pergunta para um atendente.",
+      "latency_ms": 12492
+    },
+    {
+      "id": "P018",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8327,
+      "cited": [
+        "tabela-tarifas, Art. 2"
+      ],
+      "answer": "Não, o saque em caixa eletrônico parceiro não é de graça 24 horas. O cliente tem 4 saques por mês sem custo; a partir do quinto saque, o custo é de R$ 6,50 por saque.",
+      "latency_ms": 16405
+    },
+    {
+      "id": "P019",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8713,
+      "cited": [
+        "politica-seguranca-fraude, Art. 2"
+      ],
+      "answer": "Sim, é golpe. O link falso é um dos golpes mais comuns mencionados na política de segurança.",
+      "latency_ms": 11640
+    },
+    {
+      "id": "P020",
+      "has_answer": false,
+      "outcome": "escalated",
+      "reason": "no_context",
+      "decision_ok": true,
+      "source_ok": null,
+      "retrieval_hit": null,
+      "top_similarity": 0.8441,
+      "cited": [],
+      "answer": "Não sei responder isso com segurança. Vou encaminhar sua pergunta para um atendente.",
+      "latency_ms": 8295
+    },
+    {
+      "id": "P021",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8759,
+      "cited": [
+        "tabela-tarifas, Art. 1"
+      ],
+      "answer": "Não, o cartão não tem anuidade.",
+      "latency_ms": 11460
+    },
+    {
+      "id": "P022",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.885,
+      "cited": [
+        "politica-conta-digital, Art. 5"
+      ],
+      "answer": "Você pode encerrar a conta pelo app, em 'Perfil > Encerrar conta'. Antes, é preciso zerar o saldo, e a VaultPay conclui o encerramento em até 5 dias úteis.",
+      "latency_ms": 16088
+    },
+    {
+      "id": "P023",
+      "has_answer": false,
+      "outcome": "escalated",
+      "reason": "no_context",
+      "decision_ok": true,
+      "source_ok": null,
+      "retrieval_hit": null,
+      "top_similarity": 0.8447,
+      "cited": [],
+      "answer": "Não sei responder isso com segurança. Vou encaminhar sua pergunta para um atendente.",
+      "latency_ms": 12254
+    },
+    {
+      "id": "P024",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8914,
+      "cited": [
+        "politica-cartao, Art. 6"
+      ],
+      "answer": "Até 60 dias corridos depois da compra você pode contestar, se for por compra não reconhecida.",
+      "latency_ms": 13358
+    },
+    {
+      "id": "P025",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8493,
+      "cited": [
+        "tabela-tarifas, Art. 3"
+      ],
+      "answer": "A VaultPay não oferece seguros, conforme estabelecido no Trecho 2.",
+      "latency_ms": 13863
+    },
+    {
+      "id": "P026",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.843,
+      "cited": [
+        "politica-privacidade, Art. 5"
+      ],
+      "answer": "O cliente pode solicitar a eliminação dos dados, desde que não haja obrigação legal de guardá-los. O pedido deve ser feito pelo app, em 'Perfil > Privacidade', e a resposta é dada em até 15 dias.",
+      "latency_ms": 17381
+    },
+    {
+      "id": "P027",
+      "has_answer": false,
+      "outcome": "escalated",
+      "reason": "no_context",
+      "decision_ok": true,
+      "source_ok": null,
+      "retrieval_hit": null,
+      "top_similarity": 0.8439,
+      "cited": [],
+      "answer": "Não sei responder isso com segurança. Vou encaminhar sua pergunta para um atendente.",
+      "latency_ms": 8704
+    },
+    {
+      "id": "P028",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": false,
+      "retrieval_hit": true,
+      "top_similarity": 0.8236,
+      "cited": [
+        "politica-atendimento, Art. 2"
+      ],
+      "answer": "Você pode falar com um atendente humano nos horários de segunda a sexta, das 8h às 20h, e aos sábados, das 9h às 15h. O atendimento humano não ocorre aos domingos e feriados nacionais.",
+      "latency_ms": 19317
+    },
+    {
+      "id": "P029",
+      "has_answer": true,
+      "outcome": "answered",
+      "reason": null,
+      "decision_ok": true,
+      "source_ok": true,
+      "retrieval_hit": true,
+      "top_similarity": 0.8368,
+      "cited": [
+        "tabela-tarifas, Art. 3"
+      ],
+      "answer": "A VaultPay não oferece investimentos.",
+      "latency_ms": 8942
+    },
+    {
+      "id": "P030",
+      "has_answer": false,
+      "outcome": "escalated",
+      "reason": "no_context",
+      "decision_ok": true,
+      "source_ok": null,
+      "retrieval_hit": null,
+      "top_similarity": 0.8419,
+      "cited": [],
+      "answer": "Não sei responder isso com segurança. Vou encaminhar sua pergunta para um atendente.",
+      "latency_ms": 11002
+    }
+  ]
+}
