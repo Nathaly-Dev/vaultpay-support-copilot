@@ -212,6 +212,22 @@ O que continua errado, e por quê:
 - **v3** explicou o campo `answerable` ("os trechos falam do assunto, mesmo que a resposta seja não"). Resolveu a P010, mas o modelo passou a inventar negativas sem base: "não oferece cartão adicional" (P023) e "não é possível conta conjunta" (P011). As políticas não dizem nenhuma das duas coisas.
 - Conclusão: com este modelo, mexer no prompt troca um erro por outro, e responder sem base é o erro mais grave num atendimento. Os dois arquivos ficam no repositório porque prompt usado numa medição não é apagado nem editado.
 
+**Linha de base no conjunto v2 (2026-11-13).** 100 perguntas escritas à mão: 50 com base e 50 sem. Mesmo modelo, prompt `answer-v1`, busca híbrida e `MIN_SIMILARITY=0.80`. **Não se compara com a tabela acima**, porque a prova é outra. A v2 é o medidor daqui para a frente.
+
+| Medida | Resultado |
+|---|---|
+| Decisão certa | 80/100 |
+| Com base: respondeu | 46/50 (encaminhou P010, P017, P081, P085) |
+| Sem base: encaminhou | **34/50** (respondeu 16 sem base: o erro mais grave) |
+| Citou a fonte certa, quando respondeu com base | 44/46 |
+| A busca achou o artigo principal | 44/50 |
+| P001 a P030 (as mesmas da v1) | 27/30, os mesmos acertos de 2026-11-04 (temperatura 0) |
+
+- **Respostas sem base perigosas ou inventadas (11):** "encerre a conta" para quem acha que alguém entrou nela (P056); "sim, pode comprar ingresso" (P100); regra do Pix MED aplicada a boleto (P068) e a cartão (P071); "o dinheiro volta para o recebedor" (P070); caminhos de app e passos que não existem (P052, P059, P072); P013, P031 e P054.
+- **Respostas parciais que o gabarito trata como sem base (5):** P036, P045, P047, P048 e P065. A política diz o quê, mas não como, onde ou o que acontece. O texto do modelo não é falso, mas o gabarito foi decidido antes da medição, e mudá-lo agora seria ajustar a prova ao resultado.
+- **A trava 1 não resolve:** com a nota mínima em 0,86, ela pegaria 7 dos 16 erros, mas derrubaria 14 das 46 respostas certas. Em 0,85, pegaria 3 e derrubaria 9. Os dois grupos têm notas parecidas (com base 0,81 a 0,92; sem base 0,79 a 0,91).
+- **Conclusão:** o problema é o modelo aceitar trecho "parecido" como resposta. Os próximos passos medem isso nesta prova: reranker e conferência de relevância da fonte.
+
 Resultados completos em [`data/eval/results/`](data/eval/results/).
 
 **Latência** (2026-10-30, Ryzen 7 5825U sem GPU dedicada, 16 GB, `qwen3:4b-instruct` no Ollama). É medida de velocidade, não de qualidade: as 10 perguntas do medidor só servem de carga.

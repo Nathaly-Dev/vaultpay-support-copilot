@@ -22,7 +22,7 @@ from vaultpay_copilot.rag.assistant import PROMPT_VERSION, Reply
 from vaultpay_copilot.rag.retriever import RetrievedChunk
 
 EVAL_DIR = Path(__file__).resolve().parents[3] / "data" / "eval"
-DEFAULT_CASES = EVAL_DIR / "perguntas-v1.csv"
+DEFAULT_CASES = EVAL_DIR / "perguntas-v2.csv"
 RESULTS_DIR = EVAL_DIR / "results"
 # Tipo de busca do rag/retriever.py, no relatório e no nome do arquivo. A linha de base
 # (2026-10-30) usou só a busca por significado.
@@ -192,7 +192,9 @@ def main() -> None:
             results.append(result)
             print(f"{case.id} {'ok ' if result.decision_ok else 'ERR'} {reply.outcome}")
 
-    run_id = f"{date.today()}-{re.sub(r'[^a-z0-9.]+', '-', s.model)}-{PROMPT_VERSION}-{RETRIEVAL}"
+    model = re.sub(r"[^a-z0-9.]+", "-", s.model)
+    # O conjunto entra no nome: resultados da v1 e da v2 não são comparáveis entre si.
+    run_id = f"{date.today()}-{model}-{PROMPT_VERSION}-{RETRIEVAL}-{DEFAULT_CASES.stem}"
     RESULTS_DIR.mkdir(exist_ok=True)
     summary = summarize(results)
     report = {
