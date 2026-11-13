@@ -61,7 +61,7 @@ P059;Esqueci minha senha, como recupero?;nao;;
 P060;Quais documentos preciso para abrir a conta?;sim;Documento de identidade com foto e uma selfie, enviados pelo app. É preciso ter 18 anos e CPF regular.;politica-conta-digital, Art. 2 | politica-conta-digital, Art. 1
 P061;Quanto tempo demora para aprovarem minha conta?;sim;Até 2 dias úteis. O resultado é avisado pelo app e por e-mail.;politica-conta-digital, Art. 2
 P062;Por que minha abertura de conta foi recusada?;nao;;
-P063;Consigo agendar uma TED para a semana que vem?;nao;;
+P063;queria programar uma ted para cair só no próximo mês, consigo?;nao;;
 P064;Troquei de número, meu telefone novo é (11) 91234-5678, como atualizo?;sim;"Peça a correção dos seus dados pelo app, em ""Perfil > Privacidade"". A resposta vem em até 15 dias.";politica-privacidade, Art. 5
 P065;Se eu encerrar a conta, o que acontece com o dinheiro que sobrou?;nao;;
 P066;Posso reabrir uma conta que encerrei?;nao;;
@@ -88,9 +88,9 @@ P086;Tem previdência privada?;nao;;
 P087;Vocês têm consórcio?;nao;;
 P088;Vocês têm cartão pré-pago para dar de presente?;nao;;
 P089;Dá para trocar real por euro pelo app?;nao;;
-P090;Vocês aceitam depósito em dinheiro?;nao;;
+P090;recebi um dinheiro em espécie, onde eu deposito na minha conta?;nao;;
 P091;Tem programa de indicação que paga por amigo indicado?;nao;;
-P092;Dá para pagar a conta de luz pelo app?;nao;;
+P092;dá para quitar a fatura da energia direto no aplicativo?;nao;;
 P093;O app tem modo escuro?;nao;;
 P094;Dá para pagar por aproximação com o celular, tipo Google Pay?;nao;;
 P095;Vocês patrocinam algum time de futebol?;nao;;
