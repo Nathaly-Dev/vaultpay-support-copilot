@@ -199,6 +199,19 @@ O que continua errado, e por quê:
 - **P013** (celular roubado, sem base): o **modelo** improvisou com o artigo de golpe.
 - A nota mínima de similaridade (trava 1) não separa os grupos: sem base 0,84 a 0,85, com base 0,82 a 0,90. Hoje o portão real é o modelo.
 
+**Tentativas de corrigir P010 e P013 pelo prompt (não adotadas).** Mesmo modelo, busca híbrida e `MIN_SIMILARITY`; só o prompt mudou. O padrão continua `answer-v1`.
+
+| Medida | `answer-v1` | [`answer-v2`](src/vaultpay_copilot/rag/prompts/answer-v2.md) (2026-11-10) | [`answer-v3`](src/vaultpay_copilot/rag/prompts/answer-v3.md) (2026-11-13) |
+|---|---|---|---|
+| Decisão certa | **27/30** | 27/30 | 26/30 |
+| Respondeu sem base | **1/8** (P013) | 1/8 (P013) | 3/8 (P011, P013, P023) |
+| Encaminhou mesmo havendo base | 2/22 (P010, P017) | 2/22 (P010, P017) | **1/22** (P017) |
+| Citou a fonte certa | **20/20** | 19/20 (P028) | 20/21 (P028) |
+
+- **v2** acrescentou "'não oferecemos' também é resposta" e "não estender uma regra de um assunto para outro". Não mudou P010 nem P013. Causa achada olhando a saída crua da P010: o modelo escrevia a resposta certa ("não possui telefone"), mas marcava `answerable: false`, porque lia o campo como "a coisa existe".
+- **v3** explicou o campo `answerable` ("os trechos falam do assunto, mesmo que a resposta seja não"). Resolveu a P010, mas o modelo passou a inventar negativas sem base: "não oferece cartão adicional" (P023) e "não é possível conta conjunta" (P011). As políticas não dizem nenhuma das duas coisas.
+- Conclusão: com este modelo, mexer no prompt troca um erro por outro, e responder sem base é o erro mais grave num atendimento. Os dois arquivos ficam no repositório porque prompt usado numa medição não é apagado nem editado.
+
 Resultados completos em [`data/eval/results/`](data/eval/results/).
 
 **Latência** (2026-10-30, Ryzen 7 5825U sem GPU dedicada, 16 GB, `qwen3:4b-instruct` no Ollama). É medida de velocidade, não de qualidade: as 10 perguntas do medidor só servem de carga.

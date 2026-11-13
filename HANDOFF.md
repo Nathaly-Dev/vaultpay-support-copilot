@@ -1,6 +1,6 @@
 # HANDOFF: VaultPay Assist (support copilot)
 
-Estado em **2026-11-10**. Leia isto antes de continuar. Regras de trabalho e comandos ficam no [`CLAUDE.md`](CLAUDE.md); a visão do produto, no [`README.md`](README.md).
+Estado em **2026-11-13**. Leia isto antes de continuar. Regras de trabalho e comandos ficam no [`CLAUDE.md`](CLAUDE.md); a visão do produto, no [`README.md`](README.md).
 
 ## Onde estamos
 
@@ -11,7 +11,7 @@ Estado em **2026-11-10**. Leia isto antes de continuar. Regras de trabalho e com
 | 2. RAG (tapa-dados, busca, três travas, gravação) | ✅ mergeada |
 | 3. API (FastAPI) | ✅ mergeada (PR #10) |
 | Interface do chat (expansão aprovada) | ✅ mergeada (PRs #11, #12, #14 e #15: celular e design system v0.3.0) |
-| 4. Avaliação | 🚧 conjunto, linha de base (#13) e busca híbrida (#16) mergeados; faltam revisão do texto e as próximas melhorias (item B) |
+| 4. Avaliação | 🚧 conjunto, linha de base (#13) e busca híbrida (#16) mergeados; prompts v2 e v3 medidos e não adotados; faltam revisão do texto e as próximas melhorias (item B) |
 | 5. Análise e demo | ⬜ não começada |
 
 ### Branches e PRs abertos
@@ -71,7 +71,7 @@ Em ordem. Cada item é um PR (ou uma decisão da Nathaly, marcada com 🙋).
 4. 🙋 A Nathaly marca a planilha de revisão → publicar "texto correto: X/19" no README.
 5. Uma melhoria por vez, medida contra a linha de base (o resultado vira um arquivo novo em `data/eval/results/`):
    - ✅ busca híbrida (ADR 0004, PR #16): busca 18/22 → 21/22, decisão 25/30 → 27/30, fonte 17/18 → 20/20, sem base 1/8 igual; P016 e P029 resolvidas, P017 não (sem palavra em comum). Próximo passo do padrão: reranker, medido separado;
-   - prompt `answer-v2` ("a resposta é não" ainda é resposta; não improvisar sem base) para P010 e P013 (hoje os erros que sobram são do **modelo**, não da busca);
+   - ✅ prompts `answer-v2` e `answer-v3` medidos e **não adotados** (README, seção Resultados): o v2 não mudou nada; o v3 resolveu P010, mas passou a inventar negativas (sem base 1/8 → 3/8). Com este modelo, mexer no prompt troca um erro por outro; o padrão continua `answer-v1`. Não tentar outra versão de prompt sem uma ideia nova;
    - reranker (cross-encoder local, via `sentence-transformers`): modelo novo para baixar, então **proposta antes** (nome, origem, tamanho) e decisão registrada; medir também a latência; conferir antes se o artigo certo do P017 aparece entre os 20 candidatos;
    - decidir o destino da trava 1 (`MIN_SIMILARITY`) e se a trava 3 passa a conferir relevância da fonte;
    - conjunto v2 com 100 perguntas **escritas pela Nathaly** (`data/eval/perguntas-v2.csv`, 50 com base e 50 sem; gabarito revisado por ela em 2026-11-13; decisões em `data/eval/README.md`). Próximo: apontar o medidor para a v2 e medir a linha de base nela. Ainda faltam ataques de prompt injection;
@@ -147,6 +147,7 @@ A Nathaly preferiu seguir construindo e entender tudo **no fim**, numa apresenta
 - Borda: limite de corpo, limite por IP (janela deslizante), uma pergunta por vez, headers de segurança, log sem dado pessoal, `X-Forwarded-For`.
 - Latência x vazão; `localhost` x `127.0.0.1`; por que streaming não combina com as travas; medir antes de otimizar.
 - Avaliação: conjunto escrito por pessoa, "a resposta é não ainda é resposta", medir busca separada do modelo, linha de base.
+- Prompts v2 e v3: o nome do campo também é instrução (`answerable` lido como "a coisa existe"); responder mais (cobertura) custa errar mais (precisão).
 - Busca híbrida: busca por significado x por palavra, raiz das palavras e acento, junção por posição (RRF) e por que não somar notas; reranker como próximo passo; busca melhor não elimina alucinação sozinha.
 - Responsivo: tamanhos de tela combinados, `<dialog>` (Esc, foco preso e devolvido), o evento `close` atrasado que fechava a gaveta reaberta.
 - Interface: design system com tokens, contraste medido, temas equivalentes; cópia conferida por hash; o que fica no navegador e por quê.
