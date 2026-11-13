@@ -42,12 +42,13 @@ As perguntas foram escritas pela Nathaly; o `tem_resposta` foi conferido artigo 
 
 ## Conjunto v2 (`perguntas-v2.csv`, 100 perguntas)
 
-As 100 perguntas foram escritas pela Nathaly. P001 a P030 são as mesmas da v1, com o gabarito já revisado. Em P031 a P100, o `tem_resposta` foi conferido artigo por artigo contra as políticas (2026-11-13). `resposta_esperada` e `fonte_esperada` são um rascunho do Claude, **a revisar linha por linha pela Nathaly** antes de a v2 valer como gabarito. Resultado: 57 com base, 43 sem base.
+As 100 perguntas foram escritas pela Nathaly. P001 a P030 são as mesmas da v1, com o gabarito já revisado. Em P031 a P100, o `tem_resposta` foi conferido artigo por artigo contra as políticas (2026-11-13). `resposta_esperada` e `fonte_esperada` são um rascunho do Claude, **revisado linha por linha pela Nathaly** (2026-11-13). Resultado: 53 com base, 47 sem base.
 
 - **Mantidas as decisões da v1:** P012 (fatura) e P013 (celular roubado) continuam `nao`; P016 (consignado) e P029 (ações) continuam `sim`.
 - **Viraram `nao`** (as políticas não falam do assunto): fatura (P049, P050, P051), Pix que não chegou (P031), saque no exterior (P039), prazo da TED (P042), cartão recusado (P044), uso do cartão virtual (P052), senha (P055, P059), dois celulares (P058), motivo da recusa da conta (P062), reabrir conta (P066), contestação de boleto, destino do dinheiro, produto que não chegou e acompanhamento (P068, P070, P071, P072), e-mail de propaganda (P076), modo escuro (P093) e pagamento por aproximação (P094).
 - **Viraram `sim`** (a política diz que não oferece): P084 (conta para empresa, Conta Digital Art. 1) e P092 (empréstimo com imóvel, Tarifas Art. 3).
 - **Casos de fronteira:**
-  - **`nao`:** P036 (a política diz quantas chaves e de que tipo, não como cadastrar); P054 e P056 (mesmo critério da P013); P069 (a cliente reconhece a assinatura, não é compra não reconhecida); P086 (ler previdência como investimento ou seguro seria deduzir, como no P005).
+  - **`nao`:** P036, P045 e P047 (a política diz o quê, mas não como nem onde: cadastrar chave, bloquear o cartão, pedir a segunda via); P048 (o prazo de 10 dias úteis é do cartão físico, não se sabe o da segunda via); P065 (a política só diz que é preciso zerar o saldo, não o que acontece com o dinheiro); P054 e P056 (mesmo critério da P013); P069 (a cliente reconhece a assinatura, não é compra não reconhecida); P086 (ler previdência como investimento ou seguro seria deduzir, como no P005).
   - **`sim`:** P063 e P064 (direito de correção, Privacidade Art. 5); P073 (não vende e informa com quem compartilha, Privacidade Art. 2 e 5); P081 (atendimento exclusivamente pelo chat do app); P085 e P090 (financiamento e antecipação do FGTS são empréstimos).
+- **Ajustes da revisão:** P034 também manda trocar o PIN e registrar boletim de ocorrência (Segurança Art. 5); P053 sem "não passe o código" (dedução); P057 só com o golpe do link falso (a política fala de foto do cartão, não de dados); P080 com texto mais claro sobre o fim de semana.
 - **Dados fictícios:** CPF da P017, e-mail `example.com` da P026 e telefone da P064.

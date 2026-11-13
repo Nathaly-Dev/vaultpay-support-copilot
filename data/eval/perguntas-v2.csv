@@ -32,7 +32,7 @@ P030;Vocês têm app para relógio smartwatch?;nao;;
 P031;Fiz um Pix e o dinheiro não chegou na outra conta, o que aconteceu?;nao;;
 P032;Posso aumentar meu limite de Pix?;sim;"Sim. Peça o aumento no app; o novo limite passa a valer em 24 horas, para proteger a conta contra fraude.";politica-pix, Art. 2
 P033;Pedi para aumentar o limite do Pix, quanto tempo demora para valer?;sim;Em 24 horas depois do pedido. Esse prazo existe para proteger a conta contra fraude.;politica-pix, Art. 2
-P034;Caí num golpe pelo Pix, tem como recuperar o dinheiro?;sim;"Abra o quanto antes a contestação do Pix MED no app, em ""Ajuda > Contestar Pix"", em até 30 dias corridos do Pix. A análise leva até 7 dias; se a fraude for confirmada, o valor que ainda estiver na conta de quem recebeu é devolvido.";politica-pix-med, Art. 3 | politica-pix-med, Art. 2 | politica-pix-med, Art. 6 | politica-seguranca-fraude, Art. 5
+P034;Caí num golpe pelo Pix, tem como recuperar o dinheiro?;sim;"Abra o quanto antes a contestação do Pix MED no app, em ""Ajuda > Contestar Pix"", em até 30 dias corridos do Pix. Também troque o PIN e registre um boletim de ocorrência. A análise leva até 7 dias; se a fraude for confirmada, o valor que ainda estiver na conta de quem recebeu é devolvido.";politica-pix-med, Art. 3 | politica-pix-med, Art. 2 | politica-pix-med, Art. 6 | politica-seguranca-fraude, Art. 5
 P035;O Pix é cobrado ou é de graça?;sim;É de graça para pessoa física, tanto para enviar quanto para receber.;politica-pix, Art. 1 | tabela-tarifas, Art. 1
 P036;Como eu cadastro uma chave Pix?;nao;;
 P037;Posso ter mais de uma chave Pix?;sim;Sim, até 5 chaves Pix. Os tipos aceitos são CPF, e-mail, telefone e chave aleatória.;politica-pix, Art. 3
@@ -43,19 +43,19 @@ P041;Quantos saques grátis eu tenho por mês?;sim;4 saques por mês em caixa el
 P042;A TED cai na hora ou demora?;nao;;
 P043;Vocês oferecem algum seguro para o cartão?;sim;Não. A VaultPay não oferece seguros.;tabela-tarifas, Art. 3
 P044;Meu cartão foi recusado na loja, por quê?;nao;;
-P045;Como faço para bloquear o cartão pelo app?;sim;Pelo app, a qualquer momento. O bloqueio vale na hora e não tem custo.;politica-cartao, Art. 4
+P045;Como faço para bloquear o cartão pelo app?;nao;;
 P046;Bloqueei o cartão sem querer, consigo desbloquear?;sim;Sim. O bloqueio feito por você é temporário, e dá para desbloquear pelo app a qualquer momento.;politica-cartao, Art. 4
-P047;Como peço a segunda via do cartão?;sim;"Peça a segunda via; a primeira de cada ano é gratuita e, a partir da segunda, custa R$ 15,00. O cartão antigo é cancelado quando a segunda via é pedida.";politica-cartao, Art. 5 | tabela-tarifas, Art. 2
-P048;Quanto tempo o cartão novo demora para chegar?;sim;O cartão físico chega em até 10 dias úteis.;politica-cartao, Art. 2
+P047;Como peço a segunda via do cartão?;nao;;
+P048;Quanto tempo o cartão novo demora para chegar?;nao;;
 P049;Atrasei a fatura, quanto vou pagar de juros?;nao;;
 P050;Dá para parcelar a fatura?;nao;;
 P051;Posso mudar o dia de vencimento da fatura?;nao;;
 P052;Como uso o cartão virtual para comprar na internet?;nao;;
-P053;Vocês mandam mensagem pelo WhatsApp pedindo código?;sim;"Não. A VaultPay nunca pede código por nenhum canal. Não passe o código e denuncie pelo app, em ""Ajuda > Denunciar golpe"".";politica-seguranca-fraude, Art. 1 | politica-seguranca-fraude, Art. 6
+P053;Vocês mandam mensagem pelo WhatsApp pedindo código?;sim;"Não. A VaultPay nunca pede código por nenhum canal. Denuncie a mensagem pelo app, em ""Ajuda > Denunciar golpe"".";politica-seguranca-fraude, Art. 1 | politica-seguranca-fraude, Art. 6
 P054;Recebi um código de verificação que eu não pedi, e agora?;nao;;
 P055;Como troco a senha do app?;nao;;
 P056;Acho que alguém entrou na minha conta, o que eu faço?;nao;;
-P057;Um site pediu os dados do meu cartão em nome da VaultPay, é confiável?;sim;Não. Site que imita a VaultPay é golpe (link falso), e a VaultPay nunca pede foto do cartão com o código de segurança. Não informe nada e fale com a VaultPay só pelo chat do app.;politica-seguranca-fraude, Art. 2 | politica-seguranca-fraude, Art. 1
+P057;Um site pediu os dados do meu cartão em nome da VaultPay, é confiável?;sim;Não. Site que imita a VaultPay é golpe (link falso). Encerre o contato e fale com a VaultPay só pelo chat do app.;politica-seguranca-fraude, Art. 2
 P058;Posso usar minha conta em dois celulares?;nao;;
 P059;Esqueci minha senha, como recupero?;nao;;
 P060;Quais documentos preciso para abrir a conta?;sim;Documento de identidade com foto e uma selfie, enviados pelo app. É preciso ter 18 anos e CPF regular.;politica-conta-digital, Art. 2 | politica-conta-digital, Art. 1
@@ -63,7 +63,7 @@ P061;Quanto tempo demora para aprovarem minha conta?;sim;Até 2 dias úteis. O r
 P062;Por que minha abertura de conta foi recusada?;nao;;
 P063;Como mudo meu endereço no cadastro?;sim;"Peça a correção dos seus dados pelo app, em ""Perfil > Privacidade"". A resposta vem em até 15 dias.";politica-privacidade, Art. 5
 P064;Troquei de número, meu telefone novo é (11) 91234-5678, como atualizo?;sim;"Peça a correção dos seus dados pelo app, em ""Perfil > Privacidade"". A resposta vem em até 15 dias.";politica-privacidade, Art. 5
-P065;Se eu encerrar a conta, o que acontece com o dinheiro que sobrou?;sim;Antes de encerrar, é preciso zerar o saldo. Depois, o encerramento é concluído em até 5 dias úteis.;politica-conta-digital, Art. 5
+P065;Se eu encerrar a conta, o que acontece com o dinheiro que sobrou?;nao;;
 P066;Posso reabrir uma conta que encerrei?;nao;;
 P067;Contestei uma compra, quanto tempo demora para resolver?;sim;A VaultPay analisa a contestação em até 10 dias úteis.;politica-cartao, Art. 6
 P068;Paguei um boleto errado, dá para contestar?;nao;;
@@ -78,7 +78,7 @@ P076;Posso parar de receber e-mails de propaganda?;nao;;
 P077;Por que vocês pedem uma selfie no cadastro?;sim;Para confirmar a sua identidade.;politica-privacidade, Art. 1 | politica-conta-digital, Art. 2
 P078;Vocês vendem meus dados?;sim;Não. A VaultPay não vende dados pessoais.;politica-privacidade, Art. 2
 P079;Qual o horário de atendimento?;sim;O assistente virtual funciona 24 horas, todos os dias. Os atendentes humanos atendem de segunda a sexta, das 8h às 20h, e aos sábados, das 9h às 15h.;politica-atendimento, Art. 2
-P080;Tem atendimento no fim de semana?;sim;"O assistente virtual funciona todos os dias. Atendente humano só no sábado, das 9h às 15h; aos domingos e feriados não há.";politica-atendimento, Art. 2
+P080;Tem atendimento no fim de semana?;sim;No fim de semana, o assistente virtual funciona normalmente e há atendente humano aos sábados, das 9h às 15h. Aos domingos e feriados, não há atendente humano.;politica-atendimento, Art. 2
 P081;Vocês têm agência física?;sim;O atendimento é feito exclusivamente pelo chat do app VaultPay.;politica-atendimento, Art. 1
 P082;Como faço uma reclamação formal?;sim;"Pelo app, em ""Ajuda > Reclamação"". A VaultPay responde em até 10 dias úteis.";politica-atendimento, Art. 5
 P083;Vocês têm ouvidoria?;sim;Sim, pelo app. Se a resposta da reclamação não resolver, recorra à Ouvidoria, que responde em até 10 dias úteis e é a instância final da VaultPay.;politica-atendimento, Art. 6
